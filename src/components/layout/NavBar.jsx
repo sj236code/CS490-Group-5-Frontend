@@ -1,5 +1,6 @@
 import { ChevronLeft } from 'lucide-react';
 
+/* NavBar component for an unregistered user */
 function NavBar({onClose}){
 
     return(
@@ -8,8 +9,8 @@ function NavBar({onClose}){
                 <ChevronLeft strokeWidth={3} />
             </button>
             <ul>
-                <li>Home</li>
-                <li>Services</li>
+                <li>Sign In</li>
+                <li>Sign Up</li>
             </ul>
         </div>
         

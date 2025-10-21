@@ -1,6 +1,6 @@
 import { Menu } from 'lucide-react';
 
-/* MenuButton component to */
+/* MenuButton component to open NavBar*/
 function MenuButton({onClick}){
 
     return(
