@@ -16,10 +16,23 @@
   height: auto;
 }
 
+.menu-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 55px;
+  height: 55px;
+  border-radius: 5px;
+  border: 2px solid #4B5945;
+  color: #4B5945;
+}
+
 .header {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   margin-top: 0;
   background-color: #D9E9CF;
+  padding: 0 20px;
+  height: 100px;
 }
