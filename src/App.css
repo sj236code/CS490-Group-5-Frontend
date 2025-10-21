@@ -1,8 +1,13 @@
 #root {
-  max-width: 1280px;
   margin: 0 auto;
   padding: 0;
   text-align: center;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 .logo:hover {
@@ -20,19 +25,57 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 55px;
-  height: 55px;
+  width: 40px;
+  height: 40px;
   border-radius: 5px;
   border: 2px solid #4B5945;
+  background-color: #D9E9CF;
   color: #4B5945;
+  cursor: pointer;
+}
+
+.menu-icon:hover {
+  background-color: #B6CEB4;
 }
 
 .header {
+  padding: 10px 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-top: 0;
   background-color: #D9E9CF;
-  padding: 0 20px;
   height: 100px;
+  width: 100%;
+}
+
+.nav-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 250px;
+  height: 100vh;
+  background-color: #D9E9CF;
+  padding: 1rem;
+  box-shadow: 2px 0 8px rgba(0,0,0,0.2);
+  z-index: 1000;
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #D9E9CF;
+  color: #4B5945;
+  cursor: pointer;
+  border-color: #4B5945;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.close-button:hover {
+  background-color: #B6CEB4;
 }

@@ -1,16 +1,27 @@
 import jade_logo from '../../assets/jade_logo.png';
-import { Menu } from 'lucide-react';
+import MenuButton from './MenuButton.jsx';
+import {useState , useEffect} from 'react';
+import NavBar from './NavBar';
+
 
 function Header(){
+
+    const[navBar, setNavBar] = useState(false);
+
+    const toggleNavBar = () => {
+        setNavBar(prev => !prev);
+    };
+
     return(
-        <header className='header'>
-            <div className='menu-icon'>
-                <Menu strokeWidth={3}/>
-            </div>
-            <div className='logo'>
-                <img src={jade_logo} className="logo-img" />    
-            </div>
-        </header>
+        <>
+            <header className='header'>
+                <MenuButton onClick={toggleNavBar} />
+                <div className='logo'>
+                    <img src={jade_logo} className="logo-img" />    
+                </div>
+            </header>
+            {navBar && <NavBar onClose={toggleNavBar} />}
+        </>
     );
 }
 
