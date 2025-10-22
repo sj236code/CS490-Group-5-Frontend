@@ -138,10 +138,155 @@ body {
   text-align: center;
 }
 
-.hero-title{
+.hero-title {
   font-size: 2.5rem;
   margin-bottom: 20px;
   color: #F0F0F0;
+
+}
+
+.landing-search-bar {
+  background-color: white;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  position: relative;
+  z-index: 10;
+  width: 800px;
+  height: 80px;
+  max-width: 56rem;
+}
+
+/* Left Half of Search: Search Section */
+.search-section {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  padding: 1rem 1.5rem;
+}
+
+.search-section input::placeholder{
+  color: #F0F0F0;
+}
+
+.search-section input {
+  flex: 1;
+  outline: none;
+  border: none;
+  font-size: 1.5rem;
+  color: black;
+  margin-left: 0.75rem;
+}
+
+.search-icon {
+  color: #4B5945;
+  width: 50px;
+  height: 43px;
+  stroke-width: 2.2;
+}
+
+.divider {
+  height: 3rem;
+  width: 1px;
+  background-color: #d1d5db;
+}
+
+/* Right Half of Search: City Dropdown */
+.city-wrapper {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.city-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 1rem 1.5rem;
+  cursor: pointer;
+}
+
+.location-icon {
+  color: #4B5945;
+  width: 50px;
+  height: 43px;
+  stroke-width: 2.0;
+}
+
+.location-text {
+  color: #4B5945;
+  display: flex;
+  font-size: 1.5rem;
+  align-items: center;
+  flex: 1;
+  padding: 1rem 1rem;
+}
+
+.city-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: white;
+  border-radius: 0 0 1rem 1rem;
+  margin-top: -1px;
+  z-index: 20;
+}
+
+.city-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.city-item {
+  display: flex;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  cursor: pointer;
+  background-color: #F0F0F0;
+  color: #4B5945;
+  font-size: 1rem;
+  border-bottom: 1px solid #E5E7EB;
+}
+
+.city-icon {
+  margin-right: 0.75rem;
+  color: #4B5945;
+  width: 18px;
+  height: 18px;
+}
+
+.search-button {
+  margin: 0.5rem;
+  border-radius: 9999px;
+  background-color: #D9E9CF;
+  padding: 1rem;
+  border: none;
+  cursor: pointer;
+  color: #4B5945;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 70px;
+  height: 70px;
+}
+
+.search-button svg{
+  color: #4B5945;
+  width: 70px;
+  height: 70px;
+  stroke-width: 2.2;
+}
+
+.results-list{ /*TODO when endpoint created*/
+  border-radius: 1rem;
+}
+
+.result-content { /*TODO when endpoint created*/
 
 }
 
