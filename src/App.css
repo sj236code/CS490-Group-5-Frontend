@@ -226,13 +226,18 @@ body {
 
 .city-dropdown {
   position: absolute;
-  top: 100%;
+  top: calc(100% + 0.3rem);
   left: 0;
   right: 0;
   background-color: white;
-  border-radius: 0 0 1rem 1rem;
-  margin-top: -1px;
+  border-radius: 1rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 400px;
+  overflow-y: auto;
   z-index: 20;
+  border: 2px solid #D9E9CF;
 }
 
 .city-list {
@@ -248,7 +253,7 @@ body {
   cursor: pointer;
   background-color: #F0F0F0;
   color: #4B5945;
-  font-size: 1rem;
+  font-size: 1.1rem;
   border-bottom: 1px solid #E5E7EB;
 }
 
@@ -282,12 +287,45 @@ body {
   stroke-width: 2.2;
 }
 
-.results-list{ /*TODO when endpoint created*/
+/* Search Results */
+.results-list {
+  position: absolute;
+  top: calc(100% + 0.3rem);
+  left: 0;
+  right: 0;
+  background-color: white;
   border-radius: 1rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 400px;
+  overflow-y: auto;
+  z-index: 30;
+  border: 2px solid #D9E9CF;
 }
 
-.result-content { /*TODO when endpoint created*/
+.result-item {
+  display: flex;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  cursor: pointer;
+  background-color: #F0F0F0;
+  color: #4B5945;
+  font-size: 1.1rem;
+  border-bottom: 1px solid #E5E7EB;
+}
 
+.result-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 0.25rem;
+}
+
+.search-bar-wrapper {
+  position: relative;
+  width: 800px;
+  max-width: 56rem;
 }
 
 .text-1 {
