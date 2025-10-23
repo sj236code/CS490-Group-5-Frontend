@@ -74,8 +74,9 @@ body {
   height: 100vh;
   background-color: #D9E9CF;
   padding: 1rem;
-  box-shadow: 2px 0 8px rgba(0,0,0,0.2);
   z-index: 1000;
+  display: flex;
+  flex-direction: column;
 }
 
 .cart-panel {
@@ -412,6 +413,69 @@ body {
   
 }
 
+/* Registered User Nav Bar = nb */
+
+.nb-profile-section {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 2.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.nb-profile-icon {
+  width: 45px;
+  height: 45px;
+  color: #4B5945;
+}
+
+.nb-profile-info {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.nb-user-name {
+  font-weight: bold;
+  color: #4b5945;
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.nb-user-tag {
+  font-size: 0.9rem;
+  color: #4b5945;
+  margin: 3px 0;
+}
+
+.nb-verified {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  color: grey;
+}
+
+.nb-verified-icon {
+  color: blue;
+  width: 14px;
+  height: 14px;
+}
+
+/* Nav Bar Footer */
+
+.nb-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: auto;
+  padding: 2rem 1.5rem;  
+  color: white;
+}
+
+.nb-footer-link {
+  color: white;
+  font-size: 1.1rem;
+}
 /* Search Page: Search Bar */
 
 .search-page-section {

@@ -10,6 +10,11 @@ function SalonsSection(){
     
     // Runs once component mounts
     useEffect(() => {
+        fetchSalons();
+    }, []);
+
+    // Location request when user first interacts with page
+    useEffect(() => {
         const handleUserClick = () => {
             if(locationRequested) return;
             setLocationRequested(true);
@@ -26,7 +31,6 @@ function SalonsSection(){
                     (error) => {
                         console.log("location not allowed.", error);
                         console.log("displaying generic top salons");
-                        fetchSalons();
                     }
                 );
             }
