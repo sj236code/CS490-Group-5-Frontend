@@ -6,6 +6,7 @@ import NavBar from './NavBar'; // Unregistered User Nav Bar
 import CustomerNavBar from './CustomerNavBar';
 import EmployeeNavBar from './EmployeeNavBar';
 import SalonOwnerNavBar from './SalonOwnerNavBar';
+import {useNavigate} from 'react-router-dom';
 import CartPanel from './CartPanel';
 
 
@@ -16,6 +17,13 @@ function Header({userType}){
 
     // Is CartPanel open
     const[cartPanel, setCartPanel] = useState(false);
+
+    const navigate = useNavigate();
+
+    // Route to Landing Page
+    const navigateToLanding = () => {
+        navigate('/');
+    }
 
     // Toggle NavBar
     const toggleNavBar = () => {
@@ -49,7 +57,7 @@ function Header({userType}){
                 {/* If MenuButton clicked, open NavBar */}
                 <MenuButton onClick={toggleNavBar} /> 
                 {/* Logo (todo: if clicked, return back to LandingPage) */}
-                <div className='logo'>
+                <div className='logo' onClick={navigateToLanding} style={{cursor: 'pointer'}}>
                     <img src={jade_logo} className="logo-img" />    
                 </div>
                 {/* If CartButton clicked, open CartPanel */}
