@@ -58,15 +58,19 @@ function ServiceGrid(){
     };
 
     return(
-        <div className="service-grid">
-            {services.map((service,index)=> (
-                <ServiceCard
-                    key={index}
-                    icon={service.icon}
-                    title={service.name}
-                    onClick={() => handleServiceClick(service.name)} />
-            ))}
+        <div>
+            <p className='text-1'>Find Pros by Service</p>
+            <div className="service-grid">
+                {services.map((service,index)=> (
+                    <ServiceCard
+                        key={index}
+                        icon={service.icon}
+                        title={service.name}
+                        onClick={() => handleServiceClick(service.name)} />
+                ))}
+            </div>
         </div>
+
     );
 }
 

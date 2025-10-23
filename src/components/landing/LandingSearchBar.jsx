@@ -8,7 +8,8 @@ function LandingSearchBar(){
     const[showCityDropdown, setShowCityDropdown] = useState(false); // Whether city dropdown is visible
     const[showResults, setShowResults] = useState(false); // Whether search results are visible
     const[searchResults, setSearchResults] = useState([]) // Stores filtered search results
-    const[cities,setCities] = useState([]) // Cities of Valid Salons
+    const[cities,setCities] = useState([]); // Cities of Valid Salons
+    const[userLocation, setUserLocation] = useState([]); // User Location
 
     // Runs once component mounts
     useEffect(() => {
