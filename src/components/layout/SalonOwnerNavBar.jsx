@@ -1,4 +1,4 @@
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, CircleUserRound, ShieldCheck } from 'lucide-react';
 
 /* NavBar component for an salon owner user */
 function SalonOwnerNavBar({onClose}){
@@ -8,10 +8,19 @@ function SalonOwnerNavBar({onClose}){
             <button className="nav-close-button" onClick={onClose}>
                 <ChevronLeft strokeWidth={3} />
             </button>
-            <ul>
-                <li>Salon Owner</li>
-                <li>Nav Bar</li>
-            </ul>
+
+            {/* Profile Section */}
+            <div className="nb-profile-section">
+                <CircleUserRound className="nb-profile-icon" />
+                <div className="nb-profile-info">
+                    <p className="nb-user-name">John Smith</p>
+                    <p className="nb-user-tag">[Salon Name] Owner</p>
+                    <div className="nb-verified">
+                        <ShieldCheck className="nb-verified-icon" />
+                        <span>Verified</span>
+                    </div>
+                </div>
+            </div>
         </div>
         
     );

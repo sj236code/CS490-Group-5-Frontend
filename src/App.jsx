@@ -1,18 +1,27 @@
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useState } from 'react'
 import './App.css'
 import Header from './components/layout/Header.jsx'
 import LandingPage from './pages/LandingPage.jsx'
+import ContactPage from './pages/ContactPage.jsx'
+import FAQPage from './pages/FAQPage.jsx'
 
 function App() {
 
   // Temp hardcode until endpoint created
-  const [userType, setUserType] = useState("salon owner");
+  const [userType, setUserType] = useState("customer");
 
   return (
     <>
-      <Header userType={userType}/>
-      <hr />
-      <LandingPage />
+      <Router>
+        <Header userType={userType}/>
+        <hr />
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/faq" element={<FAQPage />} />
+        </Routes>
+      </Router>
     </>
   )
 }
