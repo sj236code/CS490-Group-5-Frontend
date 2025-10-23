@@ -5,7 +5,7 @@ function NavBar({onClose}){
 
     return(
         <div className="nav-bar">
-            <button className="close-button" onClick={onClose}>
+            <button className="nav-close-button" onClick={onClose}>
                 <ChevronLeft strokeWidth={3} />
             </button>
             <ul>
