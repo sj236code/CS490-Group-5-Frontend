@@ -2,11 +2,14 @@ import jade_logo from '../../assets/jade_logo.png';
 import MenuButton from './MenuButton.jsx';
 import CartButton from './CartButton.jsx';
 import {useState , useEffect} from 'react';
-import NavBar from './NavBar';
+import NavBar from './NavBar'; // Unregistered User Nav Bar
+import CustomerNavBar from './CustomerNavBar';
+import EmployeeNavBar from './EmployeeNavBar';
+import SalonOwnerNavBar from './SalonOwnerNavBar';
 import CartPanel from './CartPanel';
 
 
-function Header(){
+function Header({userType}){
 
     // Is NavBar open
     const[navBar, setNavBar] = useState(false);
@@ -24,6 +27,22 @@ function Header(){
         setCartPanel(prev => !prev);
     }
 
+    // NavBar based on User Tag
+    const whichNavBar = () => {
+        if(userType === 'customer'){
+            return <CustomerNavBar onClose={toggleNavBar} />
+        }
+        else if(userType === 'employee'){
+            return <EmployeeNavBar onClose={toggleNavBar} />
+        }
+        else if(userType === 'salon owner'){
+            return <SalonOwnerNavBar onClose={toggleNavBar} />
+        }
+        else{
+            return <NavBar onClose={toggleNavBar} />
+        }
+    }
+
     return(
         <>
             <header className='header'>
@@ -38,7 +57,7 @@ function Header(){
             </header>
 
             {/* NavBar implementation: Open & Close */}
-            {navBar && <NavBar onClose={toggleNavBar} />}
+            {navBar && whichNavBar()}
 
             {/* CartPanel implementation: Open & Close */}
             {cartPanel && <CartPanel onClose={toggleCartPanel} />}
