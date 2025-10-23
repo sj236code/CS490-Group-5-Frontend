@@ -128,23 +128,6 @@ body {
   background-color: #B6CEB4;
 }
 
-.hero-section {
-  height: 450px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background-color: #4B5945;
-  text-align: center;
-}
-
-.hero-title {
-  font-size: 2.5rem;
-  margin-bottom: 20px;
-  color: #F0F0F0;
-
-}
-
 .landing-search-bar {
   background-color: white;
   border-radius: 9999px;
@@ -328,21 +311,28 @@ body {
   max-width: 56rem;
 }
 
+/* Landing Page Service Grid */
+
 .text-1 {
-  padding: 50px;
+  padding-top: 50px;
   font-size: 2rem;
   color: #66785F;
+  margin-bottom: 20px;
 }
 
 .service-grid {
   display: grid;
   grid-template-columns: repeat(4,1fr);
   gap: 1.5rem;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  text-align: center;
+  padding: 100px 0;
 }
 
 .service-card {
   border-radius: 8px;
-  padding: 20px;
   cursor: pointer;
   text-align: pointer;
 }
@@ -351,4 +341,73 @@ body {
   width: 60px;
   height: 60px;
   color: #4B5945;
+}
+
+/* Hero Section */
+
+.hero-section {
+  height: 450px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #4B5945;
+  text-align: center;
+}
+
+.hero-title {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  color: #F0F0F0;
+
+}
+
+/* Landing Page Salons Grid */
+.salons-section {
+  height: 450px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: 40px;
+  align-items: center;
+  background-color: #4B5945;
+  text-align: center;
+}
+
+.salons-section-title {
+  font-size: 2.0rem;
+  margin-top: 10px;
+  color: #F0F0F0;
+}
+
+.salon-grid {
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  gap: 1.5rem;
+  justify-content: center;
+  padding: 100px 0;
+
+}
+
+/* Salon Card Styling */
+
+.salon-card {
+  border-radius: 16px;
+  width: 250px;
+  padding: 20px;
+  cursor: pointer;
+  text-align: center;
+  background-color: #f0f0f0;
+}
+
+.salon-info {
+
+}
+
+.salon-title {
+
+}
+
+.salon-details {
+  
 }
