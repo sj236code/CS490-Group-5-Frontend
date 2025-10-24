@@ -63,7 +63,7 @@ function SalonsSection(){
 
             const data = await response.json();
 
-            console.log('Salons Successfully Received.');
+            console.log('Salons Successfully Received.', data.salons.length);
 
             const formattedSalons = data.salons.map((salon) =>({
                 id: salon.id,
@@ -84,6 +84,7 @@ function SalonsSection(){
     // If clicked, navigate to SalonDetails page: to be implemented!
     const handleSalonClick = (salonId) => {
         console.log(`Clicked on salon ID: ${salonId}`);
+        //navigate
     };
 
     return(
@@ -96,6 +97,7 @@ function SalonsSection(){
                             key={salon.id}
                             title={salon.title}
                             type={salon.type}
+                            address={salon.address}
                             avgRating={salon.avgRating}
                             totalReviews={salon.totalReviews}
                             onClick={() => handleSalonClick(salon.id)} 
