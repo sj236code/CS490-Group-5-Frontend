@@ -6,6 +6,7 @@ import LandingPage from './pages/LandingPage.jsx'
 import ContactPage from './pages/ContactPage.jsx'
 import FAQPage from './pages/FAQPage.jsx'
 import SearchPage from './pages/SearchPage.jsx'
+import SalonDetailsPage from './pages/SalonDetailsPage.jsx';
 
 function App() {
 
@@ -20,6 +21,7 @@ function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/search" element={<SearchPage />} />
+          <Route path="/salon" element={<SalonDetailsPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/faq" element={<FAQPage />} />
         </Routes>

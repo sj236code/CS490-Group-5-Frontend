@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react';
 import SalonCard from "./SalonCard";
+import { useNavigate } from 'react-router-dom';
 
 function SalonsSection(){
+
+    const navigate = useNavigate();
 
     // Store salon array
     const [salons, setSalons] = useState([]);
@@ -82,9 +85,12 @@ function SalonsSection(){
     };
 
     // If clicked, navigate to SalonDetails page: to be implemented!
-    const handleSalonClick = (salonId) => {
-        console.log(`Clicked on salon ID: ${salonId}`);
-        //navigate
+    const handleSalonClick = (salon) => {
+        console.log(`Clicked on salon ID: `, salon);
+        //navigate line goes here
+        navigate('/salon', {
+            state: { salon }
+        });
     };
 
     return(
@@ -100,7 +106,7 @@ function SalonsSection(){
                             address={salon.address}
                             avgRating={salon.avgRating}
                             totalReviews={salon.totalReviews}
-                            onClick={() => handleSalonClick(salon.id)} 
+                            onClick={() => handleSalonClick(salon)} 
                         />
                     ))}
                 </div>
