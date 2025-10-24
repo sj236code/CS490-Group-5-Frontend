@@ -328,12 +328,21 @@ body {
   align-items: center;
   justify-content: center;
   background-color: white;
+  justify-items: center;
   text-align: center;
   padding: 100px 0;
 }
 
 .service-card {
+  border: 2px solid #4B5945;
+  width: 200px;
+  height: 200px;
   border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
   cursor: pointer;
   text-align: pointer;
 }
@@ -378,6 +387,7 @@ body {
 .salons-section-title {
   font-size: 2.0rem;
   margin-top: 10px;
+  margin-bottom: 40px;
   color: #F0F0F0;
 }
 
@@ -387,7 +397,7 @@ body {
   gap: 1.5rem;
   justify-content: center;
   padding: 100px 0;
-
+  width: 100%;
 }
 
 /* Salon Card Styling */
@@ -402,15 +412,19 @@ body {
 }
 
 .salon-info {
-
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .salon-title {
-
+  font-size: 1.2rem;
+  margin: 0;
+  color: #4B5945;
 }
 
 .salon-details {
-  
+  font-size: 0.9rem;
 }
 
 /* Registered User Nav Bar = nb */
