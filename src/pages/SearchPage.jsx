@@ -9,7 +9,6 @@ function SearchPage() {
   const { results, query, city } = location.state || {}; // Passed from LandingSearchBar
 
     const [salons, setSalons] = useState([]); // Full list of salons fetched from backend
-    const [filteredSalons, setFilteredSalons] = useState([]); // Updated with filters
     const [searchQuery, setSearchQuery] = useState(query || ''); // Store search query text
 
     // Store Filter States
@@ -28,17 +27,43 @@ function SearchPage() {
 
     // Anytime any filters change
     useEffect(() => {
-        applyFiltersAndSort();
-    }, [salons, typeFilter, priceFilter, ratingFilter, distanceFilter, sortBy, searchQuery]);
+        fetchSalons();
+    }, [searchQuery, typeFilter, priceFilter, ratingFilter, distanceFilter, sortBy]);
 
     // Fetch Salons from backend
     const fetchSalons = async () => {
         try{
-            const response = await fetch('/api/salons/search');
+            const final_search_query = new URLSearchParams();
+
+            // Handle Filtering Backend-- endpoint handles it now
+            // Remember to delete frontend filtering function
+            if (searchQuery){
+                final_search_query.append("q", searchQuery);
+            }
+            if (typeFilter !== "Any Type"){
+                final_search_query.append("type", typeFilter);
+            }
+            if (priceFilter !== "Any Price"){
+                const priceMap = { '$' : 1, '$$' : 2, '$$$' : 3};
+                final_search_query.append("price", priceMap[priceFilter]);
+                //filtered = filtered.filter(salon => salon.priceLevel === priceMap[priceFilter]);
+            }
+            if (ratingFilter !== "Any Rating"){
+                final_search_query.append("rating", ratingFilter);
+            }
+            if (distanceFilter !== "Any Distance"){
+                final_search_query.append("distance", distanceFilter)
+            }
+            if (city){
+                final_search_query.append("location", city);
+            }
+
+            const response = await fetch(`/api/salons/search?${final_search_query.toString()}`);
 
             const data = await response.json();
 
             console.log('Search Page: Salons Successfully Received.');
+            console.log('Search Results: ', data);
 
             const formattedSalons = data.salons.map((salon) => ({
                 id: salon.id,
@@ -52,74 +77,13 @@ function SearchPage() {
             }));
 
             setSalons(formattedSalons);
+
+            console.log('Salons received: ', formattedSalons);
         }
         catch(err){
             console.error('Error fetching salons: ', err);
         }
     };
-
-    // Applies active filters and sorts 
-    const applyFiltersAndSort = () => {
-        let filtered = [...salons];
-
-        // Filter salons based on search query
-        if(searchQuery){
-            filtered = filtered.filter(salon =>
-                salon.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                salon.type.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                salon.address.toLowerCase().includes(searchQuery.toLowerCase())
-            );
-        }
-
-        // Filter by Type
-        if (typeFilter !== 'Any Type'){
-            filtered = filtered.filter(salon => salon.type === typeFilter);
-        }
-
-        // Filter by Price
-        if (priceFilter !== 'Any Price'){
-            const priceMap = { '$' : 1, '$$' : 2, '$$$' : 3};
-            filtered = filtered.filter(salon => salon.priceLevel === priceMap[priceFilter]);
-        }
-
-        // Filter by Rating
-        if (ratingFilter !== 'Any Rating'){
-            const minRating = parseFloat(ratingFilter);
-            filtered = filtered.filter(salon => salon.avgRating >= minRating);
-        }
-
-        // Filter by Distance
-        if (distanceFilter !== 'Any Distance'){
-            const maxDistance = parseFloat(distanceFilter);
-            filtered = filtered.filter(salon => salon.distance <= maxDistance);
-        }
-
-        // Handle 'Sort By' Option
-        switch(sortBy){
-            case 'Highest Rated':
-                // Sort by rating
-                filtered.sort((a,b) => b.avgRating -a.avgRating); // b-a is desc
-                break;
-            case 'Most Reviews':
-                // Sort by number of reviews
-                filtered.sort((a,b) => b.totalReviews - a.totalReviews);
-                break;
-            case 'Price: Low to High':
-                // Sort by price level: l -> h
-                filtered.sort((a,b) => a.priceLevel -b.priceLevel);
-                break;
-            case 'Price: High to Low':
-                // Sort by price level: h -> l
-                filtered.sort((a,b) => b.priceLevel - a.priceLevel);
-                break;
-            default:
-                // 'Best Match'
-                break;
-        }
-
-        setFilteredSalons(filtered);
-        
-    }
 
     // If clicked, navigate to SalonDetails page: to be implemented!
     const handleSalonClick = (salonId) => {
@@ -206,7 +170,7 @@ function SearchPage() {
 
                 {/* Salon Card Grid -- Reuse from LandingPage Grid */}
                 <div className='salon-grid'>
-                    {filteredSalons.map((salon) => (
+                    {salons.map((salon) => (
                         <SalonCard 
                             key={salon.id}
                             title={salon.title}
@@ -215,11 +179,11 @@ function SearchPage() {
                             totalReviews={salon.totalReviews}
                             onClick={() => handleSalonClick(salon.id)} 
                         />
-                    ))};
+                    ))}
                 </div>
 
                 {/* No Results Found */}
-                {filteredSalons.length === 0 && (
+                {salons.length === 0 && (
                     <div className="no-results">
                         <p>No salons found matching the criteria given. Try Again.</p>
                         <button
