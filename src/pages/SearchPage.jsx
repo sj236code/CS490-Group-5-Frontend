@@ -54,16 +54,25 @@ function SearchPage() {
             if (distanceFilter !== "Any Distance"){
                 final_search_query.append("distance", distanceFilter)
             }
-            if (city){
+            if (city && city !== "All Cities"){
                 final_search_query.append("location", city);
             }
 
             const response = await fetch(`/api/salons/search?${final_search_query.toString()}`);
 
+            console.log('Full URL being sent:', `/api/salons/search?${final_search_query.toString()}`);
+
             const data = await response.json();
 
             console.log('Search Page: Salons Successfully Received.');
             console.log('Search Results: ', data);
+
+            const calculatePriceLevel = (avgPrice) => {
+                if (!avgPrice) return null;
+                if (avgPrice < 50) return 1;
+                if (avgPrice < 100) return 2;
+                return 3;
+            };
 
             const formattedSalons = data.salons.map((salon) => ({
                 id: salon.id,
@@ -72,8 +81,8 @@ function SearchPage() {
                 address: `${salon.address}, ${salon.city}`,
                 avgRating: salon.avg_rating,
                 totalReviews: salon.total_reviews,
-                priceLevel: salon.price_level,
-                distance: salon.distance || 0
+                priceLevel: salon.price_level || calculatePriceLevel(salon.avg_service_price), // Add helper
+                distance: salon.distance_miles || 0
             }));
 
             setSalons(formattedSalons);
