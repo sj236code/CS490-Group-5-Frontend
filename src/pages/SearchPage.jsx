@@ -95,8 +95,12 @@ function SearchPage() {
     };
 
     // If clicked, navigate to SalonDetails page: to be implemented!
-    const handleSalonClick = (salonId) => {
-        console.log(`Clicked on salon ID: ${salonId}`);
+    const handleSalonClick = (salon) => {
+        console.log(`Clicked on salon ID:`, salon);
+        // Reuse code from SalonsSection on LandingPage
+        navigate('/salon', {
+            state: { salon }
+        });
     };
 
     return (
@@ -184,9 +188,10 @@ function SearchPage() {
                             key={salon.id}
                             title={salon.title}
                             type={salon.type}
+                            address={salon.address}
                             avgRating={salon.avgRating}
                             totalReviews={salon.totalReviews}
-                            onClick={() => handleSalonClick(salon.id)} 
+                            onClick={() => handleSalonClick(salon)} 
                         />
                     ))}
                 </div>
