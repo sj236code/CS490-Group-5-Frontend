@@ -74,8 +74,9 @@ body {
   height: 100vh;
   background-color: #D9E9CF;
   padding: 1rem;
-  box-shadow: 2px 0 8px rgba(0,0,0,0.2);
   z-index: 1000;
+  display: flex;
+  flex-direction: column;
 }
 
 .cart-panel {
@@ -327,12 +328,21 @@ body {
   align-items: center;
   justify-content: center;
   background-color: white;
+  justify-items: center;
   text-align: center;
   padding: 100px 0;
 }
 
 .service-card {
+  border: 2px solid #4B5945;
+  width: 200px;
+  height: 200px;
   border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
   cursor: pointer;
   text-align: pointer;
 }
@@ -377,6 +387,7 @@ body {
 .salons-section-title {
   font-size: 2.0rem;
   margin-top: 10px;
+  margin-bottom: 40px;
   color: #F0F0F0;
 }
 
@@ -386,7 +397,7 @@ body {
   gap: 1.5rem;
   justify-content: center;
   padding: 100px 0;
-
+  width: 100%;
 }
 
 /* Salon Card Styling */
@@ -401,13 +412,142 @@ body {
 }
 
 .salon-info {
-
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .salon-title {
-
+  font-size: 1.2rem;
+  margin: 0;
+  color: #4B5945;
 }
 
 .salon-details {
-  
+  font-size: 0.9rem;
+}
+
+/* Registered User Nav Bar = nb */
+
+.nb-profile-section {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 2.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.nb-profile-icon {
+  width: 45px;
+  height: 45px;
+  color: #4B5945;
+}
+
+.nb-profile-info {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.nb-user-name {
+  font-weight: bold;
+  color: #4b5945;
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.nb-user-tag {
+  font-size: 0.9rem;
+  color: #4b5945;
+  margin: 3px 0;
+}
+
+.nb-verified {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  color: grey;
+}
+
+.nb-verified-icon {
+  color: blue;
+  width: 14px;
+  height: 14px;
+}
+
+/* Nav Bar Footer */
+
+.nb-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: auto;
+  padding: 2rem 1.5rem;  
+  color: white;
+}
+
+.nb-footer-link {
+  color: white;
+  font-size: 1.1rem;
+}
+/* Search Page: Search Bar */
+
+.search-page-section {
+  padding: 2rem;
+  margin: 0 auto;
+}
+
+.search-page-search-bar {
+  margin-bottom: 1.5rem;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+}
+
+.filters-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.filter-name {
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: #374151;
+}
+
+.selected-filter {
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  background-color: white;
+  cursor: pointer;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.no-results {
+  text-align: center;
+  padding: 3rem 0;
+}
+
+.clear-filters {
+  padding: 0.5rem 1.5rem;
+  background-color: #4B5945;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  cursor: pointer;
 }

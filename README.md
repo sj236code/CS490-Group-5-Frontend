@@ -22,7 +22,17 @@ This installs everything listed in package.json, including React, Vite, and any 
 npm install lucide-react
 ```
 
-### 4. Start developmental server
+### 4. Install Router
+```bash
+npm install react-router-dom
+```
+
+To check and confirm succesfully downloaded: 
+```bash
+npm list react-router-dom
+```
+
+### 5. Start developmental server
 ```bash
 npm run dev
 ```
