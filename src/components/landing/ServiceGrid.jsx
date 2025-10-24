@@ -1,6 +1,6 @@
 import ServiceCard from "./ServiceCard";
 import { useState, useEffect } from 'react';
-import { Scissors, Hand, Sparkles, Eye, User, Users, Brush, Star } from 'lucide-react';
+import { Scissors, Hand, Sparkles, Star, Palette } from 'lucide-react';
 
 // Under HeroSection, ServicesGrid with ServiceCard components organized
 function ServiceGrid(){
@@ -10,15 +10,10 @@ function ServiceGrid(){
 
     //DOESNT WORK YET--FIX!
     const defaultIcons = {
-        "Braids": Users,
-        "Waxing": Hand,
-        "Massage Therapy": Sparkles,
-        "Men's Haircut": Scissors,
-        "Nails": Hand,
-        "Facial": User,
-        "Eyelash Extensions": Eye,
-        "Hair Treatment": Sparkles,
-        "Makeup": Brush,
+        "extensions": Sparkles,
+        "haircut": Scissors,
+        "color": Palette,
+        "nails": Hand,
         "default": Star
     };
 
@@ -37,6 +32,7 @@ function ServiceGrid(){
             const data = await response.json();
 
             console.log('Services Successfully Received.');
+            console.log('Raw categories from backend:', data.categories);
 
             const formattedService = data.categories.map((category, index) => ({
                 name: category.name,
