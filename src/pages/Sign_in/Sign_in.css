@@ -14,7 +14,6 @@
     background: #F0F0F0;
     border-radius: 42px;
     padding: 32px 26px 38px;
-    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
 }
 
 .back-button {
@@ -31,17 +30,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-    transition: transform 0.2s;
     color: #FFFFFF;
-}
-
-.back-button:hover {
-    transform: scale(1.05);
-}
-
-.back-button:active {
-    transform: scale(0.95);
 }
 
 .back-button svg {
@@ -74,7 +63,6 @@
     border: 1px solid #BEBEBE;
     padding: 12px;
     cursor: pointer;
-    transition: all 0.3s ease;
 }
 
 .tab:first-child {
@@ -84,16 +72,6 @@
 .tab:last-child {
     border-radius: 0 14px 14px 0;
     border-left: none;
-}
-
-.tab.active {
-    background: linear-gradient(90deg, #C7D4BE 50%, #879D85 115.04%);
-    color: #FFFFFF;
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-}
-
-.tab:hover:not(.active) {
-    background: rgba(199, 212, 190, 0.3);
 }
 
 .signin-form {
@@ -116,7 +94,6 @@
     border-radius: 14px;
     padding: 14px 20px;
     box-sizing: border-box;
-    transition: border-color 0.3s ease;
 }
 
 .form-input::placeholder {
@@ -133,10 +110,8 @@
     font-size: 15px;
     line-height: 19px;
     color: #8A8A8A;
-    text-decoration: none;
     margin-bottom: 22px;
     display: inline-block;
-    transition: color 0.3s ease;
 }
 
 .forgot-password:hover {
@@ -149,23 +124,11 @@
     font-size: 24px;
     line-height: 30px;
     color: #FFFFFF;
-    background: linear-gradient(90deg, #C7D4BE 50%, #879D85 115.04%);
     border: 1px solid #BEBEBE;
     border-radius: 14px;
     padding: 14px;
     cursor: pointer;
     margin-bottom: 15px;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.signin-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.15);
-}
-
-.signin-button:active {
-    transform: translateY(0);
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .signup-text {
@@ -179,83 +142,9 @@
 
 .signup-link {
     color: #4F4B4B;
-    text-decoration: none;
     font-weight: 400;
-    transition: color 0.3s ease;
 }
 
 .signup-link:hover {
     color: #66785F;
-    text-decoration: underline;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .signin-container {
-        border-radius: 40px;
-        padding: 40px 24px;
-    }
-
-    .signin-title {
-        font-size: 36px;
-        line-height: 44px;
-        margin-bottom: 30px;
-    }
-
-    .tab {
-        font-size: 24px;
-        line-height: 29px;
-        padding: 16px;
-    }
-
-    .form-input {
-        font-size: 24px;
-        line-height: 29px;
-        padding: 18px 20px;
-    }
-
-    .signin-button {
-        font-size: 24px;
-        line-height: 29px;
-        padding: 18px;
-    }
-
-    .back-button {
-        top: 50px;
-        left: 34px;
-    }
-}
-
-@media (max-width: 480px) {
-    .signin-container {
-        border-radius: 30px;
-        padding: 30px 20px;
-    }
-
-    .signin-title {
-        font-size: 28px;
-        line-height: 34px;
-    }
-
-    .tab {
-        font-size: 20px;
-        line-height: 24px;
-    }
-
-    .form-input {
-        font-size: 18px;
-        line-height: 22px;
-        padding: 14px 16px;
-    }
-
-    .signin-button {
-        font-size: 20px;
-        line-height: 24px;
-    }
-
-    .forgot-password,
-    .signup-text {
-        font-size: 16px;
-        line-height: 20px;
-    }
 }

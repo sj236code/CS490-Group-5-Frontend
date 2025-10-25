@@ -11,12 +11,12 @@ function Sign_in() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Add your authentication logic here
+        // Add authentication logic here
         console.log('Sign in attempted with:', { email, password });
     };
 
     const handleBack = () => {
-        navigate(-1); // Go back to previous page
+        navigate('/'); // Go back to Landing page
     };
 
     return (
@@ -66,6 +66,7 @@ function Sign_in() {
                         />
                     </div>
 
+                    {/* Add Forgot Password Logic Here */}
                     <a href="#" className="forgot-password">Forgot Password?</a>
 
                     <button type="submit" className="signin-button">
