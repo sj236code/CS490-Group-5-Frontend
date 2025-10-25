@@ -55,7 +55,7 @@ function SalonsSection(){
     // Async function to fetch top salons-generic (not specific to a loc) from backend API
     const fetchSalons = async (lat, long) => {
         try{
-            let url='/api/salons/generic';
+            let url=`${import.meta.env.VITE_API_URL}/api/salons/generic`;
 
             // If location allowed, use top-rated near user endpoint
             if(lat && long){
