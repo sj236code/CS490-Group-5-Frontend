@@ -43,6 +43,9 @@ function SalonProductCard({product, onClick}) {
         return stars;
     };
 
+    const handleBooking = () => {
+        console.log("booked.");
+    };
 
     return(
         <div className="salon-service-card" onClick={onClick}>
@@ -66,15 +69,7 @@ function SalonProductCard({product, onClick}) {
                 <span className="salon-service-price">
                     ${product.price ? product.price.toFixed(2) : '0.00'}
                 </span>
-                <button 
-                    className="salon-service-book-btn"
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        onClick && onClick();
-                    }}
-                >
-                    Book
-                </button>
+                <button className="salon-service-book-btn" onClick={handleBooking}>Book</button>
             </div>
         </div>
     );

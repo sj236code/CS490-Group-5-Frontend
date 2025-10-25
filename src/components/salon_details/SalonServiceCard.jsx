@@ -1,7 +1,7 @@
 // Modeled after ServiceCard used in LandingPage
 // Made to show salon-specific details like price & rating
 import { useState, useEffect } from 'react';
-import {Star, Sparkle, ChevronLeft, ChevronRight, Rows4} from 'lucide-react';
+import {Star, Sparkle, ChevronLeft, ChevronRight, Rows4, BookDashed} from 'lucide-react';
 
 function SalonServiceCard({service, onClick}) {
 
@@ -43,6 +43,9 @@ function SalonServiceCard({service, onClick}) {
         return stars;
     };
 
+    const handleBooking = () => {
+        console.log("booked.");
+    };
 
     return(
         <div className="salon-service-card" onClick={onClick}>
@@ -66,15 +69,7 @@ function SalonServiceCard({service, onClick}) {
                 <span className="salon-service-price">
                     ${service.price ? service.price.toFixed(2) : '0.00'}
                 </span>
-                <button 
-                    className="salon-service-book-btn"
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        onClick && onClick();
-                    }}
-                >
-                    Book
-                </button>
+                <button className="salon-service-book-btn" onClick={handleBooking}>Book</button>
             </div>
         </div>
     );
