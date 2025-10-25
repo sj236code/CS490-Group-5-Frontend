@@ -15,18 +15,16 @@ function App() {
   
   return (
     <>
-      <Router>
-        <Header userType={userType}/>
-        <hr />
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/search" element={<SearchPage />} />
-          <Route path="/salon" element={<SalonDetailsPage />} />
-          <Route path="/contact" element={<ContactPage />} />
-          <Route path="/faq" element={<FAQPage />} />
-          <Route path="/signin" element={<SignIn />} />
-        </Routes>
-      </Router>
+      <Header userType={userType}/>
+      <hr />
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/search" element={<SearchPage />} />
+        <Route path="/salon" element={<SalonDetailsPage />} />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/faq" element={<FAQPage />} />
+        <Route path="/signin" element={<SignIn />} />
+      </Routes>
     </>
   )
 }
