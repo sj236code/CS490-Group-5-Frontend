@@ -69,7 +69,7 @@ function SalonProductCard({product, onClick}) {
                 <span className="salon-service-price">
                     ${product.price ? product.price.toFixed(2) : '0.00'}
                 </span>
-                <button className="salon-service-book-btn" onClick={handleBooking}>Book</button>
+                <button className="salon-service-book-btn" onClick={handleBooking}>Buy</button>
             </div>
         </div>
     );
