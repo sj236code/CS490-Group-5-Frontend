@@ -13,6 +13,8 @@ function App() {
   // Temp hardcode until endpoint created
   const [userType, setUserType] = useState("customer");
 
+  console.log("API URL:", import.meta.env.VITE_API_URL);
+
   return (
     <>
       <Router>

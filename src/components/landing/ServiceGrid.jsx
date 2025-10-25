@@ -37,7 +37,7 @@ function ServiceGrid(){
     // Async function to fetch service categories from backend API
     const fetchCategories = async () => {
         try{
-            const response = await fetch('/api/salons/categories');
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/salons/categories`);
 
             const data = await response.json();
 
