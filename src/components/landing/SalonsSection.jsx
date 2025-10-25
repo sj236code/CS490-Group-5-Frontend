@@ -59,7 +59,7 @@ function SalonsSection(){
 
             // If location allowed, use top-rated near user endpoint
             if(lat && long){
-                url=`/api/salons/top-rated?user_lat=${lat}&user_long=${long}`;
+                url=`${import.meta.env.VITE_API_URL}/api/salons/top-rated?user_lat=${lat}&user_long=${long}`;
             }
 
             const response = await fetch(url);
