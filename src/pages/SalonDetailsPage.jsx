@@ -44,7 +44,7 @@ function SalonDetailsPage() {
 
     const fetchServices = async () => {
         try {
-            const response = await fetch(`/api/salons/details/${salonDetails.id}/services`);
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/salons/details/${salonDetails.id}/services`);
             const data = await response.json();
 
             setServices(data.services || []);

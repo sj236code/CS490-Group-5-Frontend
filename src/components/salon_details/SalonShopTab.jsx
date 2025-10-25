@@ -27,7 +27,7 @@ function SalonShopTab({salonId}){
     // Fetch Services
     const fetchServices = async() => {
         try{
-            const response = await fetch(`/api/salons/details/${salonId}/services`);
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/salons/details/${salonId}/services`);
             const data = await response.json();
 
             setServices(data.services || []);
@@ -41,7 +41,7 @@ function SalonShopTab({salonId}){
     // Fetch Products-- endpoint not created yet
     const fetchProducts = async() => {
         try{
-            const response = await fetch(`/api/salons/details/${salonId}/products`);
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/salons/details/${salonId}/products`);
             const data = await response.json();
 
             setServices(data.services || []);
