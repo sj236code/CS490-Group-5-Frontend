@@ -58,9 +58,9 @@ function SearchPage() {
                 final_search_query.append("location", city);
             }
 
-            const response = await fetch(`/api/salons/search?${final_search_query.toString()}`);
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/salons/search?${final_search_query.toString()}`);
 
-            console.log('Full URL being sent:', `/api/salons/search?${final_search_query.toString()}`);
+            console.log('Full URL being sent:', `${import.meta.env.VITE_API_URL}/api/salons/search?${final_search_query.toString()}`);
 
             const data = await response.json();
 

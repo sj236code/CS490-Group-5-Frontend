@@ -22,7 +22,7 @@ function LandingSearchBar(){
     // Async function to fetch service categories from backend API
     const fetchCities = async () => {
         try{
-            const response = await fetch('/api/salons/cities');
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/salons/cities`);
 
             const data = await response.json();
 
@@ -55,7 +55,7 @@ function LandingSearchBar(){
         if (searchWord.trim()) {
             try {
                 // Build URL with query parameters
-                let url = `/api/autocomplete?q=${encodeURIComponent(searchWord)}`;
+                let url = `${import.meta.env.VITE_API_URL}/api/autocomplete?q=${encodeURIComponent(searchWord)}`;
 
                 if (selectedCity){
                     url += `&city=${encodeURIComponent(selectedCity)}`;
