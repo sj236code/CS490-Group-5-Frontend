@@ -607,11 +607,132 @@ body {
 }
 
 .salon-detail-tab-link.active {
-  color: #2c2c2c;
-  background-color: #96A78D;
+  color: black;
+  background-color: #4B5945;
   border-bottom: none;
 }
 
 .salon-details-tab-content {
 
+}
+
+/* Salon ShopTab */
+
+.salon-service-card {
+  border: 2px solid #4B5945;
+  width: 200px;
+  border-radius: 8px;
+  cursor: pointer;
+  background-color: white;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.salon-service-image {
+  width: 100%;
+  height: 140px;
+  background-color: #D9E9CF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.salon-service-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.salon-service-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  background-color: #D9E9CF;
+}
+
+.salon-service-info {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.salon-service-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: #4B5945;
+  margin-left: 10px;
+  margin-top: 10px;
+  text-align: left;
+}
+
+.salon-service-rating {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: #718096;
+  margin-left: 10px;
+}
+
+.salon-service-price {
+  font-size: 18px;
+  font-weight: 700;
+  color: #4B5945;
+  margin-left: 10px;
+  text-align: left;
+}
+
+.salon-service-book-btn {
+  width: 50px;
+  padding: 10px;
+  background: #96A78D;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: auto;
+  margin: 10px;
+}
+
+.shop-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 200px);
+  gap: 100px;
+  margin: 50px;
+  justify-content: center;
+  align-items: start;
+}
+
+.salon-service-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 12px;
+}
+
+.shop-service-title {
+  color: #4B5945;
+  margin: 20px;
+  text-align: left;
+  margin-left: 400px;
+  margin-top: 50px;
+}
+
+.shop-carousel {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  padding: 40px 0;
 }

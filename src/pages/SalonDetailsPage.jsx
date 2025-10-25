@@ -1,6 +1,7 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { Star } from 'lucide-react';
+import SalonShopTab from '../components/salon_details/SalonShopTab';
 
 function SalonDetailsPage() {
     const location = useLocation();
@@ -9,6 +10,8 @@ function SalonDetailsPage() {
 
     const [salonDetails, setSalonDetails] = useState(salon);
     const [workingTab, setWorkingTab] = useState("About");
+
+    const [services, setServices] = useState([]);
 
     // Do I have to handle possible error if no valid salon is passed?
     useEffect(() => {
@@ -31,6 +34,28 @@ function SalonDetailsPage() {
                 </button>
             </div>
         );
+    }
+
+    useEffect(() => {
+        if (workingTab === "Shop" && salonDetails?.id){
+            fetchServices();
+        }
+    }, [workingTab, salonDetails]);
+
+    const fetchServices = async () => {
+        try {
+            const response = await fetch(`/api/salons/details/${salonDetails.id}/services`);
+            const data = await response.json();
+
+            setServices(data.services || []);
+        }
+        catch (error) {
+            console.error("Failed to fetch services.", error);
+        }
+    };
+
+    const addToCart = (service) => {
+        console.log("Added to cart:", service);
     }
 
     return (
@@ -58,7 +83,7 @@ function SalonDetailsPage() {
                 <button className="salon-detail-tab-link" onClick={() => setWorkingTab('About')}>About</button>
                 <button className="salon-detail-tab-link" onClick={() => setWorkingTab('Gallery')}>Gallery</button>
                 <button className="salon-detail-tab-link" onClick={() => setWorkingTab('Reviews')}>Reviews</button>
-                <button className="salon-detail-tab-link" onClick={() => setWorkingTab('Services')}>Services</button>
+                <button className="salon-detail-tab-link" onClick={() => setWorkingTab('Shop')}>Shop</button>
             </div>
 
             {/* Tab Content */}
@@ -78,9 +103,9 @@ function SalonDetailsPage() {
                         <h2>Reviews Page for: {salonDetails.title}</h2>
                     </div>
                 )}
-                {workingTab =="Services" && (
+                {workingTab =="Shop" && (
                     <div>
-                        <h2>Services Page for: {salonDetails.title}</h2>
+                        <SalonShopTab salonId={salonDetails.id} />
                     </div>
                 )}
             </div>
