@@ -10,7 +10,9 @@ import SalonDetailsPage from './pages/SalonDetailsPage.jsx'
 import SignIn from './pages/Sign_in/Sign_in.jsx'
 import ForgotPassword from './pages/Sign_in/Forgot_pass.jsx'
 import SignUp from './pages/Sign_up/Sign_up.jsx';
-import VerifyOTP from './pages/Sign_up/Verify_otp.jsx';
+import VerifyOTP from '<div className="" />
+<pages />
+<Sign_in></Sign_in>/Verify_otp.jsx';
 
 function App() {
   // Temp hardcode until endpoint created
