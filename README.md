@@ -4,7 +4,7 @@ This project is built with [Vite](https://vitejs.dev/) for fast development and 
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### 1. Clone the repository
 ```bash
