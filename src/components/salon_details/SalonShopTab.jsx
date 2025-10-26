@@ -2,14 +2,19 @@ import { useState, useEffect } from 'react';
 import {Star, ChevronLeft, ChevronRight} from 'lucide-react';
 import SalonServiceCard from './SalonServiceCard';
 import SalonProductCard from './SalonProductCard';
+import BookAppt from './BookAppt';
 
-function SalonShopTab({salonId}){
+function SalonShopTab({salon}){
 
     // Service Section
     const [services, setServices] = useState([]);
     const [currentServiceIndex, setCurrentServiceIndex] = useState(0);
     const [cart, setCart] = useState([]);
     const servicesPerPage = 3;
+
+    // Booking Service Modal
+    const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+    const [selectedService, setSelectedService] = useState(null);
 
     // Product Section
     const [products, setProducts] = useState([]);
@@ -18,16 +23,16 @@ function SalonShopTab({salonId}){
 
     // Load Services & Products when component mounts
     useEffect(() => {
-        if (salonId){
+        if (salon?.id){
             fetchServices();
             //fetchProducts();
         }
-    }, [salonId]);
+    }, [salon?.id]);
 
     // Fetch Services
     const fetchServices = async() => {
         try{
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/salons/details/${salonId}/services`);
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/salons/details/${salon.id}/services`);
             const data = await response.json();
 
             setServices(data.services || []);
@@ -65,9 +70,10 @@ function SalonShopTab({salonId}){
         }
     };
 
-    const addServiceToCart = (service) => {
-        setCart([...cart,service]);
-        console.log("Service added to cart: ", service);
+    const addServiceToCart = (service, salon) => {
+        setSelectedService(service);
+        setIsBookingModalOpen(true);
+        console.log("Booking modal for following service opening: ", service);
         // Implement Post to DB
     };
 
@@ -87,13 +93,13 @@ function SalonShopTab({salonId}){
     };
 
     const addProductToCart = (product) => {
-        setCart([...cart,service]);
-        console.log("Service added to cart: ", service);
+        console.log("Product added to cart: ", product);
         // Implement Post to DB
     };
 
     const currentProducts = products.slice(currentProductIndex, currentProductIndex + productsPerPage);
 
+    // Handle Edge Case: A salon does not offer services or products
     if(services.length === 0 && products.length === 0){
         return(
             <div>
@@ -117,7 +123,7 @@ function SalonShopTab({salonId}){
                         <SalonServiceCard
                             key={service.id}
                             service={service}
-                            onClick={() => addServiceToCart(service)}
+                            onClick={() => addServiceToCart(service, salon)}
                         />
                     ))}
                 </div>
@@ -133,13 +139,13 @@ function SalonShopTab({salonId}){
                 {/* Left Arrow */}
                 <button onClick={prevProduct}> <ChevronLeft size={32} /> </button>
 
-                {/* Services Grid */}
+                {/* Reuse Services Grid */}
                 <div className="shop-grid">
                     {currentProducts.map((product) => (
                         <SalonServiceCard
-                            key={service.id}
-                            service={service}
-                            onClick={() => addServiceToCart(product)}
+                            key={product.id}
+                            service={product}
+                            onClick={() => addProductToCart(product)}
                         />
                     ))}
                 </div>
@@ -147,6 +153,13 @@ function SalonShopTab({salonId}){
                 {/* Right Arrow */}
                 <button onClick={nextProduct}> <ChevronRight size={32} /> </button>
             </div>
+
+            <BookAppt
+                isOpen={isBookingModalOpen}
+                onClose={() => setIsBookingModalOpen(false)}
+                service={selectedService}
+                salon={salon}
+            />
         </div>
     );
 

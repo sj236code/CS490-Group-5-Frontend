@@ -105,7 +105,7 @@ function SalonDetailsPage() {
                 )}
                 {workingTab =="Shop" && (
                     <div>
-                        <SalonShopTab salonId={salonDetails.id} />
+                        <SalonShopTab salon={salonDetails} />
                     </div>
                 )}
             </div>
