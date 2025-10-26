@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft } from 'lucide-react';
-import './SignUp_SIMPLE.css';
+import './Sign_up.css';
 
 function SignUp() {
     const [activeTab, setActiveTab] = useState('signup');

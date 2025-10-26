@@ -8,6 +8,7 @@ import FAQPage from './pages/FAQPage.jsx'
 import SearchPage from './pages/SearchPage.jsx'
 import SalonDetailsPage from './pages/SalonDetailsPage.jsx'
 import SignIn from './pages/Sign_in/Sign_in.jsx'
+import SignUp from './pages/Sign_up/Sign_up.jsx';
 
 function App() {
   // Temp hardcode until endpoint created
@@ -24,6 +25,7 @@ function App() {
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/faq" element={<FAQPage />} />
         <Route path="/signin" element={<SignIn />} />
+        <Route path="/signup" element={<SignUp />} />
       </Routes>
     </>
   )
