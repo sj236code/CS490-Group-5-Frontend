@@ -87,8 +87,6 @@ function Sign_in() {
                         />
                     </div>
 
-                    <a href="/forgot-password" className="forgot-password">Forgot Password?</a>
-
                     {error && (
                         <div className="error-message">
                             {error}
@@ -99,9 +97,11 @@ function Sign_in() {
                         Sign In
                     </button>
 
-                    <p className="signup-text">
+                    <a href="/forgot-password" className="forgot-password">Forgot Password?</a>
+
+                    {/* <p className="signup-text">
                         Dont have an account? <a href="/signup" className="signup-link">Sign Up</a>
-                    </p>
+                    </p> */}
                 </form>
             </div>
         </div>

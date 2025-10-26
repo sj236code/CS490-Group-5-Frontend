@@ -24,7 +24,7 @@ function SignUp() {
     };
 
     const handleBack = () => {
-        navigate(-1);
+        navigate('/');
     };
 
     const handleTabSwitch = (tab) => {
@@ -112,14 +112,14 @@ function SignUp() {
                     </button>
 
                     <div className="links">
-                        <p className="link-text">
+                        {/* <p className="link-text">
                             Have an account? <a href="/signin" className="link">Sign In</a>
-                        </p>
+                        </p> */}
                         <p className="link-text">
                             Salon Owner? <a href="/register-salon" className="link">Register Salon</a>
                         </p>
                         <p className="link-text">
-                            Employee? <a href="/employee-registration" className="link">Create Employee Acct</a>
+                            Employee? <a href="/employee-registration" className="link">Create Employee Account</a>
                         </p>
                     </div>
                 </form>
