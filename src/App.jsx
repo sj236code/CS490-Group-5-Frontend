@@ -10,6 +10,7 @@ import SalonDetailsPage from './pages/SalonDetailsPage.jsx'
 import SignIn from './pages/Sign_in/Sign_in.jsx'
 import ForgotPassword from './pages/Sign_in/Forgot_pass.jsx'
 import SignUp from './pages/Sign_up/Sign_up.jsx';
+import VerifyOTP from './pages/Sign_up/Verify_otp.jsx';
 
 function App() {
   // Temp hardcode until endpoint created
@@ -28,6 +29,7 @@ function App() {
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/verify-otp" element={<VerifyOTP />} />
       </Routes>
     </>
   )
