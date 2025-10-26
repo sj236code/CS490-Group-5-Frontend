@@ -98,7 +98,7 @@ function SalonsSection(){
             <section className="salons-section">
                 <p className='salons-section-title'>Browse Top-Rated Salons</p>
                 <div className='salon-grid'>
-                    {salons.map((salon) => (
+                    {salons.slice(0,4).map((salon) => (
                         <SalonCard
                             key={salon.id}
                             title={salon.title}
