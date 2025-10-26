@@ -111,10 +111,14 @@ function DashboardManageTab({salon}){
     return (
         <div className="salon-shop-tab">
             {/* Services */}
-            <h2 className="shop-service-title">Available Services:</h2>
-            <button onClick={handleAddService} className="add-service-btn">
-                    Add Service
-            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '50rem', marginBottom: '1rem' }}>
+                <h2 className="shop-service-title">Available Services:</h2>
+                <button onClick={handleAddService} className="add-service-btn">
+                        Add Service
+                </button>
+            </div>
+
+
             <div className="shop-carousel">
                 
                 {/* Left Arrow */}

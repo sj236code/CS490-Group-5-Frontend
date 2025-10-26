@@ -722,7 +722,7 @@ body {
 
 .shop-service-title {
   color: #4B5945;
-  margin: 20px;
+  margin: 0;
   text-align: left;
   margin-left: 400px;
   margin-top: 50px;
@@ -764,10 +764,11 @@ body {
 /* Salon Dashboard */
 .add-service-btn {
   padding: 0.5rem 1rem;
-  background: #007bff;
+  background: #4B5945;
   color: white;
   border: none;
   border-radius: 4px;
+  margin-top: 50px;
   cursor: pointer;
 }
 

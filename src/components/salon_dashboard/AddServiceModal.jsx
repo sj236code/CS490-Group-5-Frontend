@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { X, Upload } from 'lucide-react';
-import { preconnect } from 'react-dom';
 
 function AddServiceModal({ isOpen, onClose, salonId, onServiceAdded }) {
 
@@ -8,7 +7,6 @@ function AddServiceModal({ isOpen, onClose, salonId, onServiceAdded }) {
         serviceName: "",
         price: "",
         duration: "",
-        description: "",
     });
 
     const [images, setImages] = useState([]);
@@ -24,7 +22,7 @@ function AddServiceModal({ isOpen, onClose, salonId, onServiceAdded }) {
 
     // Image Upload
     const handleImageUpload = (e) => {
-        const file = Array.from(e.target.file);
+        const file = Array.from(e.target.files);
         setImages((prev) => [...prev, ...files]);
     }
 
@@ -36,7 +34,6 @@ function AddServiceModal({ isOpen, onClose, salonId, onServiceAdded }) {
             name: formData.serviceName,
             price: parseFloat(formData.price),
             duration: parseInt(formData.duration),
-            description: formData.description,
             images: images.map((img) => URL.createObjectURL(img)),
         };
 
@@ -46,7 +43,6 @@ function AddServiceModal({ isOpen, onClose, salonId, onServiceAdded }) {
             serviceName: "",
             price: "",
             duration: "",
-            description: "",
         });
 
         // Reset form
@@ -141,14 +137,6 @@ function AddServiceModal({ isOpen, onClose, salonId, onServiceAdded }) {
                         </label>
                     </div>
 
-                    <textarea
-                        name="description"
-                        placeholder="Description/ Notes"
-                        value={formData.description}
-                        onChange={handleChange}
-                        className="add-service-description-box"
-                        rows="4"
-                    />
 
                     {/* Footer Buttons */}
                     <div className="add-service-actions">
