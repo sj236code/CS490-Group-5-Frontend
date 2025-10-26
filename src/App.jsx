@@ -9,8 +9,9 @@ import SearchPage from './pages/SearchPage.jsx'
 import SalonDetailsPage from './pages/SalonDetailsPage.jsx'
 import SignIn from './pages/Sign_in/Sign_in.jsx'
 import ForgotPassword from './pages/Sign_in/Forgot_pass.jsx'
-import SignUp from './pages/Sign_up/Sign_up.jsx';
 import VerifyOTP from './pages/Sign_in/Verify_otp.jsx';
+import SignUp from './pages/Sign_up/Sign_up.jsx';
+import RegisterSalon from './pages/Sign_up/Salon_registration.jsx';
 
 
 function App() {
