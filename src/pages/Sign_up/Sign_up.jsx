@@ -113,7 +113,7 @@ function SignUp() {
 
                     <div className="links">
                         <p className="link-text">
-                            Have an account? <a href="/signin" className="link">SignIn</a>
+                            Have an account? <a href="/signin" className="link">Sign In</a>
                         </p>
                         <p className="link-text">
                             Salon Owner? <a href="/register-salon" className="link">Register Salon</a>

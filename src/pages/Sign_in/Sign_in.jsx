@@ -100,7 +100,7 @@ function Sign_in() {
                     </button>
 
                     <p className="signup-text">
-                        Dont have an account? <a href="/signup" className="signup-link">SignUp</a>
+                        Dont have an account? <a href="/signup" className="signup-link">Sign Up</a>
                     </p>
                 </form>
             </div>
