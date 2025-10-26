@@ -16,7 +16,7 @@
     padding: 40px 30px;
 }
 
-.back-button-simple {
+.back-button {
     position: absolute;
     top: 35px;
     left: 35px;
@@ -32,7 +32,7 @@
     justify-content: center;
 }
 
-.back-button-simple svg {
+.back-button svg {
     width: 22px;
     height: 22px;
 }
