@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import {Star, ChevronLeft, ChevronRight} from 'lucide-react';
 import DashboardServiceCard from './DashboardServiceCard';
 import DashboardProductCard from './DashboardProductCard';
+import AddServiceModal from './AddServiceModal';
 
 
 function DashboardManageTab({salon}){
@@ -15,6 +16,8 @@ function DashboardManageTab({salon}){
     const [products, setProducts] = useState([]);
     const [currentProductIndex, setCurrentProductIndex] = useState(0);
     const productsPerPage = 3;
+
+    const [isAddServiceModalOpen, setIsAddServiceModalOpen] = useState(false);
 
     // Load Services & Products when component mounts
     useEffect(() => {
@@ -50,6 +53,15 @@ function DashboardManageTab({salon}){
         catch (err){
             console.error("Unable to fetch services. Error: ", err);
         }
+    };
+
+    // Handle Modal Open & Close
+    const handleAddService = () => {
+        setIsAddServiceModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsAddServiceModalOpen(false);
     };
 
     // ServiceCard Handling
@@ -100,6 +112,9 @@ function DashboardManageTab({salon}){
         <div className="salon-shop-tab">
             {/* Services */}
             <h2 className="shop-service-title">Available Services:</h2>
+            <button onClick={handleAddService} className="add-service-btn">
+                    Add Service
+            </button>
             <div className="shop-carousel">
                 
                 {/* Left Arrow */}
@@ -141,6 +156,15 @@ function DashboardManageTab({salon}){
                 {/* Right Arrow */}
                 <button onClick={nextProduct}> <ChevronRight size={32} /> </button>
             </div>
+
+            {/* AddService Modal */}
+            <AddServiceModal   
+                isOpen={isAddServiceModalOpen}
+                onClose={handleCloseModal}
+                salonId={salon?.id}
+                onServiceAdded={fetchServices}
+            />
+
         </div>
     );
 
