@@ -1,20 +1,15 @@
 import { useState, useEffect } from 'react';
 import {Star, ChevronLeft, ChevronRight} from 'lucide-react';
-import SalonServiceCard from './SalonServiceCard';
-import SalonProductCard from './SalonProductCard';
-import BookAppt from './BookAppt';
+import DashboardServiceCard from './DashboardServiceCard';
+import DashboardProductCard from './DashboardProductCard';
 
-function SalonShopTab({salon}){
+
+function DashboardManageTab({salon}){
 
     // Service Section
     const [services, setServices] = useState([]);
     const [currentServiceIndex, setCurrentServiceIndex] = useState(0);
-    const [cart, setCart] = useState([]);
     const servicesPerPage = 3;
-
-    // Booking Service Modal
-    const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
-    const [selectedService, setSelectedService] = useState(null);
 
     // Product Section
     const [products, setProducts] = useState([]);
@@ -46,7 +41,7 @@ function SalonShopTab({salon}){
     // Fetch Products-- endpoint not created yet
     const fetchProducts = async() => {
         try{
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/salons/details/${salon.id}/products`);
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/salons/details/${salonId}/products`);
             const data = await response.json();
 
             setProducts(data.products || []);
@@ -68,13 +63,6 @@ function SalonShopTab({salon}){
         if(currentServiceIndex + servicesPerPage < services.length){
             setCurrentServiceIndex(currentServiceIndex + servicesPerPage);
         }
-    };
-
-    const addServiceToCart = (service, salon) => {
-        setSelectedService(service);
-        setIsBookingModalOpen(true);
-        console.log("Booking modal for following service opening: ", service);
-        // Implement Post to DB
     };
 
     const currentServices = services.slice(currentServiceIndex, currentServiceIndex + servicesPerPage);
@@ -120,10 +108,10 @@ function SalonShopTab({salon}){
                 {/* Services Grid */}
                 <div className="shop-grid">
                     {currentServices.map((service) => (
-                        <SalonServiceCard
+                        <DashboardServiceCard
                             key={service.id}
                             service={service}
-                            onClick={() => addServiceToCart(service, salon)}
+                            onClick={() => console.log("Clicked Service: ", service)}
                         />
                     ))}
                 </div>
@@ -142,10 +130,10 @@ function SalonShopTab({salon}){
                 {/* Reuse Services Grid */}
                 <div className="shop-grid">
                     {currentProducts.map((product) => (
-                        <SalonProductCard
+                        <DashboardProductCard
                             key={product.id}
                             service={product}
-                            onClick={() => addProductToCart(product)}
+                            onClick={() => console.log("Clicked Product: ", product)}
                         />
                     ))}
                 </div>
@@ -153,16 +141,9 @@ function SalonShopTab({salon}){
                 {/* Right Arrow */}
                 <button onClick={nextProduct}> <ChevronRight size={32} /> </button>
             </div>
-
-            <BookAppt
-                isOpen={isBookingModalOpen}
-                onClose={() => setIsBookingModalOpen(false)}
-                service={selectedService}
-                salon={salon}
-            />
         </div>
     );
 
 }
 
-export default SalonShopTab;
+export default DashboardManageTab;
