@@ -1,10 +1,10 @@
 .signin-page {
-    min-height: calc(100vh - 100px);
+    min-height: 100vh;
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: center;
     background: #D9E9CF;
-    padding: 10px 20px 15px;
+    padding: 20px;
 }
 
 .signin-container {
@@ -12,25 +12,24 @@
     width: 100%;
     max-width: 440px;
     background: #F0F0F0;
-    border-radius: 42px;
-    padding: 32px 26px 38px;
+    border-radius: 40px;
+    padding: 40px 30px;
 }
 
 .back-button {
     position: absolute;
-    top: 45px;
-    left: 40px;
+    top: 35px;
+    left: 35px;
     width: 36px;
     height: 36px;
     background: #66785F;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    padding: 0;
+    color: #FFFFFF;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #FFFFFF;
 }
 
 .back-button svg {
@@ -39,9 +38,7 @@
 }
 
 .signin-title {
-    font-weight: 700;
     font-size: 36px;
-    line-height: 44px;
     color: #000000;
     text-align: center;
     margin: 0 0 20px 0;
@@ -50,14 +47,12 @@
 .tab-container {
     display: flex;
     gap: 0;
-    margin-bottom: 22px;
+    margin-bottom: 20px;
 }
 
 .tab {
     flex: 1;
-    font-weight: 700;
-    font-size: 24px;
-    line-height: 30px;
+    font-size: 22px;
     color: #AAA2A2;
     background: transparent;
     border: 1px solid #BEBEBE;
@@ -74,6 +69,11 @@
     border-left: none;
 }
 
+.tab.active {
+    background: #879D85;
+    color: #FFFFFF;
+}
+
 .signin-form {
     display: flex;
     flex-direction: column;
@@ -85,45 +85,47 @@
 
 .form-input {
     width: 100%;
-    font-weight: 400;
-    font-size: 22px;
-    line-height: 28px;
+    font-size: 20px;
     color: #000000;
     background: #F0F0F0;
     border: 1px solid #BEBEBE;
     border-radius: 14px;
     padding: 14px 20px;
-    box-sizing: border-box;
 }
 
 .form-input::placeholder {
     color: #D9D9D9;
 }
 
-.form-input:focus {
-    outline: none;
-    border-color: #879D85;
+.form-input.error-input {
+    border: 2px solid #E74C3C;
+    background: #FFE5E5;
 }
 
 .forgot-password {
-    font-weight: 400;
-    font-size: 15px;
-    line-height: 19px;
+    font-size: 14px;
     color: #8A8A8A;
-    margin-bottom: 22px;
-    display: inline-block;
+    text-align: right;
+    margin-bottom: 15px;
+    display: block;
 }
 
-.forgot-password:hover {
-    color: #66785F;
+.error-message {
+    background: #FFE5E5;
+    border: 1px solid #E74C3C;
+    border-radius: 14px;
+    padding: 12px 16px;
+    margin-bottom: 15px;
+    font-size: 14px;
+    color: #E74C3C;
+    text-align: center;
 }
 
 .signin-button {
     width: 100%;
-    font-weight: 700;
     font-size: 24px;
-    line-height: 30px;
     color: #FFFFFF;
+    background: #879D85;
     border: 1px solid #BEBEBE;
     border-radius: 14px;
     padding: 14px;
@@ -132,9 +134,7 @@
 }
 
 .signup-text {
-    font-weight: 400;
-    font-size: 16px;
-    line-height: 20px;
+    font-size: 15px;
     color: #8A8A8A;
     text-align: center;
     margin: 0;
@@ -142,9 +142,4 @@
 
 .signup-link {
     color: #4F4B4B;
-    font-weight: 400;
-}
-
-.signup-link:hover {
-    color: #66785F;
 }

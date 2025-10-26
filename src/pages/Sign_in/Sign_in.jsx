@@ -7,39 +7,54 @@ function Sign_in() {
     const [activeTab, setActiveTab] = useState('signin');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
     const navigate = useNavigate();
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Add authentication logic here
-        console.log('Sign in attempted with:', { email, password });
+        
+        // Simple validation - replace with real auth logic
+        if (email === 'test@test.com' && password === 'password123') {
+            // Success - go to landing page
+            navigate('/');
+        } else {
+            // Show error
+            setError('The email or password you entered is incorrect.');
+        }
     };
 
     const handleBack = () => {
-        navigate('/'); // Go back to Landing page
+        navigate('/');
+    };
+
+    const handleTabSwitch = (tab) => {
+        setActiveTab(tab);
+        if (tab === 'signup') {
+            navigate('/signup');
+        }
     };
 
     return (
         <div className="signin-page">
             <div className="signin-container">
                 <button className="back-button" onClick={handleBack}>
-                    <ChevronLeft strokeWidth={3} />
+                    <ChevronLeft />
                 </button>
 
-                <h1 className="signin-title">Sign in</h1>
+                <h1 className="signin-title">Sign In</h1>
 
                 <div className="tab-container">
                     <button 
                         className={`tab ${activeTab === 'signin' ? 'active' : ''}`}
                         onClick={() => setActiveTab('signin')}
                     >
-                        Sign in
+                        Sign In
                     </button>
                     <button 
                         className={`tab ${activeTab === 'signup' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('signup')}
+                        onClick={() => handleTabSwitch('signup')}
                     >
-                        Sign up
+                        Sign Up
                     </button>
                 </div>
 
@@ -49,8 +64,11 @@ function Sign_in() {
                             type="email"
                             placeholder="Email Address"
                             value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            className="form-input"
+                            onChange={(e) => {
+                                setEmail(e.target.value);
+                                setError('');
+                            }}
+                            className={`form-input ${error ? 'error-input' : ''}`}
                             required
                         />
                     </div>
@@ -60,21 +78,29 @@ function Sign_in() {
                             type="password"
                             placeholder="Password"
                             value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            className="form-input"
+                            onChange={(e) => {
+                                setPassword(e.target.value);
+                                setError('');
+                            }}
+                            className={`form-input ${error ? 'error-input' : ''}`}
                             required
                         />
                     </div>
 
-                    {/* Add Forgot Password Logic Here */}
-                    <a href="#" className="forgot-password">Forgot Password?</a>
+                    <a href="/forgot-password" className="forgot-password">Forgot Password?</a>
+
+                    {error && (
+                        <div className="error-message">
+                            {error}
+                        </div>
+                    )}
 
                     <button type="submit" className="signin-button">
-                        Sign in
+                        Sign In
                     </button>
 
                     <p className="signup-text">
-                        Dont have an account? <a href="#" className="signup-link">SignUp</a>
+                        Dont have an account? <a href="/signup" className="signup-link">SignUp</a>
                     </p>
                 </form>
             </div>
