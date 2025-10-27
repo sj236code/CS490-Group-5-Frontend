@@ -187,7 +187,7 @@ function EditProductModal({ isOpen, onClose, product, onProductUpdated }) {
                         <button 
                             type="submit" 
                             className="add-service-submit-btn"
-                        >
+                        > Save Changes
                         </button>
                     </div>
                 </form>
