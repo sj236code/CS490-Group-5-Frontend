@@ -703,6 +703,18 @@ body {
   margin: 10px;
 }
 
+.book-appt-personal-info {
+  background-color: white;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  position: relative;
+  z-index: 10;
+  width: 330px;
+  height: 40px;
+  padding-left: 0.3rem;
+}
+
 .shop-grid {
   display: grid;
   grid-template-columns: repeat(3, 200px);
@@ -724,7 +736,7 @@ body {
   color: #4B5945;
   margin: 0;
   text-align: left;
-  margin-left: 400px;
+  margin-left: 550px;
   margin-top: 50px;
 }
 
@@ -769,6 +781,7 @@ body {
   border: none;
   border-radius: 4px;
   margin-top: 50px;
+  margin-right: 550px;
   cursor: pointer;
 }
 
@@ -801,7 +814,7 @@ body {
 .add-service-modal-header {
   display: flex;
   justify-content: space-between;
-  align-items: left;
+  text-align: left;
   color: #4B5945;
 }
 
@@ -954,3 +967,4 @@ body {
 .add-service-btn-submit:hover {
   background: #B6CEB4;
 }
+

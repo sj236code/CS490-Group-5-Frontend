@@ -141,7 +141,7 @@ function DashboardManageTab({salon}){
     return (
         <div className="salon-shop-tab">
             {/* Services */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '50rem', marginBottom: '1rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
                 <h2 className="shop-service-title">Available Services:</h2>
                 <button onClick={handleAddService} className="add-service-btn">
                         Add Service
@@ -169,7 +169,7 @@ function DashboardManageTab({salon}){
             </div>
 
             {/* Products */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '50rem', marginBottom: '1rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
                 <h2 className="shop-service-title">Available Products:</h2>
                 <button onClick={handleAddProduct} className="add-service-btn">
                         Add Product
