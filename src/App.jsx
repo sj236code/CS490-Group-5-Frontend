@@ -20,6 +20,8 @@ import EmployeeRegistration from "./pages/Sign_up/Employee_registration.jsx";
 import { auth } from "./firebase";
 import { onAuthStateChanged } from "firebase/auth";
 
+function App() {
+
   // Temp hardcode until endpoint created
   const [userType, setUserType] = useState("salon owner");
 
