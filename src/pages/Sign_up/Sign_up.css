@@ -1,0 +1,138 @@
+.signup-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #D9E9CF;
+    padding: 20px;
+}
+
+.signup-container {
+    position: relative;
+    width: 100%;
+    max-width: 440px;
+    background: #F0F0F0;
+    border-radius: 40px;
+    padding: 40px 30px;
+}
+
+.back-button {
+    position: absolute;
+    top: 35px;
+    left: 35px;
+    width: 36px;
+    height: 36px;
+    background: #66785F;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.back-button svg {
+    width: 22px;
+    height: 22px;
+}
+
+.signup-title {
+    font-size: 36px;
+    color: #000000;
+    text-align: center;
+    margin: 0 0 20px 0;
+}
+
+.tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 20px;
+}
+
+.tab-btn {
+    flex: 1;
+    font-size: 22px;
+    color: #AAA2A2;
+    background: transparent;
+    border: 1px solid #BEBEBE;
+    padding: 12px;
+    cursor: pointer;
+}
+
+.tab-btn:first-child {
+    border-radius: 14px 0 0 14px;
+}
+
+.tab-btn:last-child {
+    border-radius: 0 14px 14px 0;
+    border-left: none;
+}
+
+.tab-btn.active {
+    background: #879D85;
+    color: #FFFFFF;
+}
+
+.signup-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.input-field {
+    width: 100%;
+    font-size: 20px;
+    color: #000000;
+    background: #F0F0F0;
+    border: 1px solid #BEBEBE;
+    border-radius: 14px;
+    padding: 14px 20px;
+}
+
+.input-field::placeholder {
+    color: #D9D9D9;
+}
+
+.error-box {
+    background: #FFE5E5;
+    border: 1px solid #E74C3C;
+    border-radius: 14px;
+    padding: 12px 16px;
+    margin-bottom: 15px;
+    font-size: 14px;
+    color: #E74C3C;
+    text-align: center;
+}
+
+.submit-btn {
+    width: 100%;
+    font-size: 24px;
+    color: #FFFFFF;
+    background: #879D85;
+    border: 1px solid #BEBEBE;
+    border-radius: 14px;
+    padding: 14px;
+    cursor: pointer;
+    margin-bottom: 15px;
+}
+
+.links {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.link-text {
+    font-size: 15px;
+    color: #8A8A8A;
+    text-align: center;
+    margin: 0;
+}
+
+.link {
+    color: #4F4B4B;
+}

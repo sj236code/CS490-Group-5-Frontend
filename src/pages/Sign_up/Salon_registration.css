@@ -1,0 +1,294 @@
+.register-salon-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #D9E9CF;
+    padding: 20px;
+}
+
+.register-salon-container {
+    position: relative;
+    width: 100%;
+    max-width: 750px;
+    background: #F0F0F0;
+    border-radius: 40px;
+    padding: 40px;
+}
+
+.back-button {
+    position: absolute;
+    top: 35px;
+    left: 35px;
+    width: 36px;
+    height: 36px;
+    background: #66785F;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.back-button svg {
+    width: 22px;
+    height: 22px;
+}
+
+.title {
+    font-size: 36px;
+    color: #000000;
+    text-align: center;
+    margin: 0 0 25px 0;
+}
+
+.progress-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.step {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 2px solid #879D85;
+    background: #F0F0F0;
+}
+
+.step.active {
+    background: #5A8F5A;
+}
+
+.step-line {
+    width: 80px;
+    height: 2px;
+    background: #879D85;
+}
+
+.step-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+    font-size: 14px;
+    color: #999999;
+}
+
+.current-label {
+    color: #000000;
+}
+
+.form-content {
+    min-height: 300px;
+    margin-bottom: 20px;
+}
+
+.form-step {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.row {
+    display: flex;
+    gap: 15px;
+}
+
+.half {
+    width: 50%;
+    font-size: 18px;
+    color: #000000;
+    background: #F0F0F0;
+    border: 1px solid #BEBEBE;
+    border-radius: 14px;
+    padding: 14px 20px;
+}
+
+.full {
+    width: 100%;
+    font-size: 18px;
+    color: #000000;
+    background: #F0F0F0;
+    border: 1px solid #BEBEBE;
+    border-radius: 14px;
+    padding: 14px 20px;
+}
+
+.third {
+    width: 33%;
+    font-size: 18px;
+    color: #000000;
+    background: #F0F0F0;
+    border: 1px solid #BEBEBE;
+    border-radius: 14px;
+    padding: 14px 20px;
+}
+
+.textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.half::placeholder,
+.full::placeholder,
+.third::placeholder,
+.textarea::placeholder {
+    color: #D9D9D9;
+}
+
+.section-label {
+    font-size: 18px;
+    color: #000000;
+    margin: 0 0 10px 0;
+}
+
+.hours-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.hours-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.day-name {
+    width: 50px;
+    font-size: 16px;
+    color: #000000;
+}
+
+.time-input {
+    width: 120px;
+    font-size: 16px;
+    color: #000000;
+    background: #F0F0F0;
+    border: 1px solid #BEBEBE;
+    border-radius: 10px;
+    padding: 8px 12px;
+}
+
+.closed-label {
+    font-size: 14px;
+    color: #000000;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.service-block {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 15px;
+}
+
+.upload-btn {
+    width: 33%;
+    font-size: 14px;
+    color: #000000;
+    background: #F0F0F0;
+    border: 1px solid #BEBEBE;
+    border-radius: 10px;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.add-another {
+    font-size: 16px;
+    color: #666666;
+    background: none;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.checkbox-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.checkbox-grid label {
+    font-size: 16px;
+    color: #000000;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.other-label {
+    font-size: 16px;
+    color: #999999;
+    margin: 10px 0 10px 0;
+}
+
+.upload-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 30px;
+}
+
+.upload-section span {
+    font-size: 18px;
+    color: #999999;
+}
+
+.import-btn {
+    font-size: 16px;
+    color: #000000;
+    background: #F0F0F0;
+    border: 1px solid #BEBEBE;
+    border-radius: 10px;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+.checkbox-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.checkbox-list label {
+    font-size: 14px;
+    color: #000000;
+    display: flex;
+    gap: 10px;
+    line-height: 1.4;
+}
+
+.button-row {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.back-btn-bottom {
+    font-size: 20px;
+    color: #FFFFFF;
+    background: #999999;
+    border: none;
+    border-radius: 14px;
+    padding: 12px 32px;
+    cursor: pointer;
+}
+
+.continue-button {
+    font-size: 20px;
+    color: #FFFFFF;
+    background: #879D85;
+    border: none;
+    border-radius: 14px;
+    padding: 12px 32px;
+    cursor: pointer;
+}
