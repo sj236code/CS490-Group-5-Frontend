@@ -4,6 +4,8 @@ import DashboardServiceCard from './DashboardServiceCard';
 import DashboardProductCard from './DashboardProductCard';
 import AddServiceModal from './AddServiceModal';
 import AddProductModal from './AddProductModal';
+import EditServiceModal from './EditServiceModal';
+import EditProductModal from './EditProductModal';
 
 
 function DashboardManageTab({salon}){
@@ -18,8 +20,15 @@ function DashboardManageTab({salon}){
     const [currentProductIndex, setCurrentProductIndex] = useState(0);
     const productsPerPage = 3;
 
+    // Adding Service & Product
     const [isAddServiceModalOpen, setIsAddServiceModalOpen] = useState(false);
     const [isAddProductModalOpen, setIsAddProductModalOpen] = useState(false);
+
+    // Edit Service & Product
+    const [isEditServiceModalOpen, setIsEditServiceModalOpen] = useState(false);
+    const [selectedService, setSelectedService] = useState(null);
+    const [isEditProductModalOpen, setIsEditProductModalOpen] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState(null);
 
 
     // Load Services & Products when component mounts
@@ -66,6 +75,10 @@ function DashboardManageTab({salon}){
     const handleCloseModal = () => {
         setIsAddServiceModalOpen(false);
         setIsAddProductModalOpen(false);
+        setIsEditServiceModalOpen(false);
+        setSelectedService(null);
+        setIsEditProductModalOpen(false);
+        setSelectedProduct(null);
     };
 
     const handleAddProduct = () => {
@@ -102,6 +115,20 @@ function DashboardManageTab({salon}){
 
     const currentProducts = products.slice(currentProductIndex, currentProductIndex + productsPerPage);
 
+    // Edit Service
+    const handleEditService = (service) => {
+        setSelectedService(service);
+        console.log("Updated service: ", service);
+        setIsEditServiceModalOpen(true);
+    };
+
+    // Edit Product
+    const handleEditProduct = (product) => {
+        setSelectedProduct(product);
+        console.log("Updated product: ", product);
+        setIsEditProductModalOpen(true);
+    };
+
     // Handle Edge Case: A salon does not offer services or products
     if(services.length === 0 && products.length === 0){
         return(
@@ -132,7 +159,7 @@ function DashboardManageTab({salon}){
                         <DashboardServiceCard
                             key={service.id}
                             service={service}
-                            onClick={(handleProducts) => console.log("Clicked Service: ", service)}
+                            onClick={() => handleEditService(service)}
                         />
                     ))}
                 </div>
@@ -160,7 +187,7 @@ function DashboardManageTab({salon}){
                         <DashboardProductCard
                             key={product.id}
                             product={product}
-                            onClick={() => console.log("Clicked Product: ", product)}
+                            onClick={() => handleEditProduct(product)}
                         />
                     ))}
                 </div>
@@ -183,6 +210,22 @@ function DashboardManageTab({salon}){
                 onClose={handleCloseModal}
                 salonId={salon?.id}
                 onProductAdded={fetchProducts}
+            />
+
+            {/* Edit Service Modal */}
+            <EditServiceModal
+                isOpen={isEditServiceModalOpen}
+                onClose={handleCloseModal}
+                service={selectedService}
+                onServiceUpdated={fetchServices}
+            />
+
+            {/* Edit Product Modal */}
+            <EditProductModal
+                isOpen={isEditProductModalOpen}
+                onClose={handleCloseModal}
+                product={selectedProduct}
+                onServiceUpdated={fetchProducts}
             />
 
         </div>

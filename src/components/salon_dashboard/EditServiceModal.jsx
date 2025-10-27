@@ -1,8 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X, Upload } from 'lucide-react';
-import { resumeAndPrerenderToNodeStream } from 'react-dom/static';
 
-function AddServiceModal({ isOpen, onClose, salonId, onServiceAdded }) {
+function EditServiceModal({ isOpen, onClose, service, onServiceUpdated }) {
 
     const [formData, setFormData] = useState({
         serviceName: "",
@@ -10,11 +9,22 @@ function AddServiceModal({ isOpen, onClose, salonId, onServiceAdded }) {
         duration: "",
     });
 
-    const [images, setImages] = useState([]);
     const [iconFile, setIconFile] = useState(null);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
+    // Populate form with existing service data when modal opens
+    useEffect(() => {
+        if (service && isOpen) {
+            setFormData({
+                serviceName: service.name || "",
+                price: service.price || "",
+                duration: service.duration || "",
+            });
+            setIconFile(null);
+        }
+    }, [service, isOpen]);
 
-      // Text input changes
+    // Text input changes
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prev) => ({
@@ -23,55 +33,65 @@ function AddServiceModal({ isOpen, onClose, salonId, onServiceAdded }) {
         }));
     };
 
-    // Image Upload
+    // Image Upload - only allow one file
     const handleImageUpload = (e) => {
-        const file = Array.from(e.target.files);
-        setImages((prev) => [...prev, ...files]);
-    }
-
-    const submitService = async(e) => {
-        e.preventDefault();
-
-        try{
-
-            const formDataToSend = new FormData();
-            formDataToSend.append('name', formData.serviceName);
-            formDataToSend.append('salon_id', salonId);
-            formDataToSend.append('price', formData.price);
-            formDataToSend.append('duration', formData.duration);
-            formDataToSend.append('is_active', 'true');
-
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/salon_register/add_service`, { method: 'POST', body: formDataToSend,});
-
-            const data = await response.json();
-
-            if(!response.ok){
-                throw new Error(data.error || 'Failed. ');
-            }
-
-            console.log('Service added successfully: ', data);
-
-            setFormData({
-                serviceName: "",
-                price: "",
-                duration: "",
-            });
-
-            if (onServiceAdded) {
-                onServiceAdded();
-            }
-        
-            onClose();
-
-        }
-        catch(err){
-            console.error("Error adding service: ", err);
+        const file = e.target.files[0];
+        if (file) {
+            setIconFile(file);
         }
     };
 
-    // Reset images
+    const submitService = async (e) => {
+        e.preventDefault();
+
+        try {
+            // Create FormData object to match backend expectations
+            const formDataToSend = new FormData();
+            formDataToSend.append('service_id', service.id);
+            formDataToSend.append('name', formData.serviceName);
+            formDataToSend.append('price', formData.price);
+            formDataToSend.append('duration', formData.duration);
+            formDataToSend.append('is_active', 'true');
+            
+            // Add the icon file if a new one was selected
+            if (iconFile) {
+                formDataToSend.append('icon_file', iconFile);
+            }
+
+            // const response = await fetch(`${import.meta.env.VITE_API_URL}/api/salon_register/update_service`, {
+            //     method: 'PUT',
+            //     body: formDataToSend,
+            // });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Failed to update service');
+            }
+
+            console.log('Service updated successfully:', data);
+
+            // Refresh
+            if (onServiceUpdated) {
+                onServiceUpdated();
+            }
+            
+            onClose();
+
+        } 
+        catch (err) {
+            console.error("Error updating service:", err);
+        }
+    };
+
+    // Reset form and close
     const handleBack = () => {
-        setImages([]);
+        setFormData({
+            serviceName: "",
+            price: "",
+            duration: "",
+        });
+        setIconFile(null);
         onClose();
     };
 
@@ -85,13 +105,25 @@ function AddServiceModal({ isOpen, onClose, salonId, onServiceAdded }) {
                 
                 {/* Header */}
                 <div className="add-service-modal-header">
-                    <h2 className="add-service-header-title">Add a Service</h2>
+                    <h2 className="add-service-header-title">Edit Service</h2>
                     <button className="add-service-close-btn" onClick={handleBack}>
                         <X size={24} />
                     </button>
                 </div>
 
                 <hr className="add-service-divider" />
+
+                {/* Current Icon Preview */}
+                {service?.icon_url && !iconFile && (
+                    <div style={{ marginBottom: '15px', textAlign: 'center' }}>
+                        <p style={{ fontSize: '12px', color: '#666', marginBottom: '5px' }}>Current Image:</p>
+                        <img 
+                            src={service.icon_url} 
+                            alt={service.name}
+                            style={{ maxWidth: '100px', maxHeight: '100px', borderRadius: '8px' }}
+                        />
+                    </div>
+                )}
 
                 {/* Form with Details */}
                 <form onSubmit={submitService} className="add-service-form">
@@ -133,25 +165,29 @@ function AddServiceModal({ isOpen, onClose, salonId, onServiceAdded }) {
                         
                         <label className="add-service-upload-btn">
                             <Upload size={16} />
-                            Upload Images
+                            {iconFile ? iconFile.name : 'Change Image'}
                             <input
                                 type="file"
-                                multiple
                                 accept="image/*"
                                 onChange={handleImageUpload}
-                                style={{display: 'none'}}
+                                style={{ display: 'none' }}
                             />
                         </label>
                     </div>
 
-
                     {/* Footer Buttons */}
                     <div className="add-service-actions">
-                        <button type="button" onClick={handleBack} className="add-service-back-btn">
+                        <button 
+                            type="button" 
+                            onClick={handleBack} 
+                            className="add-service-back-btn"
+                        >
                             Back
                         </button>
-                        <button type="submit" className="add-service-submit-btn">
-                            Add Service
+                        <button 
+                            type="submit" 
+                            className="add-service-submit-btn"
+                        > Save Changes
                         </button>
                     </div>
                 </form>
@@ -160,4 +196,4 @@ function AddServiceModal({ isOpen, onClose, salonId, onServiceAdded }) {
     );
 }
 
-export default AddServiceModal;
+export default EditServiceModal;
