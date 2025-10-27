@@ -13,7 +13,7 @@ function RegisterSalon() {
         password: '',
         confirmPassword: ''
     });
-    const [salonDetails1, setSalonDetails1] = useState({
+    const [salonDetails, setSalonDetails] = useState({
         salonName: '',
         salonType: '',
         address1: '',
@@ -23,16 +23,14 @@ function RegisterSalon() {
         zip: '',
         phone: ''
     });
-    const [salonDetails2, setSalonDetails2] = useState({
-        hours: {
-            monday: { open: '', close: '', closed: false },
-            tuesday: { open: '', close: '', closed: false },
-            wednesday: { open: '', close: '', closed: false },
-            thursday: { open: '', close: '', closed: false },
-            friday: { open: '', close: '', closed: false },
-            saturday: { open: '', close: '', closed: false },
-            sunday: { open: '', close: '', closed: false }
-        }
+    const [hours, setHours] = useState({
+        monday: { open: '', close: '', closed: false },
+        tuesday: { open: '', close: '', closed: false },
+        wednesday: { open: '', close: '', closed: false },
+        thursday: { open: '', close: '', closed: false },
+        friday: { open: '', close: '', closed: false },
+        saturday: { open: '', close: '', closed: false },
+        sunday: { open: '', close: '', closed: false }
     });
     const [services, setServices] = useState([
         { name: '', price: '', duration: '', description: '', images: [] }
@@ -63,7 +61,7 @@ function RegisterSalon() {
     };
 
     const handleContinue = () => {
-        if (currentStep < 5) {
+        if (currentStep < 6) {
             setCurrentStep(currentStep + 1);
         } else {
             handleSubmit();
@@ -78,8 +76,6 @@ function RegisterSalon() {
     const addService = () => {
         setServices([...services, { name: '', price: '', duration: '', description: '', images: [] }]);
     };
-
-    const showHours = currentStep === 2 && salonDetails1.salonName;
 
     return (
         <div className="register-salon-page">
@@ -100,17 +96,21 @@ function RegisterSalon() {
                     <div className={`step ${currentStep >= 4 ? 'active' : ''}`}></div>
                     <div className="step-line"></div>
                     <div className={`step ${currentStep >= 5 ? 'active' : ''}`}></div>
+                    <div className="step-line"></div>
+                    <div className={`step ${currentStep >= 6 ? 'active' : ''}`}></div>
                 </div>
 
                 <div className="step-labels">
                     <span className={currentStep === 1 ? 'current-label' : ''}>Owner Info.</span>
                     <span className={currentStep === 2 ? 'current-label' : ''}>Salon Details</span>
-                    <span className={currentStep === 3 ? 'current-label' : ''}>Services</span>
-                    <span className={currentStep === 4 ? 'current-label' : ''}>Payment</span>
-                    <span className={currentStep === 5 ? 'current-label' : ''}>Verification</span>
+                    <span className={currentStep === 3 ? 'current-label' : ''}>Hours</span>
+                    <span className={currentStep === 4 ? 'current-label' : ''}>Services</span>
+                    <span className={currentStep === 5 ? 'current-label' : ''}>Payment</span>
+                    <span className={currentStep === 6 ? 'current-label' : ''}>Verification</span>
                 </div>
 
                 <div className="form-content">
+                    {/* STEP 1: Owner Info */}
                     {currentStep === 1 && (
                         <div className="form-step">
                             <div className="row">
@@ -128,49 +128,50 @@ function RegisterSalon() {
                         </div>
                     )}
 
+                    {/* STEP 2: Salon Details */}
                     {currentStep === 2 && (
                         <div className="form-step">
-                            {showHours ? (
-                                <>
-                                    <p className="section-label">Hours</p>
-                                    <div className="hours-list">
-                                        {Object.keys(salonDetails2.hours).map(day => (
-                                            <div key={day} className="hours-row">
-                                                <span className="day-name">{day.charAt(0).toUpperCase() + day.slice(1).slice(0, 3)}.</span>
-                                                <input type="time" className="time-input" placeholder="Open" />
-                                                <span>to</span>
-                                                <input type="time" className="time-input" placeholder="Close" />
-                                                <label className="closed-label">
-                                                    <input type="checkbox" /> Closed
-                                                </label>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </>
-                            ) : (
-                                <>
-                                    <div className="row">
-                                        <input type="text" placeholder="Salon Name" className="half" />
-                                        <input type="text" placeholder="Salon Type" className="half" />
-                                    </div>
-                                    <div className="row">
-                                        <input type="text" placeholder="Address 1" className="half" />
-                                        <input type="text" placeholder="Address 2" className="half" />
-                                    </div>
-                                    <div className="row">
-                                        <input type="text" placeholder="City" className="half" />
-                                        <input type="text" placeholder="State" className="half" />
-                                    </div>
-                                    <div className="row">
-                                        <input type="text" placeholder="Zip" className="half" />
-                                        <input type="tel" placeholder="Phone No." className="half" />
-                                    </div>
-                                </>
-                            )}
+                            <div className="row">
+                                <input type="text" placeholder="Salon Name" className="half" />
+                                <input type="text" placeholder="Salon Type" className="half" />
+                            </div>
+                            <div className="row">
+                                <input type="text" placeholder="Address 1" className="half" />
+                                <input type="text" placeholder="Address 2" className="half" />
+                            </div>
+                            <div className="row">
+                                <input type="text" placeholder="City" className="half" />
+                                <input type="text" placeholder="State" className="half" />
+                            </div>
+                            <div className="row">
+                                <input type="text" placeholder="Zip" className="half" />
+                                <input type="tel" placeholder="Phone No." className="half" />
+                            </div>
                         </div>
                     )}
 
+                    {/* STEP 3: Hours */}
                     {currentStep === 3 && (
+                        <div className="form-step">
+                            <p className="section-label">Hours</p>
+                            <div className="hours-list">
+                                {Object.keys(hours).map(day => (
+                                    <div key={day} className="hours-row">
+                                        <span className="day-name">{day.charAt(0).toUpperCase() + day.slice(1).slice(0, 3)}.</span>
+                                        <input type="time" className="time-input" placeholder="Open" />
+                                        <span>to</span>
+                                        <input type="time" className="time-input" placeholder="Close" />
+                                        <label className="closed-label">
+                                            <input type="checkbox" /> Closed
+                                        </label>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* STEP 4: Services */}
+                    {currentStep === 4 && (
                         <div className="form-step">
                             <p className="section-label">Services:</p>
                             {services.map((service, index) => (
@@ -188,7 +189,8 @@ function RegisterSalon() {
                         </div>
                     )}
 
-                    {currentStep === 4 && (
+                    {/* STEP 5: Payment */}
+                    {currentStep === 5 && (
                         <div className="form-step">
                             <p className="section-label">Select All Accepted Payment Methods:</p>
                             <div className="checkbox-grid">
@@ -204,7 +206,8 @@ function RegisterSalon() {
                         </div>
                     )}
 
-                    {currentStep === 5 && (
+                    {/* STEP 6: Verification */}
+                    {currentStep === 6 && (
                         <div className="form-step">
                             <div className="upload-section">
                                 <span>Upload Business License:</span>
@@ -227,7 +230,7 @@ function RegisterSalon() {
                 <div className="button-row">
                     <button type="button" onClick={handleBack} className="back-btn-bottom">Back</button>
                     <button type="button" onClick={handleContinue} className="continue-button">
-                        {currentStep === 5 ? 'Submit' : 'Continue'}
+                        {currentStep === 6 ? 'Submit' : 'Continue'}
                     </button>
                 </div>
             </div>
