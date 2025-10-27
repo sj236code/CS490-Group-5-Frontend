@@ -2,15 +2,15 @@ import { Search, MapPin } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-function LandingSearchBar(){
+function LandingSearchBar() {
 
-    const[wordEntered, setWordEntered] = useState(""); // User Search Query
-    const[selectedCity, setSelectedCity] = useState(null); // Default City 
-    const[showCityDropdown, setShowCityDropdown] = useState(false); // Whether city dropdown is visible
-    const[showResults, setShowResults] = useState(false); // Whether search results are visible
-    const[searchResults, setSearchResults] = useState([]) // Stores filtered search results
-    const[cities,setCities] = useState([]); // Cities of Valid Salons
-    const[userLocation, setUserLocation] = useState([]); // User Location
+    const [wordEntered, setWordEntered] = useState(""); // User Search Query
+    const [selectedCity, setSelectedCity] = useState(null); // Default City 
+    const [showCityDropdown, setShowCityDropdown] = useState(false); // Whether city dropdown is visible
+    const [showResults, setShowResults] = useState(false); // Whether search results are visible
+    const [searchResults, setSearchResults] = useState([]) // Stores filtered search results
+    const [cities, setCities] = useState([]); // Cities of Valid Salons
+    const [userLocation, setUserLocation] = useState([]); // User Location
 
     const navigate = useNavigate();
 
@@ -21,7 +21,7 @@ function LandingSearchBar(){
 
     // Async function to fetch service categories from backend API
     const fetchCities = async () => {
-        try{
+        try {
             const response = await fetch(`${import.meta.env.VITE_API_URL}/api/salons/cities`);
 
             const data = await response.json();
@@ -32,7 +32,7 @@ function LandingSearchBar(){
 
             //console.log('End of Async Function.');
         }
-        catch (err){
+        catch (err) {
             console.error('Error fetching cities: ', err);
         }
     };
@@ -48,7 +48,7 @@ function LandingSearchBar(){
     // ]
 
     // Everytime user types in search bar
-    const handleSearchQueryChange = async (event) =>{
+    const handleSearchQueryChange = async (event) => {
         const searchWord = event.target.value;
         setWordEntered(searchWord);
 
@@ -57,7 +57,7 @@ function LandingSearchBar(){
                 // Build URL with query parameters
                 let url = `${import.meta.env.VITE_API_URL}/api/autocomplete?q=${encodeURIComponent(searchWord)}`;
 
-                if (selectedCity){
+                if (selectedCity) {
                     url += `&city=${encodeURIComponent(selectedCity)}`;
                 }
 
@@ -76,19 +76,19 @@ function LandingSearchBar(){
 
                 setSearchResults(formattedResults);
                 setShowResults(true);
-            } 
+            }
             catch (err) {
                 console.error('Error fetching autocomplete results:', err);
                 setSearchResults([]);
                 setShowResults(false);
             }
-        } 
+        }
         else {
             // If input is empty, clear results and hide dropdown
             setSearchResults([]);
             setShowResults(false);
         }
-        
+
     };
 
     // When the user clicks on city dropdown
@@ -106,8 +106,9 @@ function LandingSearchBar(){
         setShowResults(false);
 
         navigate('/search', {
-            state:{
+            state: {
                 results: searchResults,
+                cities: cities,
                 query: wordEntered,
                 city: searchLocation
             }
@@ -127,7 +128,7 @@ function LandingSearchBar(){
     //     }
     // };
 
-    return(
+    return (
         <>
             <div className="search-bar-wrapper">
 
@@ -152,8 +153,8 @@ function LandingSearchBar(){
                     <div className="city-wrapper">
                         <div className="city-section">
                             <MapPin className="location-icon" />
-                            <div 
-                                className="location-dropdown" 
+                            <div
+                                className="location-dropdown"
                                 onClick={() => setShowCityDropdown(!showCityDropdown)}>
                                 <span className='location-text'>{selectedCity || 'All Cities'}</span>
                             </div>
@@ -176,7 +177,7 @@ function LandingSearchBar(){
                                             key={index}
                                             className={`city-item ${city === selectedCity ? 'selected' : ''}`}
                                             onClick={() => handleCitySelect(city)}
-                                            >
+                                        >
                                             <MapPin size={18} className="city-icon" />
                                             {city}
                                         </li>
