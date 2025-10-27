@@ -11,7 +11,7 @@ import SalonDetailsPage from './pages/SalonDetailsPage.jsx';
 function App() {
 
   // Temp hardcode until endpoint created
-  const [userType, setUserType] = useState("customer");
+  const [userType, setUserType] = useState("salon owner");
 
   console.log("API URL:", import.meta.env.VITE_API_URL);
 

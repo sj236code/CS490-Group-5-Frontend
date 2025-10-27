@@ -1,0 +1,49 @@
+
+*/
+.masonry-gallery {
+  opacity: 1;
+  transition: opacity 0.3s ease-in-out;
+}
+
+
+.grid-sizer {
+  width: calc(33.333% - 10px); 
+}
+
+
+.gallery-item {
+  width: calc(33.333% - 10px); 
+  margin-bottom: 10px;
+  border-radius: var(--radius-md); 
+  overflow: hidden; 
+  border: 1px solid var(--color-border); 
+  background-color: var(--color-muted); 
+}
+
+
+.gallery-item .img-responsive {
+  width: 100%;
+  height: auto;
+  display: block;
+  cursor: pointer;
+}
+
+
+@media (max-width: 768px) {
+  .grid-sizer,
+  .gallery-item {
+    width: calc(50% - 10px);
+  }
+}
+
+@media (max-width: 480px) {
+  .grid-sizer,
+  .gallery-item {
+    width: 100%; 
+  }
+}
+
+
+.gallery-modal-overlay {
+  display: none;
+}
