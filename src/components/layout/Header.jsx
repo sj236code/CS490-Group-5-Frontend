@@ -68,6 +68,7 @@ function Header({userType}){
                 </div>
                 {/* Sign In/ Sign Out Button */}
                 <div>
+                    <p> this is a test</p>
                     <LoginButton onClick={navigateToLogin} style={{cursor: 'pointer'}}/>
                 </div>
                 {/* If CartButton clicked, open CartPanel */}
