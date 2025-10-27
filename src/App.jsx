@@ -16,6 +16,10 @@ import RegisterSalon from "./pages/Sign_up/Salon_registration.jsx";
 import RegisterSalonSuccess from "./pages/Sign_up/Salon_registration_success.jsx";
 import EmployeeRegistration from "./pages/Sign_up/Employee_registration.jsx";
 
+// Firebase
+import { auth } from "./firebase";
+import { onAuthStateChanged } from "firebase/auth";
+
 function App() {
 
   // Temp hardcode until endpoint created
@@ -25,32 +29,30 @@ function App() {
 
   return (
     <>
-      <Router>
-        <Header userType={userType}/>
-        <hr />
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          
-          {/* Auth */}
-          <Route path="/signin" element={<SignIn />} />
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/verify-otp" element={<VerifyOTP />} />
-
-          {/* Salon / Employee */}
-          <Route path="/register-salon" element={<RegisterSalon />} />
-          <Route path="/register-salon-success" element={<RegisterSalonSuccess />} />
-          <Route path="/employee-registration" element={<EmployeeRegistration />} />
-
-          <Route path="/search" element={<SearchPage />} />
-          <Route path="/salon" element={<SalonDetailsPage />} />
-          <Route path="/salonDashboard" element={<SalonDashboard />} />
-          <Route path="/contact" element={<ContactPage />} />
-          <Route path="/faq" element={<FAQPage />} />
-        </Routes>
-      </Router>
+      <Header userType={userType} />
+      <hr />
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        
+        {/* Auth */}
+        <Route path="/signin" element={<SignIn />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/verify-otp" element={<VerifyOTP />} />
+    
+        {/* Salon / Employee */}
+        <Route path="/register-salon" element={<RegisterSalon />} />
+        <Route path="/register-salon-success" element={<RegisterSalonSuccess />} />
+        <Route path="/employee-registration" element={<EmployeeRegistration />} />
+    
+        <Route path="/search" element={<SearchPage />} />
+        <Route path="/salon" element={<SalonDetailsPage />} />
+        <Route path="/salonDashboard" element={<SalonDashboard />} />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/faq" element={<FAQPage />} />
+      </Routes>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
