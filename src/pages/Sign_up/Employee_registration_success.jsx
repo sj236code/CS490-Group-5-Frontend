@@ -5,26 +5,26 @@ import './Employee_registration_success.css';
 function EmployeeRegistrationSuccess() {
     const navigate = useNavigate();
 
-    const handleClose = () => {
-        navigate('/');
-    };
-
     return (
-        <div className="success-page-simple">
-            <div className="success-container-simple">
-                <h1 className="success-title-simple">Employee Registration Requested</h1>
-                <div className="title-line-simple"></div>
+        <div className="employee-success-page">
+            <div className="employee-success-container">
+                <h1 className="employee-success-title">Employee Registration Requested</h1>
+                <div className="employee-title-line"></div>
 
-                <h2 className="thank-you-text">Thank You !</h2>
+                <h2 className="employee-thank-you">Thank You!</h2>
 
-                <div className="checkmark-circle">
-                    <Check size={60} color="#FFFFFF" />
+                <div className="employee-checkmark-circle">
+                    <Check size={70} strokeWidth={3} color="#FFFFFF" />
                 </div>
 
-                <div className="success-message">
-                    <p className="message-bold">Request Submitted!</p>
-                    <p className="message-normal">You will receive an email once approved.</p>
+                <div className="employee-success-message">
+                    <p className="employee-message-bold">Request Submitted!</p>
+                    <p className="employee-message-normal">You will receive an email once approved.</p>
                 </div>
+
+                <button onClick={() => navigate('/')} className="employee-home-button">
+                    Go to Home
+                </button>
             </div>
         </div>
     );
