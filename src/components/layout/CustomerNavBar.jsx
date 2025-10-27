@@ -1,4 +1,4 @@
-import { ChevronLeft, CircleUserRound, ShieldCheck } from 'lucide-react';
+import { ChevronLeft, CircleUserRound, ShieldCheck, Logout } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 /* NavBar component for an customer user */
@@ -14,6 +14,17 @@ function CustomerNavBar({onClose}){
     const handleFAQClick = () => {
         navigate('/faq');
         onClose();
+    };
+
+    const handleLogout = async () => {
+        try {
+            await signOut(auth); // Sign out Firebase user
+            navigate('/signup');  // Redirect to SignUp page
+            onClose();            // Close navbar
+        } 
+        catch (error) {
+            console.error("Logout failed:", error);
+        }
     };
 
     return(

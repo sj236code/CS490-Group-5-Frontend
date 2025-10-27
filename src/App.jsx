@@ -8,6 +8,13 @@ import FAQPage from './pages/FAQPage.jsx'
 import SearchPage from './pages/SearchPage.jsx'
 import SalonDetailsPage from './pages/SalonDetailsPage.jsx';
 import SalonDashboard from './pages/SalonDashboard.jsx';
+import SignIn from "./pages/Sign_in/Sign_in.jsx";
+import ForgotPassword from "./pages/Sign_in/Forgot_pass.jsx";
+import VerifyOTP from "./pages/Sign_in/Verify_otp.jsx";
+import SignUp from "./pages/Sign_up/Sign_up.jsx";
+import RegisterSalon from "./pages/Sign_up/Salon_registration.jsx";
+import RegisterSalonSuccess from "./pages/Sign_up/Salon_registration_success.jsx";
+import EmployeeRegistration from "./pages/Sign_up/Employee_registration.jsx";
 
 function App() {
 
@@ -23,6 +30,18 @@ function App() {
         <hr />
         <Routes>
           <Route path="/" element={<LandingPage />} />
+          
+          {/* Auth */}
+          <Route path="/signin" element={<SignIn />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/verify-otp" element={<VerifyOTP />} />
+
+          {/* Salon / Employee */}
+          <Route path="/register-salon" element={<RegisterSalon />} />
+          <Route path="/register-salon-success" element={<RegisterSalonSuccess />} />
+          <Route path="/employee-registration" element={<EmployeeRegistration />} />
+
           <Route path="/search" element={<SearchPage />} />
           <Route path="/salon" element={<SalonDetailsPage />} />
           <Route path="/salonDashboard" element={<SalonDashboard />} />
