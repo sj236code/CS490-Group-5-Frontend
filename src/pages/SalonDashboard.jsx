@@ -6,39 +6,45 @@ import DashboardManageTab from '../components/salon_dashboard/DashboardManageTab
 function SalonDashboard() {
     const location = useLocation();
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams(); // ✅ use hook at top level
     const { salon } = location.state || {};
 
     const [workingTab, setWorkingTab] = useState("Manage");
     const [salonDetails, setSalonDetails] = useState(null);
 
-    const [services, setServices] = useState([]);
-
-    // Do I have to handle possible error if no valid salon is passed?
     useEffect(() => {
-        if (!salon){
-            const searhParams = new URLSearch(location.seach);
-            const salonId = useSearchParams.get('id');
-            if(salonId){
-                fetch(`${import.meta.env.VITE_API_URL}/api/salons/details/${salonId}`)
+        const salonId = searchParams.get('id');
+
+        if (salonId) {
+            // ✅ Fetch using ID from query param
+            fetch(`${import.meta.env.VITE_API_URL}/api/salons/details/${salonId}`)
+                .then(res => res.json())
+                .then(data => setSalonDetails(data))
+                .catch(err => console.error(err));
+        } 
+        else if (salon) {
+            // ✅ Use salon from location.state
+            if (salon.id && !salon.name) {
+                fetch(`${import.meta.env.VITE_API_URL}/api/salons/details/${salon.id}`)
                     .then(res => res.json())
                     .then(data => setSalonDetails(data))
                     .catch(err => console.error(err));
+            } else {
+                setSalonDetails(salon);
             }
-            console.error("No Salon Data provided.");
-        }
+            console.log("Salon Details:", salon);
+        } 
         else {
-            setSalonDetails(salon);
-            console.log("Salon Details: ", salon);
+            console.error("No salon data provided.");
         }
-    }, [location]);
+    }, [location, searchParams]);
 
     useEffect(() => {
-        if (workingTab === "Shop" && salonDetails?.id){
-            fetchServices();
+        if (workingTab === "Shop" && salonDetails?.id) {
+            // fetchServices(); // only if this function is defined elsewhere
         }
     }, [workingTab, salonDetails]);
 
-    // Add check for salonDetails
     if (!salonDetails) {
         return (
             <div style={{ padding: '50px', textAlign: 'center' }}>
@@ -50,74 +56,41 @@ function SalonDashboard() {
         );
     }
 
-    const fetchServices = async () => {
-        try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/salons/details/${salonDetails.id}/services`);
-            const data = await response.json();
-
-            setServices(data.services || []);
-        }
-        catch (error) {
-            console.error("Failed to fetch services.", error);
-        }
-    };
-
-    const addToCart = (service) => {
-        console.log("Added to cart:", service);
-    }
-
     return (
         <div>
-
-            {/* Hero */}
             <div className="salon-details-hero">
                 <div className="salon-hero-overlay"></div>
             </div>
 
-            {/* Salon Info */}
             <div>
-                <h1 className="salon-details-name">{salonDetails.title}</h1>
+                <h1 className="salon-details-name">{salonDetails.name}</h1>
                 <div className="salon-details-info">
-                    <span style={{marginRight: '5px'}}>{salonDetails.type}</span>
+                    <span style={{ marginRight: '5px' }}>{salonDetails.type}</span>
                     <span><Star size={16} fill="#96A78D"/> {salonDetails.avgRating || 'N/A'}</span>
-                    <span style={{marginLeft: '5px'}}>
-                        {salonDetails.totalReviews || 0} Reviews
+                    <span style={{ marginLeft: '5px' }}>
+                        {salonDetails.total_reviews || 0} Reviews
                     </span>
                 </div>
             </div>
 
-            {/* Nvigation Tabs */}
             <div className="salon-details-tabs">
-                <button className="salon-detail-tab-link" onClick={() => setWorkingTab('Metrics')}>Metrics</button>
-                <button className="salon-detail-tab-link" onClick={() => setWorkingTab('Calendar')}>Calendar</button>
-                <button className="salon-detail-tab-link" onClick={() => setWorkingTab('Manage')}>Manage</button>
-                <button className="salon-detail-tab-link" onClick={() => setWorkingTab('Loyalty')}>Loyalty</button>
+                {["Metrics", "Calendar", "Manage", "Loyalty"].map(tab => (
+                    <button
+                        key={tab}
+                        className="salon-detail-tab-link"
+                        onClick={() => setWorkingTab(tab)}
+                    >
+                        {tab}
+                    </button>
+                ))}
             </div>
 
-            {/* Tab Content */}
             <div className="salon-details-tab-content">
-                {workingTab =="Metrics" && (
-                    <div>
-                        <h2>Metrics Page for: {salonDetails.title}</h2>
-                    </div>
-                )}
-                {workingTab =="Calendar" && (
-                    <div>
-                        <h2>Calendar Page for: {salonDetails.title}</h2>
-                    </div>
-                )}
-                {workingTab =="Loyalty" && (
-                    <div>
-                        <h2>Loyalty Page for: {salonDetails.title}</h2>
-                    </div>
-                )}
-                {workingTab =="Manage" && (
-                    <div>
-                        <DashboardManageTab salon={salonDetails} />
-                    </div>
-                )}
+                {workingTab === "Metrics" && <h2>Metrics Page for: {salonDetails.name}</h2>}
+                {workingTab === "Calendar" && <h2>Calendar Page for: {salonDetails.name}</h2>}
+                {workingTab === "Loyalty" && <h2>Loyalty Page for: {salonDetails.name}</h2>}
+                {workingTab === "Manage" && <DashboardManageTab salon={salonDetails} />}
             </div>
-
         </div>
     );
 }

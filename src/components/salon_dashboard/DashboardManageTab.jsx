@@ -3,6 +3,7 @@ import {Star, ChevronLeft, ChevronRight} from 'lucide-react';
 import DashboardServiceCard from './DashboardServiceCard';
 import DashboardProductCard from './DashboardProductCard';
 import AddServiceModal from './AddServiceModal';
+import AddProductModal from './AddProductModal';
 
 
 function DashboardManageTab({salon}){
@@ -18,12 +19,14 @@ function DashboardManageTab({salon}){
     const productsPerPage = 3;
 
     const [isAddServiceModalOpen, setIsAddServiceModalOpen] = useState(false);
+    const [isAddProductModalOpen, setIsAddProductModalOpen] = useState(false);
+
 
     // Load Services & Products when component mounts
     useEffect(() => {
         if (salon?.id){
             fetchServices();
-            //fetchProducts();
+            fetchProducts();
         }
     }, [salon?.id]);
 
@@ -44,14 +47,14 @@ function DashboardManageTab({salon}){
     // Fetch Products-- endpoint not created yet
     const fetchProducts = async() => {
         try{
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/salons/details/${salonId}/products`);
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/salons/details/${salon.id}/products`);
             const data = await response.json();
 
             setProducts(data.products || []);
             console.log("Products loaded: ", data.products);
         }
         catch (err){
-            console.error("Unable to fetch services. Error: ", err);
+            console.error("Unable to fetch products. Error: ", err);
         }
     };
 
@@ -62,6 +65,11 @@ function DashboardManageTab({salon}){
 
     const handleCloseModal = () => {
         setIsAddServiceModalOpen(false);
+        setIsAddProductModalOpen(false);
+    };
+
+    const handleAddProduct = () => {
+        setIsAddProductModalOpen(true);
     };
 
     // ServiceCard Handling
@@ -92,11 +100,6 @@ function DashboardManageTab({salon}){
         }
     };
 
-    const addProductToCart = (product) => {
-        console.log("Product added to cart: ", product);
-        // Implement Post to DB
-    };
-
     const currentProducts = products.slice(currentProductIndex, currentProductIndex + productsPerPage);
 
     // Handle Edge Case: A salon does not offer services or products
@@ -118,7 +121,6 @@ function DashboardManageTab({salon}){
                 </button>
             </div>
 
-
             <div className="shop-carousel">
                 
                 {/* Left Arrow */}
@@ -130,7 +132,7 @@ function DashboardManageTab({salon}){
                         <DashboardServiceCard
                             key={service.id}
                             service={service}
-                            onClick={() => console.log("Clicked Service: ", service)}
+                            onClick={(handleProducts) => console.log("Clicked Service: ", service)}
                         />
                     ))}
                 </div>
@@ -140,7 +142,13 @@ function DashboardManageTab({salon}){
             </div>
 
             {/* Products */}
-            <h2 className="shop-service-title">Available Products:</h2>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '50rem', marginBottom: '1rem' }}>
+                <h2 className="shop-service-title">Available Products:</h2>
+                <button onClick={handleAddProduct} className="add-service-btn">
+                        Add Product
+                </button>
+            </div>
+
             <div className="shop-carousel">
                 
                 {/* Left Arrow */}
@@ -151,7 +159,7 @@ function DashboardManageTab({salon}){
                     {currentProducts.map((product) => (
                         <DashboardProductCard
                             key={product.id}
-                            service={product}
+                            product={product}
                             onClick={() => console.log("Clicked Product: ", product)}
                         />
                     ))}
@@ -167,6 +175,14 @@ function DashboardManageTab({salon}){
                 onClose={handleCloseModal}
                 salonId={salon?.id}
                 onServiceAdded={fetchServices}
+            />
+
+            {/* AddProduct Modal */}
+            <AddProductModal
+                isOpen={isAddProductModalOpen}
+                onClose={handleCloseModal}
+                salonId={salon?.id}
+                onProductAdded={fetchProducts}
             />
 
         </div>
