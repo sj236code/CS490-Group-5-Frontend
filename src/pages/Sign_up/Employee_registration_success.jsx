@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { Check } from 'lucide-react';
-import './EmployeeRegistrationSuccess.css';
+import './Employee_registration_success.css';
 
 function EmployeeRegistrationSuccess() {
     const navigate = useNavigate();
