@@ -20,7 +20,7 @@ function ForgotPassword() {
     return (
         <div className="forgot-page">
             <div className="forgot-container">
-                <button className="back-button-simple" onClick={handleBack}>
+                <button className="back-button" onClick={handleBack}>
                     <ChevronLeft />
                 </button>
 

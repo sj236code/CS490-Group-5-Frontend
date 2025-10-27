@@ -35,7 +35,7 @@ function EmployeeRegistration() {
     return (
         <div className="employee-registration-page">
             <div className="employee-registration-container">
-                <button className="back-button-simple" onClick={handleBack}>
+                <button className="back-button" onClick={handleBack}>
                     <ChevronLeft />
                 </button>
 

@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useState } from 'react'
 import './App.css'
+import './components/Common.css'
 import Header from './components/layout/Header.jsx'
 import LandingPage from './pages/LandingPage.jsx'
 import ContactPage from './pages/ContactPage.jsx'

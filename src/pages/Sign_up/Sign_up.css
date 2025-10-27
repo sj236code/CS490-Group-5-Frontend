@@ -16,27 +16,6 @@
     padding: 40px 30px;
 }
 
-.back-button {
-    position: absolute;
-    top: 35px;
-    left: 35px;
-    width: 36px;
-    height: 36px;
-    background: #66785F;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    color: #FFFFFF;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.back-button svg {
-    width: 22px;
-    height: 22px;
-}
-
 .signup-title {
     font-size: 36px;
     color: #000000;

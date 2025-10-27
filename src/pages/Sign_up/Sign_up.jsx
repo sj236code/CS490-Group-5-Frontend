@@ -37,7 +37,7 @@ function SignUp() {
     return (
         <div className="signup-page">
             <div className="signup-container">
-                <button className="back-btn" onClick={handleBack}>
+                <button className="back-button" onClick={handleBack}>
                     <ChevronLeft />
                 </button>
 
