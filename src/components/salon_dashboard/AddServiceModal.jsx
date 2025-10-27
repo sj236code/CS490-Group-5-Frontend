@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { X, Upload } from 'lucide-react';
+import { resumeAndPrerenderToNodeStream } from 'react-dom/static';
 
 function AddServiceModal({ isOpen, onClose, salonId, onServiceAdded }) {
 
@@ -26,41 +27,45 @@ function AddServiceModal({ isOpen, onClose, salonId, onServiceAdded }) {
         setImages((prev) => [...prev, ...files]);
     }
 
-    const submitService = (e) => {
+    const submitService = async(e) => {
         e.preventDefault();
 
-        const newService = {
-            id: salonId,
-            name: formData.serviceName,
-            price: parseFloat(formData.price),
-            duration: parseInt(formData.duration),
-            images: images.map((img) => URL.createObjectURL(img)),
-        };
+        try{
 
-        console.log('New service:', newService);
+            const formDataToSend = new FormData();
+            formDataToSend.append('name', formData.serviceName);
+            formDataToSend.append('salon_id', salonId);
+            formDataToSend.append('price', formData.price);
+            formDataToSend.append('duration', formData.duration);
+            formDataToSend.append('is_active', 'true');
 
-        setFormData({
-            serviceName: "",
-            price: "",
-            duration: "",
-        });
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/salon_register/add_service`, { method: 'POST', body: formDataToSend,});
 
-        // Reset form
-        setImages([]);
+            const data = await response.json();
 
-        if (onServiceAdded) {
-            onServiceAdded();
+            if(!response.ok){
+                throw new Error(data.error || 'Failed. ');
+            }
+
+            console.log('Service added successfully: ', data);
+
+            setFormData({
+                serviceName: "",
+                price: "",
+                duration: "",
+            });
+
+            if (onServiceAdded) {
+                onServiceAdded();
+            }
+        
+            onClose();
+
         }
-        
-        onClose();
+        catch(err){
+            console.error("Error adding service: ", err);
+        }
     };
-        
-    // TODO: Replace with actual API call when endpoint is ready
-    // const response = await fetch(`${import.meta.env.VITE_API_URL}/api/salons/${salonId}/services`, {
-    //     method: 'POST',
-    //     headers: { 'Content-Type': 'application/json' },
-    //     body: JSON.stringify(formData)
-    // });
 
     // Reset images
     const handleBack = () => {
@@ -132,7 +137,7 @@ function AddServiceModal({ isOpen, onClose, salonId, onServiceAdded }) {
                                 multiple
                                 accept="image/*"
                                 onChange={handleImageUpload}
-                                style={{ display: 'none' }}
+                                style={{display: 'none'}}
                             />
                         </label>
                     </div>
