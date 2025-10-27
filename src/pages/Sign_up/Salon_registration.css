@@ -16,10 +16,10 @@
     padding: 40px;
 }
 
-.back-btn {
+.back-button {
     position: absolute;
-    top: 30px;
-    left: 30px;
+    top: 35px;
+    left: 35px;
     width: 36px;
     height: 36px;
     background: #66785F;
@@ -32,7 +32,7 @@
     justify-content: center;
 }
 
-.back-btn svg {
+.back-button svg {
     width: 22px;
     height: 22px;
 }
@@ -273,7 +273,7 @@
     margin-top: 20px;
 }
 
-.back-button-salon-registration {
+.back-btn-bottom {
     font-size: 20px;
     color: #FFFFFF;
     background: #999999;

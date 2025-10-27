@@ -79,10 +79,12 @@ function RegisterSalon() {
         setServices([...services, { name: '', price: '', duration: '', description: '', images: [] }]);
     };
 
+    const showHours = currentStep === 2 && salonDetails1.salonName;
+
     return (
         <div className="register-salon-page">
             <div className="register-salon-container">
-                <button className="back-btn" onClick={handleBack}>
+                <button className="back-button" onClick={handleBack}>
                     <ChevronLeft />
                 </button>
 
@@ -128,7 +130,7 @@ function RegisterSalon() {
 
                     {currentStep === 2 && (
                         <div className="form-step">
-                            {salonDetails2.hours ? (
+                            {showHours ? (
                                 <>
                                     <p className="section-label">Hours</p>
                                     <div className="hours-list">
@@ -223,7 +225,7 @@ function RegisterSalon() {
                 </div>
 
                 <div className="button-row">
-                    <button type="button" onClick={handleBack} className="back-button">Back</button>
+                    <button type="button" onClick={handleBack} className="back-btn-bottom">Back</button>
                     <button type="button" onClick={handleContinue} className="continue-button">
                         {currentStep === 5 ? 'Submit' : 'Continue'}
                     </button>

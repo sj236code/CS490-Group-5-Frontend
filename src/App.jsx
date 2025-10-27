@@ -13,6 +13,7 @@ import VerifyOTP from './pages/Sign_in/Verify_otp.jsx';
 import SignUp from './pages/Sign_up/Sign_up.jsx';
 import RegisterSalon from './pages/Sign_up/Salon_registration.jsx';
 import RegisterSalonSuccess from './pages/Sign_up/Salon_registration_success.jsx'
+import EmployeeRegistration from './pages/Sign_up/Employee_registration.jsx';
 
 function App() {
   // Temp hardcode until endpoint created
@@ -34,6 +35,8 @@ function App() {
         <Route path="/verify-otp" element={<VerifyOTP />} />
         <Route path="/register-salon" element={<RegisterSalon />} />
         <Route path="/register-salon-success" element={<RegisterSalonSuccess />} />
+        <Route path="/employee-registration" element={<EmployeeRegistration />} />
+
       </Routes>
     </>
   )
