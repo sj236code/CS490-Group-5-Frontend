@@ -5,6 +5,7 @@ import {Star, Sparkle, ChevronLeft, ChevronRight, Rows4, BookDashed} from 'lucid
 
 function DashboardServiceCard({service, onClick}) {
 
+    const [imageError, setImageError] = useState(false);
     const rating = service.rating || service.avgRating || 4;
     
     // Calculate filled and empty stars
@@ -43,13 +44,30 @@ function DashboardServiceCard({service, onClick}) {
         return stars;
     };
 
+    const handleImageError = () => {
+        setImageError(true);
+    };
+
     return(
         <div className="salon-service-card" onClick={onClick}>
 
             <div className="salon-service-image">
-                <div className="salon-service-placeholder">
+
+                {service.icon_url && !imageError ? (
+                    <img 
+                        src={service.icon_url} 
+                        alt={service.name}
+                        onError={handleImageError}
+                    />
+                ) : (
+                    <div className="salon-service-placeholder">
+                        <span><Sparkle /></span>
+                    </div>
+                )}
+
+                {/* <div className="salon-service-placeholder">
                     <span><Sparkle /></span>
-                </div>
+                </div> */}
             </div>
 
             {/* Service Name */}
