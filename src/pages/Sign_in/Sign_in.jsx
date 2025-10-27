@@ -8,18 +8,47 @@ function Sign_in() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        setError('');
+        setLoading(true);
         
-        // Simple validation - replace with real auth logic
-        if (email === 'test@test.com' && password === 'password123') {
-            // Success - go to landing page
-            navigate('/');
-        } else {
-            // Show error
-            setError('The email or password you entered is incorrect.');
+        try {
+            // API Call - matches your Flask auth.py /api/auth/login endpoint
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: email,
+                    password: password
+                })
+            });
+
+            const data = await response.json();
+
+            // Check Flask response format: { "status": "success" or "error", "token": "..." }
+            if (data.status === 'success') {
+                // Success! Save JWT token
+                localStorage.setItem('token', data.token);
+                
+                console.log('Sign in successful:', data);
+                
+                // Navigate to home/dashboard
+                navigate('/');
+            } else {
+                // Show error message from server
+                setError(data.message || 'Invalid credentials');
+            }
+        } catch (err) {
+            console.error('Sign in error:', err);
+            setError('Unable to sign in. Please check your connection and try again.');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -70,6 +99,7 @@ function Sign_in() {
                             }}
                             className={`form-input ${error ? 'error-input' : ''}`}
                             required
+                            disabled={loading}
                         />
                     </div>
 
@@ -84,8 +114,11 @@ function Sign_in() {
                             }}
                             className={`form-input ${error ? 'error-input' : ''}`}
                             required
+                            disabled={loading}
                         />
                     </div>
+
+                    <a href="/forgot-password" className="forgot-password">Forgot Password?</a>
 
                     {error && (
                         <div className="error-message">
@@ -93,15 +126,13 @@ function Sign_in() {
                         </div>
                     )}
 
-                    <button type="submit" className="signin-button">
-                        Sign In
+                    <button type="submit" className="signin-button" disabled={loading}>
+                        {loading ? 'Signing In...' : 'Sign In'}
                     </button>
 
-                    <a href="/forgot-password" className="forgot-password">Forgot Password?</a>
-
-                    {/* <p className="signup-text">
-                        Dont have an account? <a href="/signup" className="signup-link">Sign Up</a>
-                    </p> */}
+                    <p className="signup-text">
+                        Dont have an account? <a href="/signup" className="signup-link">SignUp</a>
+                    </p>
                 </form>
             </div>
         </div>

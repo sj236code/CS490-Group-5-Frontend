@@ -1,30 +1,99 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft } from 'lucide-react';
-import './Sign_up.css';
+import './SignUp.css';
 
 function SignUp() {
     const [activeTab, setActiveTab] = useState('signup');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        phone: '',
+        password: '',
+        confirmPassword: '',
+        gender: '',
+        role: 'CUSTOMER'
+    });
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+    const handleChange = (e) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value
+        });
+        setError('');
+    };
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        setError('');
         
-        if (password !== confirmPassword) {
+        // Validate required fields
+        if (!formData.name || !formData.email || !formData.password) {
+            setError('Name, email, and password are required');
+            return;
+        }
+
+        // Validate passwords match
+        if (formData.password !== formData.confirmPassword) {
             setError('Passwords do not match!');
             return;
         }
+
+        // Validate password length
+        if (formData.password.length < 8) {
+            setError('Password must be at least 8 characters long.');
+            return;
+        }
+
+        setLoading(true);
         
-        console.log('Sign up attempted with:', { email, password });
-        navigate('/signup-success');
+        try {
+            // API Call - matches your Flask auth.py /api/auth/signup endpoint
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/signup`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: formData.name,
+                    email: formData.email,
+                    phone: formData.phone || null,
+                    password: formData.password,
+                    gender: formData.gender || null,
+                    role: formData.role
+                })
+            });
+
+            const data = await response.json();
+
+            // Check Flask response format: { "status": "success" or "error", "message": "..." }
+            if (data.status === 'success') {
+                console.log('Sign up successful:', data);
+                
+                // Navigate to success page with user data
+                navigate('/signup-success', { 
+                    state: { 
+                        userName: formData.name,
+                        userEmail: formData.email 
+                    } 
+                });
+            } else {
+                // Show error message from server
+                setError(data.message || 'Unable to create account. Please try again.');
+            }
+        } catch (err) {
+            console.error('Sign up error:', err);
+            setError('Unable to sign up. Please check your connection and try again.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleBack = () => {
-        navigate('/');
+        navigate(-1);
     };
 
     const handleTabSwitch = (tab) => {
@@ -61,43 +130,65 @@ function SignUp() {
                 <form onSubmit={handleSubmit} className="signup-form">
                     <div className="form-group">
                         <input
+                            type="text"
+                            name="name"
+                            placeholder="Full Name"
+                            value={formData.name}
+                            onChange={handleChange}
+                            className="input-field"
+                            required
+                            disabled={loading}
+                        />
+                    </div>
+
+                    <div className="form-group">
+                        <input
                             type="email"
+                            name="email"
                             placeholder="Email Address"
-                            value={email}
-                            onChange={(e) => {
-                                setEmail(e.target.value);
-                                setError('');
-                            }}
+                            value={formData.email}
+                            onChange={handleChange}
                             className="input-field"
                             required
+                            disabled={loading}
+                        />
+                    </div>
+
+                    <div className="form-group">
+                        <input
+                            type="tel"
+                            name="phone"
+                            placeholder="Phone Number (Optional)"
+                            value={formData.phone}
+                            onChange={handleChange}
+                            className="input-field"
+                            disabled={loading}
                         />
                     </div>
 
                     <div className="form-group">
                         <input
                             type="password"
+                            name="password"
                             placeholder="Password"
-                            value={password}
-                            onChange={(e) => {
-                                setPassword(e.target.value);
-                                setError('');
-                            }}
+                            value={formData.password}
+                            onChange={handleChange}
                             className="input-field"
                             required
+                            disabled={loading}
                         />
                     </div>
 
                     <div className="form-group">
                         <input
                             type="password"
+                            name="confirmPassword"
                             placeholder="Confirm Password"
-                            value={confirmPassword}
-                            onChange={(e) => {
-                                setConfirmPassword(e.target.value);
-                                setError('');
-                            }}
+                            value={formData.confirmPassword}
+                            onChange={handleChange}
                             className="input-field"
                             required
+                            disabled={loading}
                         />
                     </div>
 
@@ -107,19 +198,19 @@ function SignUp() {
                         </div>
                     )}
 
-                    <button type="submit" className="submit-btn">
-                        Sign Up
+                    <button type="submit" className="submit-btn" disabled={loading}>
+                        {loading ? 'Creating Account...' : 'Sign Up'}
                     </button>
 
                     <div className="links">
-                        {/* <p className="link-text">
-                            Have an account? <a href="/signin" className="link">Sign In</a>
-                        </p> */}
+                        <p className="link-text">
+                            Have an account? <a href="/signin" className="link">SignIn</a>
+                        </p>
                         <p className="link-text">
                             Salon Owner? <a href="/register-salon" className="link">Register Salon</a>
                         </p>
                         <p className="link-text">
-                            Employee? <a href="/employee-registration" className="link">Create Employee Account</a>
+                            Employee? <a href="/employee-registration" className="link">Create Employee Acct</a>
                         </p>
                     </div>
                 </form>
