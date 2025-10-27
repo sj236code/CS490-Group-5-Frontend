@@ -11,7 +11,7 @@ function AddProductModal({ isOpen, onClose, salonId, onProductAdded }) {
 
     const [images, setImages] = useState([]);
 
-      // Text input changes
+    // Text input changes
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prev) => ({
@@ -26,41 +26,45 @@ function AddProductModal({ isOpen, onClose, salonId, onProductAdded }) {
         setImages((prev) => [...prev, ...files]);
     }
 
-    const submitProduct = (e) => {
+    const submitProduct = async(e) => {
         e.preventDefault();
 
-        const newProduct = {
-            id: salonId,
-            name: formData.productName,
-            price: parseFloat(formData.price),
-            quantity: parseInt(formData.quantity),
-            images: images.map((img) => URL.createObjectURL(img)),
-        };
+        try{
 
-        console.log('New product:', newProduct);
+            const formDataToSend = new FormData();
+            formDataToSend.append('name', formData.productName);
+            formDataToSend.append('salon_id', salonId);
+            formDataToSend.append('price', formData.price);
+            formDataToSend.append('duration', formData.quantity);
+            formDataToSend.append('is_active', 'true');
 
-        setFormData({
-            productName: "",
-            price: "",
-            quantity: "",
-        });
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/salon_register/add_product`, { method: 'POST', body: formDataToSend,});
 
-        // Reset form
-        setImages([]);
+            const data = await response.json();
 
-        if (onProductAdded) {
-            onProductAdded();
+            if(!response.ok){
+                throw new Error(data.error || 'Failed. ');
+            }
+
+            console.log('Product added successfully: ', data);
+
+            setFormData({
+                productName: "",
+                price: "",
+                quantity: "",
+            });
+
+            if (onProductAdded) {
+                onProductAdded();
+            }
+        
+            onClose();
+
         }
-        
-        onClose();
+        catch(err){
+            console.error("Error adding product: ", err);
+        }
     };
-        
-    // TODO: Replace with actual API call when endpoint is ready
-    // const response = await fetch(`${import.meta.env.VITE_API_URL}/api/salons/${salonId}/services`, {
-    //     method: 'POST',
-    //     headers: { 'Content-Type': 'application/json' },
-    //     body: JSON.stringify(formData)
-    // });
 
     // Reset images
     const handleBack = () => {

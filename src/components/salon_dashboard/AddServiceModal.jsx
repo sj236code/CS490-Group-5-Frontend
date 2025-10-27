@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { X, Upload } from 'lucide-react';
-import { resumeAndPrerenderToNodeStream } from 'react-dom/static';
 
 function AddServiceModal({ isOpen, onClose, salonId, onServiceAdded }) {
 
@@ -14,7 +13,7 @@ function AddServiceModal({ isOpen, onClose, salonId, onServiceAdded }) {
     const [iconFile, setIconFile] = useState(null);
 
 
-      // Text input changes
+    // Text input changes
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prev) => ({
