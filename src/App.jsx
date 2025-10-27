@@ -32,6 +32,7 @@ function App() {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/verify-otp" element={<VerifyOTP />} />
+        <Route path="/register-salon" element={<RegisterSalon />} />
       </Routes>
     </>
   )
