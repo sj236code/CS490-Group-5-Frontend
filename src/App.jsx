@@ -32,7 +32,6 @@ function App() {
       <Router>
         <Header userType={userType}/>
         <hr />
-        <Routes>
           <Route path="/" element={<LandingPage />} />
           
           {/* Auth */}
@@ -51,7 +50,6 @@ function App() {
           <Route path="/salonDashboard" element={<SalonDashboard />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/faq" element={<FAQPage />} />
-        </Routes>
       </Router>
     </>
   );
