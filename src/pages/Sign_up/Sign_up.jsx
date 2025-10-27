@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft } from 'lucide-react';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../../firebase';
 import './Sign_up.css';
 
 function SignUp() {
@@ -11,16 +13,38 @@ function SignUp() {
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        
+        setError('');
+
         if (password !== confirmPassword) {
             setError('Passwords do not match!');
             return;
         }
-        
-        console.log('Sign up attempted with:', { email, password });
-        navigate('/signup-success');
+
+        try {
+            // ✅ Create user with Firebase Authentication
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            console.log('User signed up successfully:', userCredential.user);
+            
+            navigate('/signup-success');
+        } catch (err) {
+            console.error('Signup error:', err);
+            // Handle Firebase-specific error messages
+            switch (err.code) {
+                case 'auth/email-already-in-use':
+                    setError('This email is already registered.');
+                    break;
+                case 'auth/invalid-email':
+                    setError('Invalid email address.');
+                    break;
+                case 'auth/weak-password':
+                    setError('Password should be at least 6 characters.');
+                    break;
+                default:
+                    setError('Failed to sign up. Please try again.');
+            }
+        }
     };
 
     const handleBack = () => {
@@ -29,9 +53,7 @@ function SignUp() {
 
     const handleTabSwitch = (tab) => {
         setActiveTab(tab);
-        if (tab === 'signin') {
-            navigate('/signin');
-        }
+        if (tab === 'signin') navigate('/signin');
     };
 
     return (
@@ -101,20 +123,11 @@ function SignUp() {
                         />
                     </div>
 
-                    {error && (
-                        <div className="error-box">
-                            {error}
-                        </div>
-                    )}
+                    {error && <div className="error-box">{error}</div>}
 
-                    <button type="submit" className="submit-btn">
-                        Sign Up
-                    </button>
+                    <button type="submit" className="submit-btn">Sign Up</button>
 
                     <div className="links">
-                        {/* <p className="link-text">
-                            Have an account? <a href="/signin" className="link">Sign In</a>
-                        </p> */}
                         <p className="link-text">
                             Salon Owner? <a href="/register-salon" className="link">Register Salon</a>
                         </p>

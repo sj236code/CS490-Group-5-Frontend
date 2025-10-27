@@ -2,15 +2,11 @@ import jade_logo from '../../assets/jade_logo.png';
 import MenuButton from './MenuButton.jsx';
 import CartButton from './CartButton.jsx';
 import {useState , useEffect} from 'react';
-<<<<<<< HEAD
-import NavBar from './NavBar';
-=======
 import NavBar from './NavBar'; // Unregistered User Nav Bar
 import CustomerNavBar from './CustomerNavBar';
 import EmployeeNavBar from './EmployeeNavBar';
 import SalonOwnerNavBar from './SalonOwnerNavBar';
 import {useNavigate} from 'react-router-dom';
->>>>>>> origin/sign_in/Ethan
 import CartPanel from './CartPanel';
 
 
@@ -22,8 +18,6 @@ function Header({userType}){
     // Is CartPanel open
     const[cartPanel, setCartPanel] = useState(false);
 
-<<<<<<< HEAD
-=======
     const navigate = useNavigate();
 
     // Route to Landing Page
@@ -31,7 +25,6 @@ function Header({userType}){
         navigate('/');
     }
 
->>>>>>> origin/sign_in/Ethan
     // Toggle NavBar
     const toggleNavBar = () => {
         setNavBar(prev => !prev);
@@ -42,8 +35,6 @@ function Header({userType}){
         setCartPanel(prev => !prev);
     }
 
-<<<<<<< HEAD
-=======
     // NavBar based on User Tag
     const whichNavBar = () => {
         if(userType === 'customer'){
@@ -60,7 +51,6 @@ function Header({userType}){
         }
     }
 
->>>>>>> origin/sign_in/Ethan
     return(
         <>
             <header className='header'>
@@ -75,11 +65,7 @@ function Header({userType}){
             </header>
 
             {/* NavBar implementation: Open & Close */}
-<<<<<<< HEAD
-            {navBar && <NavBar onClose={toggleNavBar} />}
-=======
             {navBar && whichNavBar()}
->>>>>>> origin/sign_in/Ethan
 
             {/* CartPanel implementation: Open & Close */}
             {cartPanel && <CartPanel onClose={toggleCartPanel} />}

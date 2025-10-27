@@ -1,9 +1,6 @@
 import { Search, MapPin } from 'lucide-react';
 import { useState, useEffect } from 'react';
-<<<<<<< HEAD
-=======
 import { useNavigate } from 'react-router-dom';
->>>>>>> origin/sign_in/Ethan
 
 function LandingSearchBar(){
 
@@ -12,14 +9,10 @@ function LandingSearchBar(){
     const[showCityDropdown, setShowCityDropdown] = useState(false); // Whether city dropdown is visible
     const[showResults, setShowResults] = useState(false); // Whether search results are visible
     const[searchResults, setSearchResults] = useState([]) // Stores filtered search results
-<<<<<<< HEAD
-    const[cities,setCities] = useState([]) // Cities of Valid Salons
-=======
     const[cities,setCities] = useState([]); // Cities of Valid Salons
     const[userLocation, setUserLocation] = useState([]); // User Location
 
     const navigate = useNavigate();
->>>>>>> origin/sign_in/Ethan
 
     // Runs once component mounts
     useEffect(() => {
@@ -104,13 +97,6 @@ function LandingSearchBar(){
         setShowCityDropdown(false);
     };
 
-<<<<<<< HEAD
-    // When user clicks search
-    const handleSearch = () => {
-        const searchLocation = selectedCity || 'All Cities';
-        console.log('Searching for:', wordEntered, 'in', searchLocation);
-        setShowResults(false);
-=======
     // When user clicks search, traverse to SearchPage
     const handleSearch = () => {
         if (!wordEntered.trim()) return;
@@ -126,7 +112,6 @@ function LandingSearchBar(){
                 city: searchLocation
             }
         });
->>>>>>> origin/sign_in/Ethan
     };
 
     const handleResultClick = (result) => {
