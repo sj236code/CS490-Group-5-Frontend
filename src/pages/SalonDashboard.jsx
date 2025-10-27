@@ -6,7 +6,7 @@ import DashboardManageTab from '../components/salon_dashboard/DashboardManageTab
 function SalonDashboard() {
     const location = useLocation();
     const navigate = useNavigate();
-    const [searchParams] = useSearchParams(); // ✅ use hook at top level
+    const [searchParams] = useSearchParams(); 
     const { salon } = location.state || {};
 
     const [workingTab, setWorkingTab] = useState("Manage");
@@ -16,14 +16,14 @@ function SalonDashboard() {
         const salonId = searchParams.get('id');
 
         if (salonId) {
-            // ✅ Fetch using ID from query param
+            // Fetch using ID from query param
             fetch(`${import.meta.env.VITE_API_URL}/api/salons/details/${salonId}`)
                 .then(res => res.json())
                 .then(data => setSalonDetails(data))
                 .catch(err => console.error(err));
         } 
         else if (salon) {
-            // ✅ Use salon from location.state
+            // Use salon from location.state
             if (salon.id && !salon.name) {
                 fetch(`${import.meta.env.VITE_API_URL}/api/salons/details/${salon.id}`)
                     .then(res => res.json())
