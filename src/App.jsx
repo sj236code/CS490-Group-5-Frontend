@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css'
 import Header from './components/layout/Header.jsx'
 import LandingPage from './pages/LandingPage.jsx'
@@ -12,9 +12,25 @@ import SalonDashboard from './pages/SalonDashboard.jsx';
 function App() {
 
   // Temp hardcode until endpoint created
-  const [userType, setUserType] = useState("salon owner");
-
+  const [userType, setUserType] = useState(null);
   console.log("API URL:", import.meta.env.VITE_API_URL);
+
+  useEffect(() => {
+    // Temporarily Hardcode for testing -> Change when Merge with Auth Branch
+    const userId = 1;
+
+    fetch(`${import.meta.env.VITE_API_URL}/api/auth/user-type/${userId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("Response from /user-type:", data);
+        if (data.status === "success"){
+          setUserType(data.role);
+        }
+        else{
+          setUserType("user");
+        }
+      })
+  },[]);
 
   return (
     <>
