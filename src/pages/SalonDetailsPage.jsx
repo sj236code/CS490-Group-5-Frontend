@@ -2,6 +2,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { Star } from 'lucide-react';
 import SalonShopTab from '../components/salon_details/SalonShopTab';
+import GalleryTab from '../components/salon_details/GalleryTab';
 
 function SalonDetailsPage() {
     const location = useLocation();
@@ -96,6 +97,7 @@ function SalonDetailsPage() {
                 {workingTab =="Gallery" && (
                     <div>
                         <h2>Gallery Page for: {salonDetails.title}</h2>
+                        <GalleryTab salon={salonDetails} />
                     </div>
                 )}
                 {workingTab =="Reviews" && (
