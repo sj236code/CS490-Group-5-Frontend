@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { Star } from 'lucide-react';
 import DashboardManageTab from '../components/salon_dashboard/DashboardManageTab';
@@ -16,13 +16,21 @@ function SalonDashboard() {
     // Do I have to handle possible error if no valid salon is passed?
     useEffect(() => {
         if (!salon){
+            const searhParams = new URLSearch(location.seach);
+            const salonId = useSearchParams.get('id');
+            if(salonId){
+                fetch(`${import.meta.env.VITE_API_URL}/api/salons/details/${salonId}`)
+                    .then(res => res.json())
+                    .then(data => setSalonDetails(data))
+                    .catch(err => console.error(err));
+            }
             console.error("No Salon Data provided.");
         }
-        else{
+        else {
             setSalonDetails(salon);
             console.log("Salon Details: ", salon);
         }
-    }, [salon]);
+    }, [location]);
 
     useEffect(() => {
         if (workingTab === "Shop" && salonDetails?.id){
