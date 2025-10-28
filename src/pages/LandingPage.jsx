@@ -1,12 +1,13 @@
 import HeroSection from '../components/landing/HeroSection';
 import ServiceGrid from '../components/landing/ServiceGrid';
+import SalonsSection from '../components/landing/SalonsSection';
 
 function LandingPage(){
     return(
         <div>
             <HeroSection />
-            <p className='text-1'>Find Pros by Service</p>
             <ServiceGrid />
+            <SalonsSection />
         </div>  
     );
 }
