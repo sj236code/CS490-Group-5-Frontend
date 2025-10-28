@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { Star } from 'lucide-react';
 import SalonShopTab from '../components/salon_details/SalonShopTab';
 import GalleryTab from '../components/salon_details/GalleryTab';
-
+import ReviewsTab from '../components/salon_details/ReviewsTab';
 function SalonDetailsPage() {
     const location = useLocation();
     const navigate = useNavigate();
@@ -103,6 +103,7 @@ function SalonDetailsPage() {
                 {workingTab =="Reviews" && (
                     <div>
                         <h2>Reviews Page for: {salonDetails.title}</h2>
+                        <ReviewsTab salon={salonDetails} />
                     </div>
                 )}
                 {workingTab =="Shop" && (
