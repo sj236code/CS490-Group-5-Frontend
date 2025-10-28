@@ -117,7 +117,7 @@ function LandingSearchBar() {
 
     const handleResultClick = (result) => {
         setShowResults(false);
-        console.log('Clicked the following Result: ', result);
+        setWordEntered(result.value)
     };
 
     // Depreciated feature- optional: find another way 
