@@ -11,7 +11,6 @@ function SignUp() {
         phone: '',
         password: '',
         confirmPassword: '',
-        gender: '',
         role: 'CUSTOMER'
     });
     const [error, setError] = useState('');
@@ -51,37 +50,41 @@ function SignUp() {
         setLoading(true);
         
         try {
-            // API Call - matches your Flask auth.py /api/auth/signup endpoint
+            // API Call - Matches your Flask auth.py /api/auth/signup endpoint
+            // Saves to: Users, Customers (name, email, phone, role), AuthUser (email, password_hash, role)
             const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/signup`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    name: formData.name,
-                    email: formData.email,
-                    phone: formData.phone || null,
-                    password: formData.password,
-                    gender: formData.gender || null,
-                    role: formData.role
+                    name: formData.name,           // → Customers.name
+                    email: formData.email,         // → Customers.email & AuthUser.email
+                    phone: formData.phone || null, // → Customers.phone (optional)
+                    password: formData.password,   // → AuthUser.password_hash (hashed with bcrypt)
+                    role: formData.role            // → Customers.role & AuthUser.role
+                    // Note: gender field removed - your Customers table doesn't have it
                 })
             });
 
             const data = await response.json();
 
-            // Check Flask response format: { "status": "success" or "error", "message": "..." }
+            // Check Flask response: { "status": "success" or "error" }
             if (data.status === 'success') {
-                console.log('Sign up successful:', data);
+                console.log('✅ Sign up successful!');
+                console.log('User created in database:');
+                console.log('- Users table: id =', data.user.id);
+                console.log('- Customers table: name, email, phone, role');
+                console.log('- AuthUser table: email, hashed password, role');
                 
-                // Navigate to success page with user data
-                navigate('/signup-success', { 
+                // Navigate to home
+                navigate('/', { 
                     state: { 
-                        userName: formData.name,
-                        userEmail: formData.email 
+                        message: 'Account created successfully!',
+                        userName: formData.name
                     } 
                 });
             } else {
-                // Show error message from server
                 setError(data.message || 'Unable to create account. Please try again.');
             }
         } catch (err) {
@@ -128,6 +131,7 @@ function SignUp() {
                 </div>
 
                 <form onSubmit={handleSubmit} className="signup-form">
+                    {/* Full Name - Required */}
                     <div className="form-group">
                         <input
                             type="text"
@@ -141,6 +145,7 @@ function SignUp() {
                         />
                     </div>
 
+                    {/* Email - Required */}
                     <div className="form-group">
                         <input
                             type="email"
@@ -154,6 +159,7 @@ function SignUp() {
                         />
                     </div>
 
+                    {/* Phone - Optional */}
                     <div className="form-group">
                         <input
                             type="tel"
@@ -166,6 +172,7 @@ function SignUp() {
                         />
                     </div>
 
+                    {/* Password - Required */}
                     <div className="form-group">
                         <input
                             type="password"
@@ -179,6 +186,7 @@ function SignUp() {
                         />
                     </div>
 
+                    {/* Confirm Password - Required */}
                     <div className="form-group">
                         <input
                             type="password"
@@ -204,7 +212,7 @@ function SignUp() {
 
                     <div className="links">
                         <p className="link-text">
-                            Have an account? <a href="/signin" className="link">SignIn</a>
+                            Have an account? <a href="/signin" className="link">Sign In</a>
                         </p>
                         <p className="link-text">
                             Salon Owner? <a href="/register-salon" className="link">Register Salon</a>

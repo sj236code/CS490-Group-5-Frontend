@@ -17,15 +17,15 @@ function Sign_in() {
         setLoading(true);
         
         try {
-            // API Call - matches your Flask auth.py /api/auth/login endpoint
+            // API Call - Exactly matches your Flask auth.py /api/auth/login endpoint
             const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    email: email,
-                    password: password
+                    email: email,      // auth.py checks AuthUser table for this email
+                    password: password // auth.py uses bcrypt.checkpw() to compare hashed password
                 })
             });
 
@@ -33,16 +33,34 @@ function Sign_in() {
 
             // Check Flask response format: { "status": "success" or "error", "token": "..." }
             if (data.status === 'success') {
-                // Success! Save JWT token
+                // Success! Your auth.py returned a JWT token
+                
+                // Save JWT token to localStorage (for authenticated API calls)
                 localStorage.setItem('token', data.token);
                 
-                console.log('Sign in successful:', data);
+                // Decode token to get user info (token contains: user_id, email, role)
+                // The token is created in auth.py with this payload:
+                // {
+                //   "user_id": user.id,
+                //   "email": user.email,
+                //   "role": user.role,
+                //   "exp": datetime (1 hour from now)
+                // }
+                
+                console.log('Sign in successful!');
+                console.log('JWT Token saved:', data.token);
+                
+                // Optional: Fetch full user details using the token
+                // You could call /api/auth/user-type/<user_id> here if needed
                 
                 // Navigate to home/dashboard
                 navigate('/');
             } else {
                 // Show error message from server
-                setError(data.message || 'Invalid credentials');
+                // auth.py returns "Invalid credentials" if:
+                // - Email not found in AuthUser table
+                // - Password doesn't match (bcrypt comparison fails)
+                setError(data.message || 'Invalid email or password');
             }
         } catch (err) {
             console.error('Sign in error:', err);
@@ -131,7 +149,7 @@ function Sign_in() {
                     </button>
 
                     <p className="signup-text">
-                        Dont have an account? <a href="/signup" className="signup-link">SignUp</a>
+                        Don't have an account? <a href="/signup" className="signup-link">Sign Up</a>
                     </p>
                 </form>
             </div>
