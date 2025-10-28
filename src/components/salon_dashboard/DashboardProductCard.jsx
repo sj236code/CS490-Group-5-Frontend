@@ -5,6 +5,7 @@ import {Star, Sparkle, ChevronLeft, ChevronRight, Rows4} from 'lucide-react';
 
 function DashboardProductCard({product, onClick}) {
 
+    const [imageError, setImageError] = useState(false);
     const rating = product.rating || product.avgRating || 4;
     
     // Calculate filled and empty stars
@@ -47,13 +48,30 @@ function DashboardProductCard({product, onClick}) {
         console.log("booked.");
     };
 
+    const handleImageError = () => {
+        setImageError(true);
+    }
+
     return(
         <div className="salon-service-card" onClick={onClick}>
 
             <div className="salon-service-image">
-                <div className="salon-service-placeholder">
+               
+                {product.icon_url && !imageError ? (
+                    <img 
+                        src={product.icon_url} 
+                        alt={product.name}
+                        onError={handleImageError}
+                    />
+                ) : (
+                    <div className="salon-service-placeholder">
+                        <span><Sparkle /></span>
+                    </div>
+                )}
+
+                {/* <div className="salon-service-placeholder">
                     <span><Sparkle /></span>
-                </div>
+                </div> */}
             </div>
 
             {/* Service Name */}
