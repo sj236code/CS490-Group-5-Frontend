@@ -35,7 +35,7 @@ function App() {
     // 2 -> Admin (WIP)
     // 4 -> Salon Owner
     // 6 -> Employee
-    const userId = 4;
+    const userId = 1;
 
     fetch(`${import.meta.env.VITE_API_URL}/api/auth/user-type/${userId}`)
       .then((res) => res.json())

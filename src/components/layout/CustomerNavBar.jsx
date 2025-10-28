@@ -52,7 +52,8 @@ function CustomerNavBar({onClose}){
                 <button onClick={handleContactClick} className="nb-footer-link">Contact</button>
                 <button onClick={handleFAQClick} className="nb-footer-link">FAQ</button>
                 <button onClick={handleLogout} className="nb-footer-link">
-                <LogOut className="logout-icon" /> Logout
+                {/* <LogOut className="logout-icon" /> */} 
+                Logout
                 </button>
                 <div className="footer-copyright">
                 Copyright <span className="copyright-icon">©</span>
