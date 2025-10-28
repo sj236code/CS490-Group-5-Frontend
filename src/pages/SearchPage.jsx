@@ -172,8 +172,8 @@ function SearchPage() {
                         <select
                             value={cityFilter}
                             onChange={(e) => setCityFilter(e.target.value)}
-                            className='selected-filter'> 
-                            {/* Display All Cities Passed From Landing Page */}
+                            className='selected-filter'>
+                            {/* Display All Cities (Passed From Landing Page) */}
                             <option value="">All Cities</option>
                             {cities.map((cityFilter, index) => (
                                 <option key={index} value={cityFilter}>
