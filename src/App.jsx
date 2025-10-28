@@ -7,6 +7,7 @@ import LandingPage from './pages/LandingPage.jsx'
 import ContactPage from './pages/ContactPage.jsx'
 import FAQPage from './pages/FAQPage.jsx'
 import SearchPage from './pages/SearchPage.jsx'
+import SalonDashboard from './pages/SalonDashboard.jsx';
 import SalonDetailsPage from './pages/SalonDetailsPage.jsx'
 import SignIn from './pages/Sign_in/Sign_in.jsx'
 import ForgotPassword from './pages/Sign_in/Forgot_pass.jsx'
