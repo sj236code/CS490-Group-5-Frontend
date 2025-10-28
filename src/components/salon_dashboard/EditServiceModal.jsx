@@ -45,23 +45,20 @@ function EditServiceModal({ isOpen, onClose, service, onServiceUpdated }) {
         e.preventDefault();
 
         try {
-            // Create FormData object to match backend expectations
-            const formDataToSend = new FormData();
-            formDataToSend.append('service_id', service.id);
-            formDataToSend.append('name', formData.serviceName);
-            formDataToSend.append('price', formData.price);
-            formDataToSend.append('duration', formData.duration);
-            formDataToSend.append('is_active', 'true');
-            
-            // Add the icon file if a new one was selected
-            if (iconFile) {
-                formDataToSend.append('icon_file', iconFile);
-            }
 
-            // const response = await fetch(`${import.meta.env.VITE_API_URL}/api/salon_register/update_service`, {
-            //     method: 'PUT',
-            //     body: formDataToSend,
-            // });
+            // Json for backend
+            const payload = {
+                name: formData.serviceName,
+                price: parseFloat(formData.price),
+                stock_qty: parseInt(formData.duration),
+                salon_id: service.salon_id, // optional
+            };
+            
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/cart/update-service/${service.id}`, {
+                method: 'PUT',
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+            });
 
             const data = await response.json();
 

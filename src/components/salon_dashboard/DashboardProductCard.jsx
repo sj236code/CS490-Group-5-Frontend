@@ -44,10 +44,6 @@ function DashboardProductCard({product, onClick}) {
         return stars;
     };
 
-    const handleBooking = () => {
-        console.log("booked.");
-    };
-
     const handleImageError = () => {
         setImageError(true);
     }

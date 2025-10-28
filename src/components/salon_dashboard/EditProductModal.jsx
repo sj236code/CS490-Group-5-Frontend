@@ -45,23 +45,19 @@ function EditProductModal({ isOpen, onClose, product, onProductUpdated }) {
         e.preventDefault();
 
         try {
-            // Create FormData object to match backend expectations
-            const formDataToSend = new FormData();
-            formDataToSend.append('product_id', product.id);
-            formDataToSend.append('name', formData.productName);
-            formDataToSend.append('price', formData.price);
-            formDataToSend.append('quantity', formData.quantity);
-            formDataToSend.append('is_active', 'true');
-            
-            // Add the icon file if a new one was selected
-            if (iconFile) {
-                formDataToSend.append('icon_file', iconFile);
-            }
+            // Json for backend
+            const payload = {
+                name: formData.productName,
+                price: parseFloat(formData.price),
+                stock_qty: parseInt(formData.quantity),
+                salon_id: product.salon_id, // optional
+            };
 
-            // const response = await fetch(`${import.meta.env.VITE_API_URL}/api/salon_register/update_service`, {
-            //     method: 'PUT',
-            //     body: formDataToSend,
-            // });
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/cart/update-product/${product.id}`, {
+                method: 'PUT',
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+            });
 
             const data = await response.json();
 
