@@ -13,9 +13,11 @@ body {
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
+
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
+
 .logo-img {
   width: 198px;
   height: auto;
@@ -87,7 +89,7 @@ body {
   height: 100vh;
   background-color: #D9E9CF;
   padding: 1rem;
-  box-shadow: 2px 0 8px rgba(0,0,0,0.2);
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2);
   z-index: 1000;
 }
 
@@ -149,7 +151,7 @@ body {
   padding: 1rem 1.5rem;
 }
 
-.search-section input::placeholder{
+.search-section input::placeholder {
   color: #F0F0F0;
 }
 
@@ -177,10 +179,10 @@ body {
 
 /* Right Half of Search: City Dropdown */
 .city-wrapper {
-    position: relative;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .city-section {
@@ -206,6 +208,10 @@ body {
   align-items: center;
   flex: 1;
   padding: 1rem 1rem;
+}
+
+.location-text:hover {
+  color: #5A6A54;
 }
 
 .city-dropdown {
@@ -264,7 +270,11 @@ body {
   height: 70px;
 }
 
-.search-button svg{
+.search-button:hover {
+  background-color: #C9DCBC;
+}
+
+.search-button svg {
   color: #4B5945;
   width: 70px;
   height: 70px;
@@ -299,6 +309,10 @@ body {
   border-bottom: 1px solid #E5E7EB;
 }
 
+.result-item:hover {
+  background-color: #e0e0e0;
+}
+
 .result-content {
   display: flex;
   flex-direction: column;
@@ -323,7 +337,7 @@ body {
 
 .service-grid {
   display: grid;
-  grid-template-columns: repeat(4,1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 1.5rem;
   align-items: center;
   justify-content: center;
@@ -393,7 +407,7 @@ body {
 
 .salon-grid {
   display: grid;
-  grid-template-columns: repeat(4,1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 1.5rem;
   justify-content: center;
   padding: 100px 0;
@@ -482,7 +496,7 @@ body {
   flex-direction: column;
   gap: 0.5rem;
   margin-top: auto;
-  padding: 2rem 1.5rem;  
+  padding: 2rem 1.5rem;
   color: white;
 }
 
@@ -490,6 +504,7 @@ body {
   color: white;
   font-size: 1.1rem;
 }
+
 /* Search Page: Search Bar */
 
 .search-page-section {
