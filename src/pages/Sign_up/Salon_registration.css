@@ -64,7 +64,7 @@
 }
 
 .step-line {
-    width: 80px;
+    width: 60px;
     height: 2px;
     background: #879D85;
 }
@@ -73,7 +73,7 @@
     display: flex;
     justify-content: space-between;
     margin-bottom: 30px;
-    font-size: 14px;
+    font-size: 13px;
     color: #999999;
 }
 
@@ -164,7 +164,7 @@
 }
 
 .time-input {
-    width: 120px;
+    width: 140px;
     font-size: 16px;
     color: #000000;
     background: #F0F0F0;
@@ -291,4 +291,15 @@
     border-radius: 14px;
     padding: 12px 32px;
     cursor: pointer;
+}
+
+.error-message-salon {
+    background: #FFE5E5;
+    border: 1px solid #E74C3C;
+    border-radius: 14px;
+    padding: 12px 16px;
+    margin-top: 15px;
+    font-size: 14px;
+    color: #E74C3C;
+    text-align: center;
 }

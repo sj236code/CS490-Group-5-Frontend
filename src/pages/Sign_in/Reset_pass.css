@@ -1,4 +1,4 @@
-.forgot-page {
+.reset-page {
     min-height: 100vh;
     display: flex;
     align-items: center;
@@ -7,8 +7,7 @@
     padding: 20px;
 }
 
-.forgot-container {
-    position: relative;
+.reset-container {
     width: 100%;
     max-width: 440px;
     background: #F0F0F0;
@@ -16,36 +15,32 @@
     padding: 40px 30px;
 }
 
-.forgot-title {
+.reset-title {
     font-size: 32px;
     color: #000000;
     text-align: center;
     margin: 0 0 16px 0;
 }
 
-.forgot-description {
+.reset-description {
     font-size: 15px;
     color: #6B6B6B;
     text-align: center;
     margin: 0 0 24px 0;
 }
 
-.forgot-form {
+.reset-form {
     display: flex;
     flex-direction: column;
 }
 
-.label {
+.reset-label {
     font-size: 16px;
     color: #000000;
     margin-bottom: 8px;
 }
 
-.required-star {
-    color: #E74C3C;
-}
-
-.email-input {
+.password-input {
     width: 100%;
     font-size: 20px;
     color: #000000;
@@ -53,14 +48,21 @@
     border: 1px solid #BEBEBE;
     border-radius: 14px;
     padding: 14px 20px;
-    margin-bottom: 24px;
+    margin-bottom: 18px;
 }
 
-.email-input::placeholder {
-    color: #D9D9D9;
+.reset-error {
+    background: #FFE5E5;
+    border: 1px solid #E74C3C;
+    border-radius: 14px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    font-size: 14px;
+    color: #E74C3C;
+    text-align: center;
 }
 
-.continue-btn {
+.reset-continue-btn {
     width: 100%;
     font-size: 24px;
     color: #FFFFFF;

@@ -6,147 +6,155 @@ import { auth } from '../../firebase';
 import './Sign_in.css';
 
 function Sign_in() {
-  const [activeTab, setActiveTab] = useState('signin');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+    const [activeTab, setActiveTab] = useState('signin');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
-  // Firebase sign-in logic
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError('');
+        setLoading(true);
+        
+        try {
+            // API Call - Exactly matches your Flask auth.py /api/auth/login endpoint
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: email,      // auth.py checks AuthUser table for this email
+                    password: password // auth.py uses bcrypt.checkpw() to compare hashed password
+                })
+            });
 
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      // Redirect to landing page on success
-      navigate('/');
-    } catch (err) {
-      console.error('Sign-in error:', err);
-      if (err.code === 'auth/invalid-email') {
-        setError('Invalid email format.');
-      } else if (err.code === 'auth/user-not-found') {
-        setError('No account found with this email.');
-      } else if (err.code === 'auth/wrong-password') {
-        setError('Incorrect password.');
-      } else if (err.code === 'auth/too-many-requests') {
-        setError('Too many failed attempts. Please try again later.');
-      } else {
-        setError('An error occurred during sign-in. Please try again.');
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
+            const data = await response.json();
 
-  // Firebase password reset logic
-  const handleForgotPassword = async () => {
-    if (!email) {
-      setError('Please enter your email first.');
-      return;
-    }
+            // Check Flask response format: { "status": "success" or "error", "token": "..." }
+            if (data.status === 'success') {
+                // Success! Your auth.py returned a JWT token
+                
+                // Save JWT token to localStorage (for authenticated API calls)
+                localStorage.setItem('token', data.token);
+                
+                // Decode token to get user info (token contains: user_id, email, role)
+                // The token is created in auth.py with this payload:
+                // {
+                //   "user_id": user.id,
+                //   "email": user.email,
+                //   "role": user.role,
+                //   "exp": datetime (1 hour from now)
+                // }
+                
+                console.log('Sign in successful!');
+                console.log('JWT Token saved:', data.token);
+                
+                // Optional: Fetch full user details using the token
+                // You could call /api/auth/user-type/<user_id> here if needed
+                
+                // Navigate to home/dashboard
+                navigate('/');
+            } else {
+                // Show error message from server
+                // auth.py returns "Invalid credentials" if:
+                // - Email not found in AuthUser table
+                // - Password doesn't match (bcrypt comparison fails)
+                setError(data.message || 'Invalid email or password');
+            }
+        } catch (err) {
+            console.error('Sign in error:', err);
+            setError('Unable to sign in. Please check your connection and try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
 
-    setError('');
-    setLoading(true);
+    const handleBack = () => {
+        navigate('/');
+    };
 
-    try {
-      await sendPasswordResetEmail(auth, email);
-      alert('Password reset email sent! Check your inbox.');
-    } catch (err) {
-      console.error('Reset password error:', err);
-      if (err.code === 'auth/user-not-found') {
-        setError('No account found with this email.');
-      } else if (err.code === 'auth/invalid-email') {
-        setError('Invalid email format.');
-      } else {
-        setError('Failed to send reset email. Try again later.');
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
+    const handleTabSwitch = (tab) => {
+        setActiveTab(tab);
+        if (tab === 'signup') {
+            navigate('/signup');
+        }
+    };
 
-  const handleBack = () => {
-    navigate('/');
-  };
+    return (
+        <div className="signin-page">
+            <div className="signin-container">
+                <button className="back-button" onClick={handleBack}>
+                    <ChevronLeft />
+                </button>
 
-  const handleTabSwitch = (tab) => {
-    setActiveTab(tab);
-    if (tab === 'signup') {
-      navigate('/signup');
-    }
-  };
+                <h1 className="signin-title">Sign In</h1>
 
-  return (
-    <div className="signin-page">
-      <div className="signin-container">
-        <button className="back-button" onClick={handleBack}>
-          <ChevronLeft />
-        </button>
+                <div className="tab-container">
+                    <button 
+                        className={`tab ${activeTab === 'signin' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('signin')}
+                    >
+                        Sign In
+                    </button>
+                    <button 
+                        className={`tab ${activeTab === 'signup' ? 'active' : ''}`}
+                        onClick={() => handleTabSwitch('signup')}
+                    >
+                        Sign Up
+                    </button>
+                </div>
 
-        <h1 className="signin-title">Sign In</h1>
+                <form onSubmit={handleSubmit} className="signin-form">
+                    <div className="input-group">
+                        <input
+                            type="email"
+                            placeholder="Email Address"
+                            value={email}
+                            onChange={(e) => {
+                                setEmail(e.target.value);
+                                setError('');
+                            }}
+                            className={`form-input ${error ? 'error-input' : ''}`}
+                            required
+                            disabled={loading}
+                        />
+                    </div>
 
-        <div className="tab-container">
-          <button
-            className={`tab ${activeTab === 'signin' ? 'active' : ''}`}
-            onClick={() => setActiveTab('signin')}
-          >
-            Sign In
-          </button>
-          <button
-            className={`tab ${activeTab === 'signup' ? 'active' : ''}`}
-            onClick={() => handleTabSwitch('signup')}
-          >
-            Sign Up
-          </button>
-        </div>
+                    <div className="input-group">
+                        <input
+                            type="password"
+                            placeholder="Password"
+                            value={password}
+                            onChange={(e) => {
+                                setPassword(e.target.value);
+                                setError('');
+                            }}
+                            className={`form-input ${error ? 'error-input' : ''}`}
+                            required
+                            disabled={loading}
+                        />
+                    </div>
 
-        <form onSubmit={handleSubmit} className="signin-form">
-          <div className="input-group">
-            <input
-              type="email"
-              placeholder="Email Address"
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                setError('');
-              }}
-              className={`form-input ${error ? 'error-input' : ''}`}
-              required
-            />
-          </div>
+                    <a href="/forgot-password" className="forgot-password">Forgot Password?</a>
 
-          <div className="input-group">
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                setError('');
-              }}
-              className={`form-input ${error ? 'error-input' : ''}`}
-              required
-            />
-          </div>
+                    {error && (
+                        <div className="error-message">
+                            {error}
+                        </div>
+                    )}
 
-          {error && <div className="error-message">{error}</div>}
+                    <button type="submit" className="signin-button" disabled={loading}>
+                        {loading ? 'Signing In...' : 'Sign In'}
+                    </button>
 
-          <button type="submit" className="signin-button" disabled={loading}>
-            {loading ? 'Signing In...' : 'Sign In'}
-          </button>
-
-          <button
-            type="button"
-            className="forgot-password-link"
-            onClick={handleForgotPassword}
-            disabled={loading}
-          >
-            {loading ? 'Sending...' : 'Forgot Password?'}
-          </button>
-        </form>
+                    <p className="signup-text">
+                        Don't have an account? <a href="/signup" className="signup-link">Sign Up</a>
+                    </p>
+                </form>
+              
       </div>
     </div>
   );

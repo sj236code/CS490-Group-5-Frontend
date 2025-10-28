@@ -16,26 +16,6 @@
     padding: 40px;
 }
 
-.back-button-simple {
-    position: absolute;
-    top: 30px;
-    left: 30px;
-    width: 36px;
-    height: 36px;
-    background: #66785F;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    color: #FFFFFF;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.back-button-simple svg {
-    width: 22px;
-    height: 22px;
-}
 
 .page-title {
     font-size: 32px;
