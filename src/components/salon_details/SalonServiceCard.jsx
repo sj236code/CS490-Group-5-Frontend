@@ -45,7 +45,7 @@ function SalonServiceCard({service, onClick}) {
     };
 
     const handleBooking = () => {
-        console.log("booked.");
+        console.log("Handling Booking...");
     };
 
     const handleImageError = () => {
