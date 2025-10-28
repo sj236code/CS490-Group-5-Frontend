@@ -27,6 +27,7 @@ function App() {
 
   // Temp hardcode until endpoint created
   const [userType, setUserType] = useState(null);
+  const [userId, setUserId] = useState(1);
   console.log("API URL:", import.meta.env.VITE_API_URL);
 
   useEffect(() => {
@@ -35,7 +36,6 @@ function App() {
     // 2 -> Admin (WIP)
     // 4 -> Salon Owner
     // 6 -> Employee
-    const userId = 1;
 
     fetch(`${import.meta.env.VITE_API_URL}/api/auth/user-type/${userId}`)
       .then((res) => res.json())
@@ -48,15 +48,18 @@ function App() {
           setUserType("user");
         }
       })
-  },[]);
+  },[userId]);
+
+  const toggleUser = () => {
+    setUserId((prevId) => (prevId === 1 ? 4 : 1));
+  }
 
   return (
     <>
-      <Header userType={userType} />
+      <Header userType={userType} userId={userId} toggleUser={toggleUser} />
       <hr />
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        
         {/* Auth */}
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
