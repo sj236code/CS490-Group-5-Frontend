@@ -17,7 +17,11 @@ function App() {
 
   useEffect(() => {
     // Temporarily Hardcode for testing -> Change when Merge with Auth Branch
-    const userId = 1;
+    // 1 -> Customer
+    // 2 -> Admin (WIP)
+    // 4 -> Salon Owner
+    // 6 -> Employee
+    const userId = 4;
 
     fetch(`${import.meta.env.VITE_API_URL}/api/auth/user-type/${userId}`)
       .then((res) => res.json())

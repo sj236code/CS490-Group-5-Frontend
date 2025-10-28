@@ -27,7 +27,6 @@ function ServiceGrid(){
         "default": Star
     };
 
-
     // Runs once component mounts
     useEffect(() => {
         fetchCategories();
@@ -44,7 +43,9 @@ function ServiceGrid(){
             console.log('Services Successfully Received.');
             console.log('Raw categories from backend:', data.categories);
 
-            const formattedService = data.categories.map((category) => {
+            const categories = data.categories || data.data?.categories || [];
+
+            const formattedService = categories.map((category) => {
                 const normalizedName = category.name.trim().toLowerCase();
                 const mapping = serviceMapping[normalizedName];
                 return {
@@ -64,13 +65,13 @@ function ServiceGrid(){
         }
     };
 
-    const handleServiceClick = (serviceName) => {
-        console.log(`Clicked on: ${serviceName}`);
+    const handleServiceClick = (service) => {
+        console.log(`Clicked on: ${service.name}`);
         // Add navigation to search page with clicked on filtered results
-        navigate('search', {
+        navigate('/search', {
             state: {
-                presetTypeFilter: serviceName.filterType,
-                query: serviceName.name
+                presetTypeFilter: service.filterType,
+                query: service.name
             }
         });
     };
@@ -81,7 +82,7 @@ function ServiceGrid(){
             <div className="service-grid">
                 {services.slice(0, 4).map((service) => (
                     <ServiceCard
-                        key={service.id}
+                        key={service.id || service.name}
                         service={service}
                         title={service.name}
                         onClick={() => handleServiceClick(service)}
@@ -89,7 +90,6 @@ function ServiceGrid(){
                 ))}
             </div>
         </div>
-
     );
 }
 
