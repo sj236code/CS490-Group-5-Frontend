@@ -1,13 +1,19 @@
-// Modeled after ServiceCard used in SalonDetailsPage
+// Modeled after ServiceCard used in LandingPage
 // Made to show salon-specific details like price & rating
 import { useState, useEffect } from 'react';
-import {Star, Sparkle, ChevronLeft, ChevronRight, Rows4, BookDashed} from 'lucide-react';
+import {Star, Sparkle, ChevronLeft, ChevronRight, Rows4} from 'lucide-react';
 
-function ServiceCard({service, onClick}) {
+function DashboardProductCard({product, onClick}) {
 
     const [imageError, setImageError] = useState(false);
-    const rating = service.rating || service.avgRating || 4;
+    const rating = product.rating || product.avgRating || 4;
     
+    const imgSrc = (product.icon_url || product.image_url) ?? null;
+
+    useEffect(() => {
+        setImageError(false);
+    }, [imgSrc]);
+
     // Calculate filled and empty stars
     const filledStars = Math.floor(rating); // Full stars- round down half stars
     const hasHalfStar = rating % 1 >= 0.5; // calc half star
@@ -46,15 +52,19 @@ function ServiceCard({service, onClick}) {
 
     const handleImageError = () => {
         setImageError(true);
-    };
+    }
 
     return(
         <div className="salon-service-card" onClick={onClick}>
 
             <div className="salon-service-image">
-
-                {service.icon_url && !imageError ? (
-                    <img src={service.icon_url} alt={service.name} onError={handleImageError} />
+               
+                {imgSrc && !imageError ? (
+                    <img 
+                        src={imgSrc} 
+                        alt={product.name}
+                        onError={handleImageError}
+                    />
                 ) : (
                     <div className="salon-service-placeholder">
                         <span><Sparkle /></span>
@@ -67,16 +77,22 @@ function ServiceCard({service, onClick}) {
             </div>
 
             {/* Service Name */}
-            <h3 className="salon-service-name">{service.name}</h3>
+            <h3 className="salon-service-name">{product.name}</h3>
 
             {/* Rating */}
             <div className="salon-service-rating">
                 {calcStars()}
             </div>
 
+            {/* Price and Book Button */}
+            <div className="salon-service-footer">
+                <span className="salon-service-price">
+                    ${product.price ? product.price.toFixed(2) : '0.00'}
+                </span>
+            </div>
         </div>
     );
 
 }
 
-export default ServiceCard;
+export default DashboardProductCard;

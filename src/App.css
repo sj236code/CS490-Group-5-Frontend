@@ -1,7 +1,18 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
 #root {
   margin: 0 auto;
   padding: 0;
-  text-align: center;
+  max-width: 100%;
 }
 
 body {
@@ -127,6 +138,22 @@ body {
 
 .cart-panel-close-button:hover {
   background-color: #B6CEB4;
+}
+
+.sign-in-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px; 
+  border: 2px solid #4B5945; 
+  background-color: transparent;
+  color: #4B5945;
+  padding: 8px 24px; 
+  cursor: pointer;
+}
+
+.sign-in-button:hover {
+  background-color: rgba(75, 89, 69, 0.1);
 }
 
 .landing-search-bar {
@@ -550,4 +577,428 @@ body {
   border-radius: 0.5rem;
   font-size: 1rem;
   cursor: pointer;
+}
+
+/* SalonDetailsPage */
+
+.salon-details-hero {
+  position: relative;
+  height: 300px;
+  background-image: url('../salon_details_background.jpg');
+  background-size: cover;
+  background-position: top center;
+  overflow: hidden;
+}
+
+.salon-hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.salon-details-name {
+  font-size: 30px;
+  color: #4B5945;
+}
+
+.salon-details-tabs{
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0;
+  display: flex;
+  gap: 0;
+  border-bottom: 2px solid #e5e5e5;
+  position: relative;
+}
+
+.salon-detail-tab-link {
+  background: none;
+  border: none;
+  padding: 15px 40px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #666;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: all 0.3s ease;
+  position: relative;
+  flex: 1;
+}
+
+.salon-detail-tab-link:hover {
+  color: #333;
+  background-color: #f5f5f5;
+}
+
+.salon-detail-tab-link.active {
+  color: black;
+  background-color: #4B5945;
+  border-bottom: none;
+}
+
+.salon-details-tab-content {
+
+}
+
+/* Salon ShopTab */
+
+.salon-service-card {
+  border: 2px solid #4B5945;
+  width: 200px;
+  border-radius: 8px;
+  cursor: pointer;
+  background-color: white;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.salon-service-image {
+  width: 100%;
+  height: 140px;
+  background-color: #D9E9CF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.salon-service-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.salon-service-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  background-color: #D9E9CF;
+}
+
+.salon-service-info {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.salon-service-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: #4B5945;
+  margin-left: 10px;
+  margin-top: 10px;
+  text-align: left;
+}
+
+.salon-service-rating {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: #718096;
+  margin-left: 10px;
+}
+
+.salon-service-price {
+  font-size: 18px;
+  font-weight: 700;
+  color: #4B5945;
+  margin-left: 10px;
+  text-align: left;
+}
+
+.salon-service-book-btn {
+  width: 50px;
+  padding: 10px;
+  background: #96A78D;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: auto;
+  margin: 10px;
+}
+
+.book-appt-personal-info {
+  background-color: white;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  position: relative;
+  z-index: 10;
+  width: 330px;
+  height: 40px;
+  padding-left: 0.3rem;
+}
+
+.shop-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 200px);
+  gap: 100px;
+  margin: 50px;
+  justify-content: center;
+  align-items: start;
+}
+
+.salon-service-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 12px;
+}
+
+.shop-service-title {
+  color: #4B5945;
+  margin: 0;
+  text-align: left;
+  margin-left: 550px;
+  margin-top: 50px;
+}
+
+.shop-carousel {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  padding: 40px 0;
+}
+
+/* Booking Modal */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  max-width: 500px;
+  width: 90%;
+  position: relative;
+}
+
+/* Salon Dashboard */
+.add-service-btn {
+  padding: 0.5rem 1rem;
+  background: #4B5945;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  margin-top: 50px;
+  margin-right: 550px;
+  cursor: pointer;
+}
+
+/* Add Service Modal */
+
+.add-service-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.add-service-modal-content {
+  background: #fff;
+  border-radius: 16px;
+  width: 480px;
+  max-width: 90%;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  padding: 24px 28px;
+  animation: fadeIn 0.3s ease;
+}
+
+/* === Header === */
+.add-service-modal-header {
+  display: flex;
+  justify-content: space-between;
+  text-align: left;
+  color: #4B5945;
+}
+
+.add-service-header-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #4b5945;
+}
+
+.add-service-close-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #4b5945;
+}
+
+.add-service-divider {
+  margin: 16px 0;
+  border: none;
+  height: 2px;
+  background-color: #eee;
+}
+
+.add-service-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.add-service-label {
+  font-weight: 500;
+  color: #66785F;
+  text-align: left;
+}
+
+.add-service-service-name-box {
+  background-color: white;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  position: relative;
+  z-index: 10;
+  width: 420px;
+  height: 40px;
+  padding-left: 0.3rem;
+}
+
+.add-service-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.add-service-price-box {
+  background-color: white;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  position: relative;
+  z-index: 10;
+  width: 130px;
+  height: 40px;
+  padding-left: 0.3rem;
+}
+
+/* === Upload Button === */
+.add-service-upload-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: white;
+  color: #333;
+  padding: 10px 12px;
+  border: 2px solid black;
+  border-radius: 8px;
+  cursor: pointer;
+  height: 40px;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.add-service-upload-btn:hover {
+  background: #D9E9CF;
+  border-color: #4B5945;
+  color: #4B5945;
+}
+
+.add-service-description-box {
+  background-color: white;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  position: relative;
+  z-index: 10;
+  width: 420px;
+  height: 150px;
+  padding-left: 0.3rem;
+  padding-top: 0.3rem;
+}
+
+/* === Image Preview === */
+.add-service-image-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.preview-image {
+  width: 70px;
+  height: 70px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid #ddd;
+}
+
+/* === Action Buttons === */
+.add-service-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16px;
+}
+
+.add-service-back-btn,
+.add-service-submit-btn,
+.add-service-delete-btn {
+  flex: 1;
+  font-size: 1rem;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.add-service-back-btn {
+  background: #f0f0f0;
+  color: #333;
+  margin-right: 8px;
+}
+
+.add-service-back-btn:hover {
+  background: #e2e2e2;
+}
+
+.add-service-submit-btn {
+  background: #D9E9CF;
+  color: black;
+}
+
+.add-service-btn-submit:hover {
+  background: #B6CEB4;
+}
+
+.add-service-delete-btn {
+  background: #F9CFCF;
+  color: red;
+  margin-right: 8px;
+  border-color: red;
 }

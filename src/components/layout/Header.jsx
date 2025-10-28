@@ -7,7 +7,11 @@ import CustomerNavBar from './CustomerNavBar';
 import EmployeeNavBar from './EmployeeNavBar';
 import SalonOwnerNavBar from './SalonOwnerNavBar';
 import {useNavigate} from 'react-router-dom';
-import CartPanel from './CartPanel';
+import CartPanel from './CartPanel'; // Unregistered User Nav Bar
+import CustomerCartPanel from './CustomerCartPanel';
+import EmployeeCartPanel from './EmployeeCartPanel';
+import SalonOwnerCartPanel from './SalonOwnerCartPanel';
+import LoginButton from './LoginButton.jsx';
 
 
 function Header({userType}){
@@ -25,6 +29,11 @@ function Header({userType}){
         navigate('/');
     }
 
+    // Route to Sign In/ Sign Out Page
+    const navigateToLogin = () => {
+        navigate('/signup');
+    }
+
     // Toggle NavBar
     const toggleNavBar = () => {
         setNavBar(prev => !prev);
@@ -37,17 +46,32 @@ function Header({userType}){
 
     // NavBar based on User Tag
     const whichNavBar = () => {
-        if(userType === 'customer'){
+        if(userType === 'CUSTOMER'){
             return <CustomerNavBar onClose={toggleNavBar} />
         }
-        else if(userType === 'employee'){
+        else if(userType === 'EMPLOYEE'){
             return <EmployeeNavBar onClose={toggleNavBar} />
         }
-        else if(userType === 'salon owner'){
+        else if(userType === 'OWNER'){
             return <SalonOwnerNavBar onClose={toggleNavBar} />
         }
         else{
             return <NavBar onClose={toggleNavBar} />
+        }
+    }
+
+    const whichCartPanel = () => {
+        if(userType === 'CUSTOMER'){
+            return <CustomerCartPanel onClose={toggleCartPanel} />
+        }
+        else if(userType === 'EMPLOYEE'){
+            return <EmployeeCartPanel onClose={toggleCartPanel} />
+        }
+        else if(userType === 'OWNER'){
+            return <SalonOwnerCartPanel onClose={toggleCartPanel} />
+        }
+        else{
+            return <CartPanel onClose={toggleCartPanel} />
         }
     }
 
@@ -60,15 +84,20 @@ function Header({userType}){
                 <div className='logo' onClick={navigateToLanding} style={{cursor: 'pointer'}}>
                     <img src={jade_logo} className="logo-img" />    
                 </div>
+                {/* Sign In/ Sign Out Button */}
+                <div>
+                    <LoginButton onClick={navigateToLogin} style={{cursor: 'pointer'}}/>
+                </div>
                 {/* If CartButton clicked, open CartPanel */}
                 <CartButton onClick={toggleCartPanel} />
+                
             </header>
 
             {/* NavBar implementation: Open & Close */}
             {navBar && whichNavBar()}
 
             {/* CartPanel implementation: Open & Close */}
-            {cartPanel && <CartPanel onClose={toggleCartPanel} />}
+            {cartPanel && whichCartPanel()}
         </>
     );
 }

@@ -26,7 +26,7 @@ function LandingSearchBar() {
 
             const data = await response.json();
 
-            console.log('Cities Successfully Received.');
+            console.log('Cities Successfully Received.', data.cities.length);
 
             setCities(data.cities);
 
