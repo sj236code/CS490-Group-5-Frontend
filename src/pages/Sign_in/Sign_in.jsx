@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft } from 'lucide-react';
+import { signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
+import { auth } from '../../firebase';
 import './Sign_in.css';
 
 function Sign_in() {
@@ -154,7 +156,54 @@ function Sign_in() {
                 </form>
             </div>
         </div>
-    );
+
+        <form onSubmit={handleSubmit} className="signin-form">
+          <div className="input-group">
+            <input
+              type="email"
+              placeholder="Email Address"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setError('');
+              }}
+              className={`form-input ${error ? 'error-input' : ''}`}
+              required
+            />
+          </div>
+
+          <div className="input-group">
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setError('');
+              }}
+              className={`form-input ${error ? 'error-input' : ''}`}
+              required
+            />
+          </div>
+
+          {error && <div className="error-message">{error}</div>}
+
+          <button type="submit" className="signin-button" disabled={loading}>
+            {loading ? 'Signing In...' : 'Sign In'}
+          </button>
+
+          <button
+            type="button"
+            className="forgot-password-link"
+            onClick={handleForgotPassword}
+            disabled={loading}
+          >
+            {loading ? 'Sending...' : 'Forgot Password?'}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
 }
 
 export default Sign_in;

@@ -1,28 +1,42 @@
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { Star } from 'lucide-react';
-import SalonShopTab from '../components/salon_details/SalonShopTab';
+import DashboardManageTab from '../components/salon_dashboard/DashboardManageTab';
 
-function SalonDetailsPage() {
+function SalonDashboard() {
     const location = useLocation();
     const navigate = useNavigate();
     const { salon } = location.state || {};
 
-    const [salonDetails, setSalonDetails] = useState(salon);
-    const [workingTab, setWorkingTab] = useState("About");
+    const [workingTab, setWorkingTab] = useState("Manage");
+    const [salonDetails, setSalonDetails] = useState(null);
 
     const [services, setServices] = useState([]);
 
     // Do I have to handle possible error if no valid salon is passed?
     useEffect(() => {
         if (!salon){
+            const searhParams = new URLSearch(location.seach);
+            const salonId = useSearchParams.get('id');
+            if(salonId){
+                fetch(`${import.meta.env.VITE_API_URL}/api/salons/details/${salonId}`)
+                    .then(res => res.json())
+                    .then(data => setSalonDetails(data))
+                    .catch(err => console.error(err));
+            }
             console.error("No Salon Data provided.");
         }
-        else{
+        else {
             setSalonDetails(salon);
             console.log("Salon Details: ", salon);
         }
-    }, [salon]);
+    }, [location]);
+
+    useEffect(() => {
+        if (workingTab === "Shop" && salonDetails?.id){
+            fetchServices();
+        }
+    }, [workingTab, salonDetails]);
 
     // Add check for salonDetails
     if (!salonDetails) {
@@ -35,12 +49,6 @@ function SalonDetailsPage() {
             </div>
         );
     }
-
-    useEffect(() => {
-        if (workingTab === "Shop" && salonDetails?.id){
-            fetchServices();
-        }
-    }, [workingTab, salonDetails]);
 
     const fetchServices = async () => {
         try {
@@ -80,32 +88,32 @@ function SalonDetailsPage() {
 
             {/* Nvigation Tabs */}
             <div className="salon-details-tabs">
-                <button className="salon-detail-tab-link" onClick={() => setWorkingTab('About')}>About</button>
-                <button className="salon-detail-tab-link" onClick={() => setWorkingTab('Gallery')}>Gallery</button>
-                <button className="salon-detail-tab-link" onClick={() => setWorkingTab('Reviews')}>Reviews</button>
-                <button className="salon-detail-tab-link" onClick={() => setWorkingTab('Shop')}>Shop</button>
+                <button className="salon-detail-tab-link" onClick={() => setWorkingTab('Metrics')}>Metrics</button>
+                <button className="salon-detail-tab-link" onClick={() => setWorkingTab('Calendar')}>Calendar</button>
+                <button className="salon-detail-tab-link" onClick={() => setWorkingTab('Manage')}>Manage</button>
+                <button className="salon-detail-tab-link" onClick={() => setWorkingTab('Loyalty')}>Loyalty</button>
             </div>
 
             {/* Tab Content */}
             <div className="salon-details-tab-content">
-                {workingTab =="About" && (
+                {workingTab =="Metrics" && (
                     <div>
-                        <h2>About Page for: {salonDetails.title}</h2>
+                        <h2>Metrics Page for: {salonDetails.title}</h2>
                     </div>
                 )}
-                {workingTab =="Gallery" && (
+                {workingTab =="Calendar" && (
                     <div>
-                        <h2>Gallery Page for: {salonDetails.title}</h2>
+                        <h2>Calendar Page for: {salonDetails.title}</h2>
                     </div>
                 )}
-                {workingTab =="Reviews" && (
+                {workingTab =="Loyalty" && (
                     <div>
-                        <h2>Reviews Page for: {salonDetails.title}</h2>
+                        <h2>Loyalty Page for: {salonDetails.title}</h2>
                     </div>
                 )}
-                {workingTab =="Shop" && (
+                {workingTab =="Manage" && (
                     <div>
-                        <SalonShopTab salon={salonDetails} />
+                        <DashboardManageTab salon={salonDetails} />
                     </div>
                 )}
             </div>
@@ -114,4 +122,4 @@ function SalonDetailsPage() {
     );
 }
 
-export default SalonDetailsPage;
+export default SalonDashboard;

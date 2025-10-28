@@ -18,32 +18,45 @@ import EmployeeRegistration from './pages/Sign_up/Employee_registration.jsx';
 import EmployeeRegistrationSuccess from './pages/Sign_up/Employee_registration_success.jsx';
 import ResetPassword from './pages/Sign_in/Reset_pass.jsx';
 
+// Firebase
+import { auth } from "./firebase";
+import { onAuthStateChanged } from "firebase/auth";
+
 function App() {
+
   // Temp hardcode until endpoint created
-  const [userType, setUserType] = useState("customer");
-  
+  const [userType, setUserType] = useState("salon owner");
+
+  console.log("API URL:", import.meta.env.VITE_API_URL);
+
   return (
     <>
-      <Header userType={userType}/>
+      <Header userType={userType} />
       <hr />
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        <Route path="/search" element={<SearchPage />} />
-        <Route path="/salon" element={<SalonDetailsPage />} />
-        <Route path="/contact" element={<ContactPage />} />
-        <Route path="/faq" element={<FAQPage />} />
+        
+        {/* Auth */}
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/verify-otp" element={<VerifyOTP />} />
+    
+        {/* Salon / Employee */}
         <Route path="/register-salon" element={<RegisterSalon />} />
         <Route path="/register-salon-success" element={<RegisterSalonSuccess />} />
         <Route path="/employee-registration" element={<EmployeeRegistration />} />
         <Route path="/employee-registration-success" element={<EmployeeRegistrationSuccess />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+    
+        <Route path="/search" element={<SearchPage />} />
+        <Route path="/salon" element={<SalonDetailsPage />} />
+        <Route path="/salonDashboard" element={<SalonDashboard />} />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/faq" element={<FAQPage />} />
       </Routes>
     </>
-  )
+  );
 }
 
-export default App
+export default App;

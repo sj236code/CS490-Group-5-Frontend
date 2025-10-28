@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft } from 'lucide-react';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../../firebase';
 import './Sign_up.css';
 
 function SignUp() {
@@ -73,7 +75,7 @@ function SignUp() {
 
             // Check Flask response: { "status": "success" or "error" }
             if (data.status === 'success') {
-                console.log('✅ Sign up successful!');
+                console.log('Sign up successful!');
                 console.log('User created in auth_user table with:');
                 console.log('- first_name:', formData.firstName);
                 console.log('- last_name:', formData.lastName);
@@ -105,9 +107,7 @@ function SignUp() {
 
     const handleTabSwitch = (tab) => {
         setActiveTab(tab);
-        if (tab === 'signin') {
-            navigate('/signin');
-        }
+        if (tab === 'signin') navigate('/signin');
     };
 
     return (
@@ -231,11 +231,7 @@ function SignUp() {
                         />
                     </div>
 
-                    {error && (
-                        <div className="error-box">
-                            {error}
-                        </div>
-                    )}
+                    {error && <div className="error-box">{error}</div>}
 
                     <button type="submit" className="submit-btn" disabled={loading}>
                         {loading ? 'Creating Account...' : 'Sign Up'}
