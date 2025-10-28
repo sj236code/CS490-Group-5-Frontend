@@ -8,6 +8,12 @@ function DashboardProductCard({product, onClick}) {
     const [imageError, setImageError] = useState(false);
     const rating = product.rating || product.avgRating || 4;
     
+    const imgSrc = (product.icon_url || product.image_url) ?? null;
+
+    useEffect(() => {
+        setImageError(false);
+    }, [imgSrc]);
+
     // Calculate filled and empty stars
     const filledStars = Math.floor(rating); // Full stars- round down half stars
     const hasHalfStar = rating % 1 >= 0.5; // calc half star
@@ -53,9 +59,9 @@ function DashboardProductCard({product, onClick}) {
 
             <div className="salon-service-image">
                
-                {product.icon_url && !imageError ? (
+                {imgSrc && !imageError ? (
                     <img 
-                        src={product.icon_url} 
+                        src={imgSrc} 
                         alt={product.name}
                         onError={handleImageError}
                     />
