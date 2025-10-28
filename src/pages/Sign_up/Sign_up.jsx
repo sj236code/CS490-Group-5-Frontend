@@ -6,9 +6,11 @@ import './Sign_up.css';
 function SignUp() {
     const [activeTab, setActiveTab] = useState('signup');
     const [formData, setFormData] = useState({
-        name: '',
+        firstName: '',
+        lastName: '',
         email: '',
-        phone: '',
+        phoneNumber: '',
+        address: '',
         password: '',
         confirmPassword: '',
         role: 'CUSTOMER'
@@ -29,9 +31,9 @@ function SignUp() {
         e.preventDefault();
         setError('');
         
-        // Validate required fields
-        if (!formData.name || !formData.email || !formData.password) {
-            setError('Name, email, and password are required');
+        // Validate required fields (first_name, last_name, email, password are required)
+        if (!formData.firstName || !formData.lastName || !formData.email || !formData.password) {
+            setError('First name, last name, email, and password are required');
             return;
         }
 
@@ -50,20 +52,20 @@ function SignUp() {
         setLoading(true);
         
         try {
-            // API Call - Matches your Flask auth.py /api/auth/signup endpoint
-            // Saves to: Users, Customers (name, email, phone, role), AuthUser (email, password_hash, role)
+            // API Call - Matches updated auth.py with new auth_user table structure
             const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/signup`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    name: formData.name,           // → Customers.name
-                    email: formData.email,         // → Customers.email & AuthUser.email
-                    phone: formData.phone || null, // → Customers.phone (optional)
-                    password: formData.password,   // → AuthUser.password_hash (hashed with bcrypt)
-                    role: formData.role            // → Customers.role & AuthUser.role
-                    // Note: gender field removed - your Customers table doesn't have it
+                    first_name: formData.firstName,         // → auth_user.first_name
+                    last_name: formData.lastName,           // → auth_user.last_name
+                    email: formData.email,                  // → auth_user.email & Customers.email
+                    phone_number: formData.phoneNumber,     // → auth_user.phone_number & Customers.phone
+                    address: formData.address || null,      // → auth_user.address (optional)
+                    password: formData.password,            // → auth_user.password_hash (hashed)
+                    role: formData.role                     // → auth_user.role & Customers.role
                 })
             });
 
@@ -72,16 +74,18 @@ function SignUp() {
             // Check Flask response: { "status": "success" or "error" }
             if (data.status === 'success') {
                 console.log('✅ Sign up successful!');
-                console.log('User created in database:');
-                console.log('- Users table: id =', data.user.id);
-                console.log('- Customers table: name, email, phone, role');
-                console.log('- AuthUser table: email, hashed password, role');
+                console.log('User created in auth_user table with:');
+                console.log('- first_name:', formData.firstName);
+                console.log('- last_name:', formData.lastName);
+                console.log('- email:', formData.email);
+                console.log('- phone_number:', formData.phoneNumber);
+                console.log('- address:', formData.address);
                 
                 // Navigate to home
                 navigate('/', { 
                     state: { 
                         message: 'Account created successfully!',
-                        userName: formData.name
+                        userName: `${formData.firstName} ${formData.lastName}`
                     } 
                 });
             } else {
@@ -131,13 +135,27 @@ function SignUp() {
                 </div>
 
                 <form onSubmit={handleSubmit} className="signup-form">
-                    {/* Full Name - Required */}
+                    {/* First Name - Required */}
                     <div className="form-group">
                         <input
                             type="text"
-                            name="name"
-                            placeholder="Full Name"
-                            value={formData.name}
+                            name="firstName"
+                            placeholder="First Name"
+                            value={formData.firstName}
+                            onChange={handleChange}
+                            className="input-field"
+                            required
+                            disabled={loading}
+                        />
+                    </div>
+
+                    {/* Last Name - Required */}
+                    <div className="form-group">
+                        <input
+                            type="text"
+                            name="lastName"
+                            placeholder="Last Name"
+                            value={formData.lastName}
                             onChange={handleChange}
                             className="input-field"
                             required
@@ -159,13 +177,26 @@ function SignUp() {
                         />
                     </div>
 
-                    {/* Phone - Optional */}
+                    {/* Phone Number - Optional */}
                     <div className="form-group">
                         <input
                             type="tel"
-                            name="phone"
+                            name="phoneNumber"
                             placeholder="Phone Number (Optional)"
-                            value={formData.phone}
+                            value={formData.phoneNumber}
+                            onChange={handleChange}
+                            className="input-field"
+                            disabled={loading}
+                        />
+                    </div>
+
+                    {/* Address - Optional */}
+                    <div className="form-group">
+                        <input
+                            type="text"
+                            name="address"
+                            placeholder="Address (Optional)"
+                            value={formData.address}
                             onChange={handleChange}
                             className="input-field"
                             disabled={loading}

@@ -171,12 +171,14 @@ function RegisterSalon() {
         setLoading(true);
         
         try {
-            // Prepare data matching Flask pattern
+            // Prepare data matching Flask pattern and new auth_user table
             const requestData = {
                 owner: {
-                    name: `${formData.firstName} ${formData.lastName}`,
+                    first_name: formData.firstName,
+                    last_name: formData.lastName,
                     email: formData.email,
-                    phone: formData.phone,
+                    phone_number: formData.phone,
+                    address: null,  // Salon address is separate
                     password: formData.password,
                     role: 'OWNER'
                 },
