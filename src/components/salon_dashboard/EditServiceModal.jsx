@@ -21,6 +21,7 @@ function EditServiceModal({ isOpen, onClose, service, onServiceUpdated }) {
                 duration: service.duration || "",
             });
             setIconFile(null);
+            setShowDeleteConfirm(false);
         }
     }, [service, isOpen]);
 
@@ -81,6 +82,40 @@ function EditServiceModal({ isOpen, onClose, service, onServiceUpdated }) {
         }
     };
 
+    const handleDeleteClick = () => {
+        setShowDeleteConfirm(true);
+    }
+
+    const cancelDelete = () => {
+        setShowDeleteConfirm(false);
+    }
+
+    const confirmDelete = async() => {
+        
+        if(!service?.id){
+            return;
+        }
+
+        try{
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/salon_register/delete_service/${service.id}`, {
+                method: 'DELETE',
+                headers: {Accept: 'application/json'}
+            });
+
+            const data = await res.json().catch(() => ({}));
+
+            console.log('Service deleted: ', data);
+            onServiceUpdated?.();
+            onClose();
+        }
+        
+        catch (err){
+            console.error('Error deleting service: ', err);
+        }
+
+        setShowDeleteConfirm(false);
+    }
+
     // Reset form and close
     const handleBack = () => {
         setFormData({
@@ -89,6 +124,7 @@ function EditServiceModal({ isOpen, onClose, service, onServiceUpdated }) {
             duration: "",
         });
         setIconFile(null);
+        setShowDeleteConfirm(false);
         onClose();
     };
 
@@ -174,20 +210,25 @@ function EditServiceModal({ isOpen, onClose, service, onServiceUpdated }) {
 
                     {/* Footer Buttons */}
                     <div className="add-service-actions">
-                        <button 
-                            type="button" 
-                            onClick={handleBack} 
-                            className="add-service-back-btn"
-                        >
-                            Back
-                        </button>
-                        <button 
-                            type="submit" 
-                            className="add-service-submit-btn"
-                        > Save Changes
-                        </button>
+                        <button type="button" onClick={handleBack} className="add-service-back-btn">Back</button>
+                        <button type="button" onClick={handleDeleteClick} className="add-service-delete-btn">Delete Service</button>
+                        <button type="submit" className="add-service-submit-btn"> Save Changes </button>
                     </div>
                 </form>
+
+                {/* Delete Modal */}
+                {showDeleteConfirm && (
+                    <div className="add-service-modal-overlay" onClick={cancelDelete}>
+                        <div className="add-service-modal-content" onClick={(e) => e.stopPropagation()}>
+                            <h3>Delete service?</h3>
+                            <p>Are you sure you want to delete “{service?.name}”? This cannot be undone.</p>
+                            <div className="add-service-actions">
+                                <button onClick={cancelDelete} className="add-service-back-btn">Cancel</button>
+                                <button onClick={confirmDelete} className="add-service-delete-btn">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

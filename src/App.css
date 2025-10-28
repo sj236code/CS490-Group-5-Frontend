@@ -939,7 +939,8 @@ body {
 }
 
 .add-service-back-btn,
-.add-service-submit-btn {
+.add-service-submit-btn,
+.add-service-delete-btn {
   flex: 1;
   font-size: 1rem;
   padding: 10px 16px;
@@ -968,3 +969,9 @@ body {
   background: #B6CEB4;
 }
 
+.add-service-delete-btn {
+  background: #F9CFCF;
+  color: red;
+  margin-right: 8px;
+  border-color: red;
+}
