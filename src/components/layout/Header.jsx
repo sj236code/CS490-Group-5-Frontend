@@ -11,6 +11,7 @@ import CartPanel from './CartPanel'; // Unregistered User Nav Bar
 import CustomerCartPanel from './CustomerCartPanel';
 import EmployeeCartPanel from './EmployeeCartPanel';
 import SalonOwnerCartPanel from './SalonOwnerCartPanel';
+import LoginButton from './LoginButton.jsx';
 
 
 function Header({userType}){
@@ -26,6 +27,11 @@ function Header({userType}){
     // Route to Landing Page
     const navigateToLanding = () => {
         navigate('/');
+    }
+
+    // Route to Sign In/ Sign Out Page
+    const navigateToLogin = () => {
+        navigate('/signup');
     }
 
     // Toggle NavBar
@@ -78,8 +84,14 @@ function Header({userType}){
                 <div className='logo' onClick={navigateToLanding} style={{cursor: 'pointer'}}>
                     <img src={jade_logo} className="logo-img" />    
                 </div>
+                {/* Sign In/ Sign Out Button */}
+                <div>
+                    <p> this is a test</p>
+                    <LoginButton onClick={navigateToLogin} style={{cursor: 'pointer'}}/>
+                </div>
                 {/* If CartButton clicked, open CartPanel */}
                 <CartButton onClick={toggleCartPanel} />
+                
             </header>
 
             {/* NavBar implementation: Open & Close */}
