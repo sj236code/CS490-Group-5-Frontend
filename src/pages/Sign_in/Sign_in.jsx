@@ -154,53 +154,7 @@ function Sign_in() {
                         Don't have an account? <a href="/signup" className="signup-link">Sign Up</a>
                     </p>
                 </form>
-            </div>
-        </div>
-
-        <form onSubmit={handleSubmit} className="signin-form">
-          <div className="input-group">
-            <input
-              type="email"
-              placeholder="Email Address"
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                setError('');
-              }}
-              className={`form-input ${error ? 'error-input' : ''}`}
-              required
-            />
-          </div>
-
-          <div className="input-group">
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                setError('');
-              }}
-              className={`form-input ${error ? 'error-input' : ''}`}
-              required
-            />
-          </div>
-
-          {error && <div className="error-message">{error}</div>}
-
-          <button type="submit" className="signin-button" disabled={loading}>
-            {loading ? 'Signing In...' : 'Sign In'}
-          </button>
-
-          <button
-            type="button"
-            className="forgot-password-link"
-            onClick={handleForgotPassword}
-            disabled={loading}
-          >
-            {loading ? 'Sending...' : 'Forgot Password?'}
-          </button>
-        </form>
+              
       </div>
     </div>
   );
