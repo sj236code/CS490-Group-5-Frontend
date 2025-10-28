@@ -25,7 +25,7 @@ function SalonShopTab({salon}){
     useEffect(() => {
         if (salon?.id){
             fetchServices();
-            //fetchProducts();
+            fetchProducts();
         }
     }, [salon?.id]);
 
@@ -144,7 +144,7 @@ function SalonShopTab({salon}){
                     {currentProducts.map((product) => (
                         <SalonProductCard
                             key={product.id}
-                            service={product}
+                            product={product}
                             onClick={() => addProductToCart(product)}
                         />
                     ))}
