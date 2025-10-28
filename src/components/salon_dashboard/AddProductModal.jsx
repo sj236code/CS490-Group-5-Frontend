@@ -1,17 +1,15 @@
 import { useState } from 'react';
 import { X, Upload } from 'lucide-react';
 
-function AddServiceModal({ isOpen, onClose, salonId, onServiceAdded }) {
+function AddProductModal({ isOpen, onClose, salonId, onProductAdded }) {
 
     const [formData, setFormData] = useState({
-        serviceName: "",
+        productName: "",
         price: "",
-        duration: "",
+        quantity: "",
     });
 
     const [images, setImages] = useState([]);
-    const [iconFile, setIconFile] = useState(null);
-
 
     // Text input changes
     const handleChange = (e) => {
@@ -28,19 +26,19 @@ function AddServiceModal({ isOpen, onClose, salonId, onServiceAdded }) {
         setImages((prev) => [...prev, ...files]);
     }
 
-    const submitService = async(e) => {
+    const submitProduct = async(e) => {
         e.preventDefault();
 
         try{
 
             const formDataToSend = new FormData();
-            formDataToSend.append('name', formData.serviceName);
+            formDataToSend.append('name', formData.productName);
             formDataToSend.append('salon_id', salonId);
             formDataToSend.append('price', formData.price);
-            formDataToSend.append('duration', formData.duration);
+            formDataToSend.append('duration', formData.quantity);
             formDataToSend.append('is_active', 'true');
 
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/salon_register/add_service`, { method: 'POST', body: formDataToSend,});
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/salon_register/add_product`, { method: 'POST', body: formDataToSend,});
 
             const data = await response.json();
 
@@ -48,23 +46,23 @@ function AddServiceModal({ isOpen, onClose, salonId, onServiceAdded }) {
                 throw new Error(data.error || 'Failed. ');
             }
 
-            console.log('Service added successfully: ', data);
+            console.log('Product added successfully: ', data);
 
             setFormData({
-                serviceName: "",
+                productName: "",
                 price: "",
-                duration: "",
+                quantity: "",
             });
 
-            if (onServiceAdded) {
-                onServiceAdded();
+            if (onProductAdded) {
+                onProductAdded();
             }
         
             onClose();
 
         }
         catch(err){
-            console.error("Error adding service: ", err);
+            console.error("Error adding product: ", err);
         }
     };
 
@@ -84,7 +82,7 @@ function AddServiceModal({ isOpen, onClose, salonId, onServiceAdded }) {
                 
                 {/* Header */}
                 <div className="add-service-modal-header">
-                    <h2 className="add-service-header-title">Add a Service</h2>
+                    <h2 className="add-service-header-title">Add a Product</h2>
                     <button className="add-service-close-btn" onClick={handleBack}>
                         <X size={24} />
                     </button>
@@ -93,14 +91,14 @@ function AddServiceModal({ isOpen, onClose, salonId, onServiceAdded }) {
                 <hr className="add-service-divider" />
 
                 {/* Form with Details */}
-                <form onSubmit={submitService} className="add-service-form">
-                    <label className="add-service-label">Service:</label>
+                <form onSubmit={submitProduct} className="add-service-form">
+                    <label className="add-service-label">Product:</label>
                     
                     <input
                         type="text"
-                        name="serviceName"
-                        placeholder="Service Name"
-                        value={formData.serviceName}
+                        name="productName"
+                        placeholder="Product Name"
+                        value={formData.productName}
                         onChange={handleChange}
                         className="add-service-service-name-box"
                         required
@@ -121,9 +119,9 @@ function AddServiceModal({ isOpen, onClose, salonId, onServiceAdded }) {
                         
                         <input
                             type="number"
-                            name="duration"
-                            placeholder="Duration (minutes)"
-                            value={formData.duration}
+                            name="quantity"
+                            placeholder="Qty"
+                            value={formData.quantity}
                             onChange={handleChange}
                             className="add-service-price-box"
                             min="0"
@@ -138,7 +136,7 @@ function AddServiceModal({ isOpen, onClose, salonId, onServiceAdded }) {
                                 multiple
                                 accept="image/*"
                                 onChange={handleImageUpload}
-                                style={{display: 'none'}}
+                                style={{ display: 'none' }}
                             />
                         </label>
                     </div>
@@ -150,7 +148,7 @@ function AddServiceModal({ isOpen, onClose, salonId, onServiceAdded }) {
                             Back
                         </button>
                         <button type="submit" className="add-service-submit-btn">
-                            Add Service
+                            Add Product
                         </button>
                     </div>
                 </form>
@@ -159,4 +157,4 @@ function AddServiceModal({ isOpen, onClose, salonId, onServiceAdded }) {
     );
 }
 
-export default AddServiceModal;
+export default AddProductModal;
