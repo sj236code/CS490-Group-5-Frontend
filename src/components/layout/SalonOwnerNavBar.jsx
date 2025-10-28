@@ -10,11 +10,7 @@ function SalonOwnerNavBar({onClose}){
         navigate('/salonDashboard', {
             state: {
                 salon: {
-                    id: 1, 
-                    title: "Valene", 
-                    type: "Hair",
-                    avgRating: null,
-                    totalReviews: null
+                    id: 6
                 }
             }
         });

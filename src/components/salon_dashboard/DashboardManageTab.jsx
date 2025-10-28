@@ -1,31 +1,41 @@
 import { useState, useEffect } from 'react';
 import {Star, ChevronLeft, ChevronRight} from 'lucide-react';
-import SalonServiceCard from './SalonServiceCard';
-import SalonProductCard from './SalonProductCard';
-import BookAppt from './BookAppt';
+import DashboardServiceCard from './DashboardServiceCard';
+import DashboardProductCard from './DashboardProductCard';
+import AddServiceModal from './AddServiceModal';
+import AddProductModal from './AddProductModal';
+import EditServiceModal from './EditServiceModal';
+import EditProductModal from './EditProductModal';
 
-function SalonShopTab({salon}){
+
+function DashboardManageTab({salon}){
 
     // Service Section
     const [services, setServices] = useState([]);
     const [currentServiceIndex, setCurrentServiceIndex] = useState(0);
-    const [cart, setCart] = useState([]);
     const servicesPerPage = 3;
-
-    // Booking Service Modal
-    const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
-    const [selectedService, setSelectedService] = useState(null);
 
     // Product Section
     const [products, setProducts] = useState([]);
     const [currentProductIndex, setCurrentProductIndex] = useState(0);
     const productsPerPage = 3;
 
+    // Adding Service & Product
+    const [isAddServiceModalOpen, setIsAddServiceModalOpen] = useState(false);
+    const [isAddProductModalOpen, setIsAddProductModalOpen] = useState(false);
+
+    // Edit Service & Product
+    const [isEditServiceModalOpen, setIsEditServiceModalOpen] = useState(false);
+    const [selectedService, setSelectedService] = useState(null);
+    const [isEditProductModalOpen, setIsEditProductModalOpen] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState(null);
+
+
     // Load Services & Products when component mounts
     useEffect(() => {
         if (salon?.id){
             fetchServices();
-            //fetchProducts();
+            fetchProducts();
         }
     }, [salon?.id]);
 
@@ -53,8 +63,26 @@ function SalonShopTab({salon}){
             console.log("Products loaded: ", data.products);
         }
         catch (err){
-            console.error("Unable to fetch services. Error: ", err);
+            console.error("Unable to fetch products. Error: ", err);
         }
+    };
+
+    // Handle Modal Open & Close
+    const handleAddService = () => {
+        setIsAddServiceModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsAddServiceModalOpen(false);
+        setIsAddProductModalOpen(false);
+        setIsEditServiceModalOpen(false);
+        setSelectedService(null);
+        setIsEditProductModalOpen(false);
+        setSelectedProduct(null);
+    };
+
+    const handleAddProduct = () => {
+        setIsAddProductModalOpen(true);
     };
 
     // ServiceCard Handling
@@ -68,13 +96,6 @@ function SalonShopTab({salon}){
         if(currentServiceIndex + servicesPerPage < services.length){
             setCurrentServiceIndex(currentServiceIndex + servicesPerPage);
         }
-    };
-
-    const addServiceToCart = (service, salon) => {
-        setSelectedService(service);
-        setIsBookingModalOpen(true);
-        console.log("Booking modal for following service opening: ", service);
-        // Implement Post to DB
     };
 
     const currentServices = services.slice(currentServiceIndex, currentServiceIndex + servicesPerPage);
@@ -92,12 +113,21 @@ function SalonShopTab({salon}){
         }
     };
 
-    const addProductToCart = (product) => {
-        console.log("Product added to cart: ", product);
-        // Implement Post to DB
+    const currentProducts = products.slice(currentProductIndex, currentProductIndex + productsPerPage);
+
+    // Edit Service
+    const handleEditService = (service) => {
+        setSelectedService(service);
+        console.log("Updated service: ", service);
+        setIsEditServiceModalOpen(true);
     };
 
-    const currentProducts = products.slice(currentProductIndex, currentProductIndex + productsPerPage);
+    // Edit Product
+    const handleEditProduct = (product) => {
+        setSelectedProduct(product);
+        console.log("Updated product: ", product);
+        setIsEditProductModalOpen(true);
+    };
 
     // Handle Edge Case: A salon does not offer services or products
     if(services.length === 0 && products.length === 0){
@@ -111,7 +141,13 @@ function SalonShopTab({salon}){
     return (
         <div className="salon-shop-tab">
             {/* Services */}
-            <h2 className="shop-service-title">Available Services:</h2>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '50rem', marginBottom: '1rem' }}>
+                <h2 className="shop-service-title">Available Services:</h2>
+                <button onClick={handleAddService} className="add-service-btn">
+                        Add Service
+                </button>
+            </div>
+
             <div className="shop-carousel">
                 
                 {/* Left Arrow */}
@@ -120,10 +156,10 @@ function SalonShopTab({salon}){
                 {/* Services Grid */}
                 <div className="shop-grid">
                     {currentServices.map((service) => (
-                        <SalonServiceCard
+                        <DashboardServiceCard
                             key={service.id}
                             service={service}
-                            onClick={() => addServiceToCart(service, salon)}
+                            onClick={() => handleEditService(service)}
                         />
                     ))}
                 </div>
@@ -133,7 +169,13 @@ function SalonShopTab({salon}){
             </div>
 
             {/* Products */}
-            <h2 className="shop-service-title">Available Products:</h2>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '50rem', marginBottom: '1rem' }}>
+                <h2 className="shop-service-title">Available Products:</h2>
+                <button onClick={handleAddProduct} className="add-service-btn">
+                        Add Product
+                </button>
+            </div>
+
             <div className="shop-carousel">
                 
                 {/* Left Arrow */}
@@ -142,10 +184,10 @@ function SalonShopTab({salon}){
                 {/* Reuse Services Grid */}
                 <div className="shop-grid">
                     {currentProducts.map((product) => (
-                        <SalonProductCard
+                        <DashboardProductCard
                             key={product.id}
-                            service={product}
-                            onClick={() => addProductToCart(product)}
+                            product={product}
+                            onClick={() => handleEditProduct(product)}
                         />
                     ))}
                 </div>
@@ -154,15 +196,41 @@ function SalonShopTab({salon}){
                 <button onClick={nextProduct}> <ChevronRight size={32} /> </button>
             </div>
 
-            <BookAppt
-                isOpen={isBookingModalOpen}
-                onClose={() => setIsBookingModalOpen(false)}
-                service={selectedService}
-                salon={salon}
+            {/* AddService Modal */}
+            <AddServiceModal   
+                isOpen={isAddServiceModalOpen}
+                onClose={handleCloseModal}
+                salonId={salon?.id}
+                onServiceAdded={fetchServices}
             />
+
+            {/* AddProduct Modal */}
+            <AddProductModal
+                isOpen={isAddProductModalOpen}
+                onClose={handleCloseModal}
+                salonId={salon?.id}
+                onProductAdded={fetchProducts}
+            />
+
+            {/* Edit Service Modal */}
+            <EditServiceModal
+                isOpen={isEditServiceModalOpen}
+                onClose={handleCloseModal}
+                service={selectedService}
+                onServiceUpdated={fetchServices}
+            />
+
+            {/* Edit Product Modal */}
+            <EditProductModal
+                isOpen={isEditProductModalOpen}
+                onClose={handleCloseModal}
+                product={selectedProduct}
+                onServiceUpdated={fetchProducts}
+            />
+
         </div>
     );
 
 }
 
-export default SalonShopTab;
+export default DashboardManageTab;
