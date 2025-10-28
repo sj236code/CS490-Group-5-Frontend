@@ -156,6 +156,10 @@ body {
   background-color: rgba(75, 89, 69, 0.1);
 }
 
+.toggle-view-button {
+  margin-top: 10px;
+}
+
 .landing-search-bar {
   background-color: white;
   border-radius: 9999px;
