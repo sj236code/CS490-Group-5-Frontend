@@ -3,6 +3,7 @@ import {Star, ChevronLeft, ChevronRight} from 'lucide-react';
 import SalonServiceCard from './SalonServiceCard';
 import SalonProductCard from './SalonProductCard';
 import BookAppt from './BookAppt';
+import PurchaseProduct from './PurchaseProduct';
 
 function SalonShopTab({salon}){
 
@@ -21,11 +22,15 @@ function SalonShopTab({salon}){
     const [currentProductIndex, setCurrentProductIndex] = useState(0);
     const productsPerPage = 3;
 
+    // Purchase Product Modal
+    const [isPurchaseProductModalOpen, setPurchaseProductModalOpen] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState(null);
+
     // Load Services & Products when component mounts
     useEffect(() => {
         if (salon?.id){
             fetchServices();
-            //fetchProducts();
+            fetchProducts();
         }
     }, [salon?.id]);
 
@@ -93,7 +98,9 @@ function SalonShopTab({salon}){
     };
 
     const addProductToCart = (product) => {
-        console.log("Product added to cart: ", product);
+        console.log("PurchaseProduct Modal opening for: ", product);
+        setSelectedProduct(product);
+        setPurchaseProductModalOpen(true);
         // Implement Post to DB
     };
 
@@ -144,7 +151,7 @@ function SalonShopTab({salon}){
                     {currentProducts.map((product) => (
                         <SalonProductCard
                             key={product.id}
-                            service={product}
+                            product={product}
                             onClick={() => addProductToCart(product)}
                         />
                     ))}
@@ -158,6 +165,13 @@ function SalonShopTab({salon}){
                 isOpen={isBookingModalOpen}
                 onClose={() => setIsBookingModalOpen(false)}
                 service={selectedService}
+                salon={salon}
+            />
+
+            <PurchaseProduct
+                isOpen={isPurchaseProductModalOpen}
+                onClose={() => setPurchaseProductModalOpen(false)}
+                product={selectedProduct}
                 salon={salon}
             />
         </div>

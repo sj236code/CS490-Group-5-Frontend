@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 
 function BookAppt({isOpen, onClose, service, salon}){
     
     const [currentStep, setCurrentStep] = useState(1);
     const [bookingData, setBookingData] = useState({
-        user_id: '',
+        user_id: 1, //Temp hardcode the user booking
         service_id: '',
         quantity: 1,
         appt_date: '',
@@ -14,6 +14,16 @@ function BookAppt({isOpen, onClose, service, salon}){
         pictures: [],
         notes: ''
     });
+
+    useEffect(() => {
+        if(isOpen){
+            setBookingData(prev => ({
+                ...prev,
+                service_id: service?.id ?? '',
+            }));
+            setCurrentStep(1);
+        }
+    },[isOpen, service]);
 
     if (!isOpen){
         return null;
@@ -44,7 +54,7 @@ function BookAppt({isOpen, onClose, service, salon}){
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     user_id: bookingData.user_id,
-                    service_id: service.id,
+                    service_id: bookingData.service_id,
                     quantity: bookingData.quantity || 1, 
                     appt_date: bookingData.appt_date,
                     appt_time: bookingData.appt_time,
@@ -122,7 +132,7 @@ function BookAppt({isOpen, onClose, service, salon}){
                 className="add-service-form"
                 >
                 <label className="add-service-label">Service: {service.name}</label>
-                <label className="add-service-label">Salon: {salon.name}</label>
+                <label className="add-service-label">Salon: {salon.title}</label>
 
                 <label className="add-service-label">Date:</label>
                 <input

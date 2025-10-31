@@ -225,7 +225,7 @@ function DashboardManageTab({salon}){
                 isOpen={isEditProductModalOpen}
                 onClose={handleCloseModal}
                 product={selectedProduct}
-                onServiceUpdated={fetchProducts}
+                onProductUpdated={fetchProducts}
             />
 
         </div>

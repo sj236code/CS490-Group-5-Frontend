@@ -21,6 +21,7 @@ function EditProductModal({ isOpen, onClose, product, onProductUpdated }) {
                 quantity: product.quantity || "",
             });
             setIconFile(null);
+            setShowDeleteConfirm(false);
         }
     }, [product, isOpen]);
 
@@ -45,23 +46,19 @@ function EditProductModal({ isOpen, onClose, product, onProductUpdated }) {
         e.preventDefault();
 
         try {
-            // Create FormData object to match backend expectations
-            const formDataToSend = new FormData();
-            formDataToSend.append('product_id', product.id);
-            formDataToSend.append('name', formData.productName);
-            formDataToSend.append('price', formData.price);
-            formDataToSend.append('quantity', formData.quantity);
-            formDataToSend.append('is_active', 'true');
-            
-            // Add the icon file if a new one was selected
-            if (iconFile) {
-                formDataToSend.append('icon_file', iconFile);
-            }
+            // Json for backend
+            const payload = {
+                name: formData.productName,
+                price: parseFloat(formData.price),
+                stock_qty: parseInt(formData.quantity),
+                salon_id: product.salon_id, // optional
+            };
 
-            // const response = await fetch(`${import.meta.env.VITE_API_URL}/api/salon_register/update_service`, {
-            //     method: 'PUT',
-            //     body: formDataToSend,
-            // });
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/cart/update-product/${product.id}`, {
+                method: 'PUT',
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+            });
 
             const data = await response.json();
 
@@ -84,6 +81,40 @@ function EditProductModal({ isOpen, onClose, product, onProductUpdated }) {
         }
     };
 
+    const handleDeleteClick = () => {
+        setShowDeleteConfirm(true);
+    }
+
+    const cancelDelete = () => {
+        setShowDeleteConfirm(false);
+    }
+
+    const confirmDelete = async() => {
+        
+        if(!product?.id){
+            return;
+        }
+
+        try{
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/salon_register/delete_product/${product.id}`, {
+                method: 'DELETE',
+                headers: {Accept: 'application/json'}
+            });
+
+            const data = await res.json().catch(() => ({}));
+
+            console.log('Product deleted: ', data);
+            onProductUpdated?.();
+            onClose();
+        }
+        
+        catch (err){
+            console.error('Error deleting service: ', err);
+        }
+
+        setShowDeleteConfirm(false);
+    }
+
     // Reset form and close
     const handleBack = () => {
         setFormData({
@@ -92,6 +123,7 @@ function EditProductModal({ isOpen, onClose, product, onProductUpdated }) {
             duration: "",
         });
         setIconFile(null);
+        setShowDeleteConfirm(false);
         onClose();
     };
 
@@ -177,20 +209,25 @@ function EditProductModal({ isOpen, onClose, product, onProductUpdated }) {
 
                     {/* Footer Buttons */}
                     <div className="add-service-actions">
-                        <button 
-                            type="button" 
-                            onClick={handleBack} 
-                            className="add-service-back-btn"
-                        >
-                            Back
-                        </button>
-                        <button 
-                            type="submit" 
-                            className="add-service-submit-btn"
-                        > Save Changes
-                        </button>
+                        <button type="button" onClick={handleBack} className="add-service-back-btn">Back</button>
+                        <button type="button" onClick={handleDeleteClick} className="add-service-delete-btn">Delete Product</button>
+                        <button type="submit" className="add-service-submit-btn"> Save Changes </button>
                     </div>
                 </form>
+
+                {/* Delete Modal */}
+                {showDeleteConfirm && (
+                    <div className="add-service-modal-overlay" onClick={cancelDelete}>
+                        <div className="add-service-modal-content" onClick={(e) => e.stopPropagation()}>
+                            <h3>Delete product?</h3>
+                            <p>Are you sure you want to delete “{product?.name}”? This cannot be undone.</p>
+                            <div className="add-service-actions">
+                                <button onClick={cancelDelete} className="add-service-back-btn">Cancel</button>
+                                <button onClick={confirmDelete} className="add-service-delete-btn">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
