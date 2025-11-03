@@ -25,38 +25,32 @@ import { onAuthStateChanged } from "firebase/auth";
 
 function App() {
 
+  const ROLE_ORDER = ['CUSTOMER', 'OWNER', 'EMPLOYEE'];
+
   // Temp hardcode until endpoint created
-  const [userType, setUserType] = useState(null);
-  const [userId, setUserId] = useState(1);
   console.log("API URL:", import.meta.env.VITE_API_URL);
 
+  const [userType, setUserType] = useState(
+    localStorage.getItem('userType') || 'CUSTOMER'
+  );
+
   useEffect(() => {
-    // Temporarily Hardcode for testing -> Change when Merge with Auth Branch
-    // 1 -> Customer
-    // 2 -> Admin (WIP)
-    // 4 -> Salon Owner
-    // 6 -> Employee
+    localStorage.setItem('userType', userType);
+  }, [userType]);
 
-    fetch(`${import.meta.env.VITE_API_URL}/api/auth/user-type/${userId}`)
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("Response from /user-type:", data);
-        if (data.status === "success"){
-          setUserType(data.role);
-        }
-        else{
-          setUserType("user");
-        }
-      })
-  },[userId]);
-
-  const toggleUser = () => {
-    setUserId((prevId) => (prevId === 1 ? 4 : 1));
-  }
+  // Toggle cycles through CUSTOMER → OWNER → EMPLOYEE → back to CUSTOMER
+  const toggleUser = (nextRole) => {
+    if (nextRole) {
+      setUserType(nextRole);
+    } else {
+      const i = ROLE_ORDER.indexOf(userType);
+      setUserType(ROLE_ORDER[(i + 1) % ROLE_ORDER.length]);
+    }
+  };
 
   return (
     <>
-      <Header userType={userType} userId={userId} toggleUser={toggleUser} />
+      <Header userType={userType} toggleUser={toggleUser} />
       <hr />
       <Routes>
         <Route path="/" element={<LandingPage />} />

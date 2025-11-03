@@ -14,7 +14,7 @@ import SalonOwnerCartPanel from './SalonOwnerCartPanel';
 import LoginButton from './LoginButton.jsx';
 
 
-function Header({userType, userId, toggleUser}){
+function Header({userType, toggleUser}){
 
     // Is NavBar open
     const[navBar, setNavBar] = useState(false);
@@ -80,10 +80,17 @@ function Header({userType, userId, toggleUser}){
             <header className='header'>
                 {/* If MenuButton clicked, open NavBar */}
                 <MenuButton onClick={toggleNavBar} /> 
-                <div> <button className="sign-in-button toggle-view-button" onClick={toggleUser}> 
+                {/* <div> <button className="sign-in-button toggle-view-button" onClick={toggleUser}> 
                     {userId === 1 ? 'Switch to Salon Owner View' : "Switch to Customer View"} 
-                    </button> <p style={{ marginTop: '10px', color: '#4B5945' }}> 
-                    Current User ID: <strong>{userId}</strong> ({userType}) </p> 
+                    </button> <p style={{ marginTop: '10px', color: '#4B5945' }}/> 
+                </div> */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <button
+                    className="sign-in-button toggle-view-button"
+                    onClick={() => toggleUser()}
+                >
+                    Switch View ({userType})
+                </button>
                 </div>
                 {/* Logo (todo: if clicked, return back to LandingPage) */}
                 <div className='logo' onClick={navigateToLanding} style={{cursor: 'pointer'}}>
