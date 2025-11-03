@@ -55,11 +55,11 @@ function SalonsSection(){
     // Async function to fetch top salons-generic (not specific to a loc) from backend API
     const fetchSalons = async (lat, long) => {
         try{
-            let url='/api/salons/generic';
+            let url=`${import.meta.env.VITE_API_URL}/api/salons/generic`;
 
             // If location allowed, use top-rated near user endpoint
             if(lat && long){
-                url=`/api/salons/top-rated?user_lat=${lat}&user_long=${long}`;
+                url=`${import.meta.env.VITE_API_URL}/api/salons/top-rated?user_lat=${lat}&user_long=${long}`;
             }
 
             const response = await fetch(url);
@@ -98,7 +98,7 @@ function SalonsSection(){
             <section className="salons-section">
                 <p className='salons-section-title'>Browse Top-Rated Salons</p>
                 <div className='salon-grid'>
-                    {salons.map((salon) => (
+                    {salons.slice(0,4).map((salon) => (
                         <SalonCard
                             key={salon.id}
                             title={salon.title}

@@ -1,9 +1,9 @@
-// Modeled after ServiceCard used in SalonDetailsPage
+// Modeled after ServiceCard used in LandingPage
 // Made to show salon-specific details like price & rating
 import { useState, useEffect } from 'react';
 import {Star, Sparkle, ChevronLeft, ChevronRight, Rows4, BookDashed} from 'lucide-react';
 
-function ServiceCard({service, onClick}) {
+function SalonServiceCard({service, onClick}) {
 
     const [imageError, setImageError] = useState(false);
     const rating = service.rating || service.avgRating || 4;
@@ -44,6 +44,10 @@ function ServiceCard({service, onClick}) {
         return stars;
     };
 
+    const handleBooking = () => {
+        console.log("Handling Booking...");
+    };
+
     const handleImageError = () => {
         setImageError(true);
     };
@@ -54,7 +58,11 @@ function ServiceCard({service, onClick}) {
             <div className="salon-service-image">
 
                 {service.icon_url && !imageError ? (
-                    <img src={service.icon_url} alt={service.name} onError={handleImageError} />
+                    <img 
+                        src={service.icon_url} 
+                        alt={service.name}
+                        onError={handleImageError}
+                    />
                 ) : (
                     <div className="salon-service-placeholder">
                         <span><Sparkle /></span>
@@ -74,9 +82,16 @@ function ServiceCard({service, onClick}) {
                 {calcStars()}
             </div>
 
+            {/* Price and Book Button */}
+            <div className="salon-service-footer">
+                <span className="salon-service-price">
+                    ${service.price ? service.price.toFixed(2) : '0.00'}
+                </span>
+                <button className="salon-service-book-btn" onClick={handleBooking}>Book</button>
+            </div>
         </div>
     );
 
 }
 
-export default ServiceCard;
+export default SalonServiceCard;

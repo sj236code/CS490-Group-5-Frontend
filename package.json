@@ -10,7 +10,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "imagesloaded": "^5.0.0",
+    "lightgallery": "^2.9.0",
+    "firebase": "^12.4.0",
     "lucide-react": "^0.546.0",
+    "masonry-layout": "^4.2.2",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-router-dom": "^7.9.4"

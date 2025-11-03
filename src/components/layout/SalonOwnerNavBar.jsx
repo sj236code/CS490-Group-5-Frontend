@@ -1,7 +1,21 @@
-import { ChevronLeft, CircleUserRound, ShieldCheck } from 'lucide-react';
+import { ChevronLeft, CircleUserRound, ShieldCheck, LayoutDashboard } from 'lucide-react';
+import { useNavigate} from 'react-router-dom';
 
 /* NavBar component for an salon owner user */
 function SalonOwnerNavBar({onClose}){
+
+    const navigate = useNavigate();
+
+    const navToDashboard = () => {
+        navigate('/salonDashboard', {
+            state: {
+                salon: {
+                    id: 6
+                }
+            }
+        });
+        onClose();
+    }
 
     return(
         <div className="nav-bar">
@@ -21,6 +35,15 @@ function SalonOwnerNavBar({onClose}){
                     </div>
                 </div>
             </div>
+
+            {/* Navigation Links */}
+            <div className="nb-links-section">
+                <button className="nb-link-button" onClick={navToDashboard}>
+                    <LayoutDashboard size={20} />
+                    <span>Dashboard</span>
+                </button>
+            </div>
+
         </div>
         
     );
