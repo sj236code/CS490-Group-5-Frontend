@@ -68,7 +68,7 @@ function SalonDetailsPage() {
             </div>
 
             {/* Salon Info */}
-            <div>
+            <div className="salon-details-header">
                 <h1 className="salon-details-name">{salonDetails.title}</h1>
                 <div className="salon-details-info">
                     <span style={{marginRight: '5px'}}>{salonDetails.type}</span>

@@ -62,7 +62,7 @@ function SalonDashboard() {
                 <div className="salon-hero-overlay"></div>
             </div>
 
-            <div>
+            <div className="salon-details-header">
                 <h1 className="salon-details-name">{salonDetails.name}</h1>
                 <div className="salon-details-info">
                     <span style={{ marginRight: '5px' }}>{salonDetails.type}</span>
