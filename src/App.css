@@ -1423,3 +1423,128 @@ body {
   width: 100%;
   margin-top: 1rem;
 }
+
+/* ---- Uptime Page ---- */
+.uptime-page {
+  background-color: #f5f7f4;
+  padding: 1.5rem 2rem;
+  color: #4B5945;
+  font-family: "Georgia", serif;
+}
+
+/* Header Section */
+.uptime-header {
+  background-color: #4B5945;
+  color: white;
+  border-radius: 10px 10px 0 0;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.uptime-controls select {
+  background-color: #dbe5d2;
+  border: 1px solid #4B5945;
+  border-radius: 6px;
+  margin-left: 1rem;
+  padding: 0.4rem;
+  color: #4B5945;
+  font-weight: bold;
+}
+
+/* Grid Layout */
+.uptime-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.2rem;
+  margin: 1.5rem 0;
+}
+
+/* Cards */
+.uptime-card {
+  background-color: #eef3e7;
+  border-radius: 10px;
+  padding: 1rem;
+  text-align: center;
+  min-height: 100px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+
+.uptime-card h4 {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Color Schemes */
+.uptime-card.green {
+  background-color: #C8E6C9;
+}
+.uptime-card.gray {
+  background-color: #E8EAE6;
+}
+.uptime-card.red {
+  background-color: #FFCDD2;
+}
+.uptime-card.neutral {
+  background-color: #F0F3EC;
+}
+
+/* Progress Bar */
+.progress-bar {
+  background-color: #cdd5c1;
+  border-radius: 5px;
+  height: 8px;
+  width: 80%;
+  margin: 0.3rem auto;
+  overflow: hidden;
+}
+.progress-fill {
+  background-color: #4B5945;
+  height: 8px;
+  border-radius: 5px;
+}
+.progress-fill.red {
+  background-color: #C62828;
+}
+
+/* Error Section */
+.error-section {
+  background-color: #eef3e7;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-top: 2rem;
+  border: 1px solid #4B5945;
+}
+.no-error-text {
+  color: #2e7d32;
+  font-weight: bold;
+}
+.expand-btn, .collapse-btn {
+  background-color: #4B5945;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  margin-top: 1rem;
+  cursor: pointer;
+}
+.expand-btn:hover, .collapse-btn:hover {
+  background-color: #66785F;
+}
+
+/* Error Log Box */
+.error-log {
+  background-color: #f8d7da;
+  padding: 1rem;
+  border-radius: 6px;
+  border: 1px solid #c62828;
+}
+.error-time {
+  color: #b71c1c;
+  font-weight: bold;
+}
+.error-details {
+  color: #b71c1c;
+  margin-bottom: 0.3rem;
+}

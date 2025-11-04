@@ -19,7 +19,7 @@ function AdminDashboard() {
         return <DemographicsPage />;
       case "Reports":
         return <ReportsPage />;
-      case "SystemHealth":
+      case "ViewUptime":
         return <ViewUptimePage />;
       default:
         return <AnalyticsPage />;
