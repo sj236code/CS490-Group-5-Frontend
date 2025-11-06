@@ -18,10 +18,13 @@ import RegisterSalonSuccess from './pages/Sign_up/Salon_registration_success.jsx
 import EmployeeRegistration from './pages/Sign_up/Employee_registration.jsx';
 import EmployeeRegistrationSuccess from './pages/Sign_up/Employee_registration_success.jsx';
 import ResetPassword from './pages/Sign_in/Reset_pass.jsx';
+import Checkout from './components/checkout&payment/Checkout.jsx';
+
 
 // Firebase
 import { auth } from "./firebase";
 import { onAuthStateChanged } from "firebase/auth";
+
 
 function App() {
 
@@ -78,6 +81,8 @@ function App() {
         <Route path="/salonDashboard" element={<SalonDashboard />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/faq" element={<FAQPage />} />
+
+        <Route path="/checkout" element={<Checkout />} />
       </Routes>
     </>
   );
