@@ -18,6 +18,8 @@ import RegisterSalonSuccess from './pages/Sign_up/Salon_registration_success.jsx
 import EmployeeRegistration from './pages/Sign_up/Employee_registration.jsx';
 import EmployeeRegistrationSuccess from './pages/Sign_up/Employee_registration_success.jsx';
 import ResetPassword from './pages/Sign_in/Reset_pass.jsx';
+import AdminDashboard from './pages/AdminDashboard.jsx';
+//import CustomerAppointments from './pages/CustomerAppointments.jsx'
 import Checkout from './pages/checkout&payment/Checkout.jsx';
 
 
@@ -98,8 +100,14 @@ function App() {
         <Route path="/search" element={<SearchPage />} />
         <Route path="/salon" element={<SalonDetailsPage />} />
         <Route path="/salonDashboard" element={<SalonDashboard />} />
+
+        <Route path="/adminDashboard" element={<AdminDashboard />} />
+
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/faq" element={<FAQPage />} />
+        <Route path="/admin-dashboard" element={<AdminDashboard />} />
+        {/* <Route path="/customerAppointments" element={<CustomerAppointments} /> */}
+
 
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/payment-confirmation" element={<PaymentConfirmation />} />

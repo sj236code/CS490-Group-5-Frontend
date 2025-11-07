@@ -2,7 +2,7 @@ import { ChevronLeft, CircleUserRound, ShieldCheck, Logout } from 'lucide-react'
 import { useNavigate } from 'react-router-dom';
 
 /* NavBar component for an customer user */
-function CustomerNavBar({onClose}){
+function AdminNavBar({onClose}){
 
     const navigate = useNavigate();
 
@@ -10,17 +10,6 @@ function CustomerNavBar({onClose}){
         navigate(path);
         onClose();
     } 
-
-    const handleLogout = async () => {
-        try {
-            await signOut(auth); // Sign out Firebase user
-            navigate('/signup');  // Redirect to SignUp page
-            onClose();            // Close navbar
-        } 
-        catch (error) {
-            console.error("Logout failed:", error);
-        }
-    };
 
     return (
         <div className="nav-bar">
@@ -33,7 +22,7 @@ function CustomerNavBar({onClose}){
                 <CircleUserRound className="nb-profile-icon" />
                 <div className="nb-profile-info">
                 <p className="nb-user-name">John Smith</p>
-                <p className="nb-user-tag">Customer</p>
+                <p className="nb-user-tag">Admin</p>
                 <div className="nb-verified">
                     <ShieldCheck className="nb-verified-icon" />
                     <span>Verified</span>
@@ -45,12 +34,7 @@ function CustomerNavBar({onClose}){
             {/* MyJade Account */}
             <div className="nb-section">
                 <div className="nb-section-title">MyJade Account</div>
-                <button className="nb-text-link" onClick={() => navTo('/customerAppointments')}>Appointments</button>
-                <button className="nb-text-link" onClick={() => navTo('/wallet')}>My Wallet</button>
-                <button className="nb-text-link" onClick={() => navTo('/gallery')}>Gallery</button>
-                <button className="nb-text-link" onClick={() => navTo('/rewards')}>Loyalty &amp; Rewards</button>
-                <button className="nb-text-link" onClick={() => navTo('/payments')}>Payments</button>
-                <button className="nb-text-link" onClick={handleLogout}>Log Out</button>
+                <button className="nb-text-link" onClick={() => navTo('/adminDashboard')}>Dashboard</button>
             </div>
 
             {/* Footer */}
@@ -65,4 +49,4 @@ function CustomerNavBar({onClose}){
 
 }
 
-export default CustomerNavBar;
+export default AdminNavBar;

@@ -13,6 +13,7 @@ import EmployeeCartPanel from './EmployeeCartPanel';
 import SalonOwnerCartPanel from './SalonOwnerCartPanel';
 import AdminCartPanel from './AdminCartPanel';
 import LoginButton from './LoginButton.jsx';
+import AdminNavBar from './AdminNavBar.jsx';
 
 
 function Header({userType, userId, onPickRole, onCycleRole }){
@@ -55,6 +56,9 @@ function Header({userType, userId, onPickRole, onCycleRole }){
         }
         else if(userType === 'OWNER'){
             return <SalonOwnerNavBar onClose={toggleNavBar} />
+        }
+        else if(userType === 'ADMIN'){
+            return <AdminNavBar onClose={toggleNavBar} />
         }
         else{
             return <NavBar onClose={toggleNavBar} />
