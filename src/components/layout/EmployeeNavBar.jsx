@@ -1,7 +1,15 @@
 import { ChevronLeft, CircleUserRound, ShieldCheck } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 /* NavBar component for an employee user */
 function EmployeeNavBar({onClose}){
+
+    const navigate = useNavigate();
+
+    const navTo = (path) => {
+        navigate(path);
+        onClose();
+    }
 
     return(
         <div className="nav-bar">
@@ -21,6 +29,29 @@ function EmployeeNavBar({onClose}){
                     </div>
                 </div>
             </div>
+
+            {/* MyJade Account */}
+            <div className="nb-section">
+                <div className="nb-section-title">MyJade Account</div>
+                <button className="nb-text-link" onClick={() => navTo('/appointments')}>Appointments</button>
+                <button className="nb-text-link" onClick={() => navTo('/scheduling')}>Scheduling</button>
+                <button className="nb-text-link" onClick={() => navTo('/paymentportal')}>Payment Portal</button>
+                <button className="nb-text-link" onClick={() => navTo('/messages')}>Messages</button>
+            </div>
+
+            {/* Salon Owner? */}
+            <div className="nb-section">
+                <div className="nb-section-title">Salon Owner?</div>
+                <button className="nb-text-link" onClick={() => navTo('/register-salon')}>Register your salon</button>
+            </div>
+
+            {/* Footer */}
+            <div className="nb-footer">
+                <button className="nb-footer-link" onClick={() => navTo('/contact')}>Contact</button>
+                <button className="nb-footer-link" onClick={() => navTo('/faq')}>FAQ</button>
+                <div className="nb-footer-link">Copyright ©</div>
+            </div>  
+
         </div>
     );
 

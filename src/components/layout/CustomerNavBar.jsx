@@ -6,15 +6,10 @@ function CustomerNavBar({onClose}){
 
     const navigate = useNavigate();
 
-    const handleContactClick = () => {
-        navigate('/contact');
-        onClose(); 
-    };
-
-    const handleFAQClick = () => {
-        navigate('/faq');
+    const navTo = (path) => {
+        navigate(path);
         onClose();
-    };
+    } 
 
     const handleLogout = async () => {
         try {
@@ -47,18 +42,35 @@ function CustomerNavBar({onClose}){
 
             </div>
 
+            {/* MyJade Account */}
+            <div className="nb-section">
+                <div className="nb-section-title">MyJade Account</div>
+                <button className="nb-text-link" onClick={() => navTo('/appointments')}>Appointments</button>
+                <button className="nb-text-link" onClick={() => navTo('/wallet')}>My Wallet</button>
+                <button className="nb-text-link" onClick={() => navTo('/gallery')}>Gallery</button>
+                <button className="nb-text-link" onClick={() => navTo('/rewards')}>Loyalty &amp; Rewards</button>
+                <button className="nb-text-link" onClick={() => navTo('/payments')}>Payments</button>
+                <button className="nb-text-link" onClick={handleLogout}>Log Out</button>
+            </div>
+
+            {/* Salon Owner? */}
+            <div className="nb-section">
+                <div className="nb-section-title">Salon Owner?</div>
+                <button className="nb-text-link" onClick={() => navTo('/register-salon')}>Register your salon</button>
+            </div>
+
+            {/* Payments (standalone)
+            <div className="nb-section">
+                <button className="nb-text-link" onClick={() => navTo('/payments')}>Payments</button>
+            </div> */}
+
             {/* Footer */}
             <div className="nb-footer">
-                <button onClick={handleContactClick} className="nb-footer-link">Contact</button>
-                <button onClick={handleFAQClick} className="nb-footer-link">FAQ</button>
-                <button onClick={handleLogout} className="nb-footer-link">
-                {/* <LogOut className="logout-icon" /> */} 
-                Logout
-                </button>
-                <div className="footer-copyright">
-                Copyright <span className="copyright-icon">©</span>
-                </div>
-            </div>
+                <button className="nb-footer-link" onClick={() => navTo('/contact')}>Contact</button>
+                <button className="nb-footer-link" onClick={() => navTo('/faq')}>FAQ</button>
+                <div className="nb-footer-link">Copyright ©</div>
+            </div>  
+
         </div>
     );
 
