@@ -11,10 +11,11 @@ import CartPanel from './CartPanel'; // Unregistered User Nav Bar
 import CustomerCartPanel from './CustomerCartPanel';
 import EmployeeCartPanel from './EmployeeCartPanel';
 import SalonOwnerCartPanel from './SalonOwnerCartPanel';
+import AdminCartPanel from './AdminCartPanel';
 import LoginButton from './LoginButton.jsx';
 
 
-function Header({userType, userId, toggleUser}){
+function Header({userType, userId, onPickRole, onCycleRole }){
 
     // Is NavBar open
     const[navBar, setNavBar] = useState(false);
@@ -65,10 +66,13 @@ function Header({userType, userId, toggleUser}){
             return <CustomerCartPanel onClose={toggleCartPanel} />
         }
         else if(userType === 'EMPLOYEE'){
-            return <EmployeeCartPanel onClose={toggleCartPanel} />
+            return <EmployeeCartPanel onClose={toggleCartPanel} userId={userId}/>
         }
         else if(userType === 'OWNER'){
-            return <SalonOwnerCartPanel onClose={toggleCartPanel} />
+            return <SalonOwnerCartPanel onClose={toggleCartPanel} userId={userId}/>
+        }
+        else if(userType === 'ADMIN'){
+            return <AdminCartPanel onClose={toggleCartPanel} userId={userId}/>
         }
         else{
             return <CartPanel onClose={toggleCartPanel} />
@@ -80,10 +84,13 @@ function Header({userType, userId, toggleUser}){
             <header className='header'>
                 {/* If MenuButton clicked, open NavBar */}
                 <MenuButton onClick={toggleNavBar} /> 
-                <div> <button className="sign-in-button toggle-view-button" onClick={toggleUser}> 
-                    {userId === 1 ? 'Switch to Salon Owner View' : "Switch to Customer View"} 
-                    </button> <p style={{ marginTop: '10px', color: '#4B5945' }}> 
-                    Current User ID: <strong>{userId}</strong> ({userType}) </p> 
+
+                {/* simple role switch pills */}
+                <div className="role-switch">
+                    <button className={`role-btn ${userType === 'CUSTOMER' ? 'active' : ''}`} onClick={() => onPickRole('CUSTOMER')}>Customer</button>
+                    <button className={`role-btn ${userType === 'OWNER' ? 'active' : ''}`} onClick={() => onPickRole('OWNER')}>Owner</button>
+                    <button className={`role-btn ${userType === 'ADMIN' ? 'active' : ''}`} onClick={() => onPickRole('ADMIN')}>Admin</button>
+                    <button className={`role-btn ${userType === 'EMPLOYEE' ? 'active' : ''}`} onClick={() => onPickRole('EMPLOYEE')}>Employee</button>
                 </div>
                 {/* Logo (todo: if clicked, return back to LandingPage) */}
                 <div className='logo' onClick={navigateToLanding} style={{cursor: 'pointer'}}>

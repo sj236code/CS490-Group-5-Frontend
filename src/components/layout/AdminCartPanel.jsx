@@ -1,12 +1,12 @@
 import RestrictedCartPanel from './RestrictedCartPanel';
 
 /* CartPanel component for any user */
-function EmployeeCartPanel({ onClose, userId, userName, onLogout }){
+function AdminCartPanel({ onClose, userId, userName, onLogout }){
 
   return (
     <RestrictedCartPanel
       onClose={onClose}
-      userType="Employee"
+      userType="Admin"
       userId={userId}
       userName={userName}
       onLogout={onLogout}
@@ -15,4 +15,4 @@ function EmployeeCartPanel({ onClose, userId, userName, onLogout }){
 
 }
 
-export default EmployeeCartPanel
+export default AdminCartPanel
