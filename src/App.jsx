@@ -18,6 +18,8 @@ import RegisterSalonSuccess from './pages/Sign_up/Salon_registration_success.jsx
 import EmployeeRegistration from './pages/Sign_up/Employee_registration.jsx';
 import EmployeeRegistrationSuccess from './pages/Sign_up/Employee_registration_success.jsx';
 import ResetPassword from './pages/Sign_in/Reset_pass.jsx';
+import AdminDashboard from './pages/AdminDashboard.jsx';
+//import CustomerAppointments from './pages/CustomerAppointments.jsx'
 
 // Firebase
 import { auth } from "./firebase";
@@ -92,8 +94,13 @@ function App() {
         <Route path="/search" element={<SearchPage />} />
         <Route path="/salon" element={<SalonDetailsPage />} />
         <Route path="/salonDashboard" element={<SalonDashboard />} />
+
+        <Route path="/adminDashboard" element={<AdminDashboard />} />
+
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/faq" element={<FAQPage />} />
+        {/* <Route path="/customerAppointments" element={<CustomerAppointments} /> */}
+
       </Routes>
     </>
   );
