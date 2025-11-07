@@ -1799,3 +1799,155 @@ body {
   padding: 4px 0;
 }
 .nb-footer-link:hover { text-decoration: underline; }
+
+/* Customer MyWallet */
+.wallet-container {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 24px 16px 80px;
+}
+
+.wallet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.wallet-title {
+  margin: 0;
+  font-size: 20px;
+  color: #1f2328;
+}
+
+.wallet-subtitle {
+  margin: 6px 0 0;
+  font-size: 14px;
+  color: #6b6f76;
+}
+
+.wallet-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #cdd6c7;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: #e6f0dd;
+  color: #2a3823;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.wallet-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border: 1px solid #e6e7e9;
+  background: #fff;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 12px;
+}
+
+.wallet-brand {
+  color: #fff;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  width: 44px;
+  text-align: center;
+}
+
+.wallet-brand.visa {
+  background-color: #356ae6;
+}
+
+.wallet-brand.mc {
+  background-color: #e53935;
+}
+
+.wallet-info {
+  text-align: left;
+}
+
+.wallet-number {
+  font-weight: 600;
+  color: #1f2328;
+}
+
+.wallet-default-badge {
+  margin-left: 6px;
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: #e6f0dd;
+  color: #2a3823;
+}
+
+.wallet-text {
+  font-size: 14px;
+  color: #6b6f76;
+  margin-top: 3px;
+}
+
+.wallet-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.wallet-set-btn,
+.wallet-remove-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.wallet-set-btn {
+  border: 1px solid #e6e7e9;
+  background: #fff;
+}
+
+.wallet-remove-btn {
+  border: 1px solid #f1d4d2;
+  background: #fdeeee;
+  color: #a12b25;
+}
+
+.wallet-security-box {
+  border: 1px solid #e6e7e9;
+  background: #fafbfb;
+  border-radius: 10px;
+  padding: 16px;
+  margin-top: 20px;
+}
+
+.wallet-security-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.wallet-info-icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid #cfd3d8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: #6b6f76;
+}
+
+.wallet-security-title {
+  font-weight: 600;
+  color: #1f2328;
+}
