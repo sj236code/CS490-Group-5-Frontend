@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react';
+import { useNavigate} from 'react-router-dom';
 import { ChevronRight, Trash2, ShoppingCart, Scissors, Milk } from 'lucide-react';
 
 function CustomerCartPanel({ onClose }) {
 
     const [cart, setCart] = useState(null); // Cart data
+
+    const navigate = useNavigate();
 
     // Runs once component mounts
     useEffect(() => {
