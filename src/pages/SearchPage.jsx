@@ -6,23 +6,25 @@ import SalonCard from '../components/landing/SalonCard';
 function SearchPage() {
     const location = useLocation();
     const navigate = useNavigate();
-    const { results, cities, query, city } = location.state || {}; // Passed from LandingSearchBar
+    const { results, cities:passedCities, query, city } = location.state || {}; // Passed from LandingSearchBar
 
     const [salons, setSalons] = useState([]); // Full list of salons fetched from backend
     const [searchQuery, setSearchQuery] = useState(query || ''); // Store search query text
+    const [cities, setCities] = useState(passedCities || []);
 
     // Store Filter States
     const [typeFilter, setTypeFilter] = useState('Any Type');
     const [priceFilter, setPriceFilter] = useState('Any Price');
     const [ratingFilter, setRatingFilter] = useState('Any Rating');
-    const [cityFilter, setCityFilter] = useState(city);
+    const [cityFilter, setCityFilter] = useState(city || '');
     const [distanceFilter, setDistanceFilter] = useState('Any Distance');
     const [sortBy, setSortBy] = useState('Best Match');
 
-    // Effects- multiple needed 
-
     // Fetches all salons from backend- run on mount
     useEffect(() => {
+        if (!passedCities || passedCities.length === 0) {
+            fetchCities();
+        }
         fetchSalons();
     }, []);
 
@@ -30,6 +32,25 @@ function SearchPage() {
     useEffect(() => {
         fetchSalons();
     }, [searchQuery, typeFilter, priceFilter, ratingFilter, cityFilter, distanceFilter, sortBy]);
+
+    // Effects- multiple needed 
+    // Async function to fetch service categories from backend API-- taken from LandingPage
+    const fetchCities = async () => {
+        try {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/salons/cities`);
+
+            const data = await response.json();
+
+            console.log('Cities Successfully Received.', data.cities?.length);
+
+            setCities(data.cities || []);
+
+            //console.log('End of Async Function.');
+        }
+        catch (err) {
+            console.error('Error fetching cities: ', err);
+        }
+    };
 
     // Fetch Salons from backend
     const fetchSalons = async () => {
@@ -55,7 +76,7 @@ function SearchPage() {
             if (distanceFilter !== "Any Distance") {
                 final_search_query.append("distance", distanceFilter)
             }
-            if (cityFilter !== "All Cities") {
+            if (cityFilter !== "All Cities" && cityFilter !== "") {
                 final_search_query.append("location", cityFilter);
             }
 
@@ -125,7 +146,7 @@ function SearchPage() {
                     <div className='filter-group'>
                         <label className='filter-name'>Type</label>
                         <select
-                            value={cityFilter}
+                            value={typeFilter}
                             onChange={(e) => setTypeFilter(e.target.value)}
                             className='selected-filter'>
                             <option>Any Type</option>

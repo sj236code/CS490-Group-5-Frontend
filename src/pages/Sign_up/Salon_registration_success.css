@@ -1,0 +1,63 @@
+.salon-success-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #D9E9CF;
+    padding: 20px;
+}
+
+.salon-success-container {
+    width: 100%;
+    max-width: 650px;
+    background: #F0F0F0;
+    border-radius: 40px;
+    padding: 50px 40px;
+    text-align: center;
+}
+
+.salon-success-title {
+    font-size: 32px;
+    color: #000000;
+    margin: 0 0 10px 0;
+}
+
+.salon-title-line {
+    width: 100%;
+    height: 2px;
+    background: #879D85;
+    margin: 0 0 40px 0;
+}
+
+.salon-thank-you {
+    font-size: 36px;
+    color: #000000;
+    margin: 0 0 30px 0;
+}
+
+.salon-checkmark {
+    width: 100px;
+    height: 100px;
+    background: #5A8F5A;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 30px auto;
+}
+
+.salon-message {
+    margin-top: 20px;
+}
+
+.salon-message-bold {
+    font-size: 18px;
+    color: #000000;
+    margin: 0 0 5px 0;
+}
+
+.salon-message-normal {
+    font-size: 16px;
+    color: #6B6B6B;
+    margin: 0;
+}
