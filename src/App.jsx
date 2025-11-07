@@ -105,6 +105,7 @@ function App() {
 
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/faq" element={<FAQPage />} />
+        <Route path="/admin-dashboard" element={<AdminDashboard />} />
         {/* <Route path="/customerAppointments" element={<CustomerAppointments} /> */}
 
 
