@@ -26,16 +26,15 @@ import { onAuthStateChanged } from "firebase/auth";
 function App() {
 
   // Temp hardcode until endpoint created
+
+  const DEMO_IDS = { CUSTOMER: 7, OWNER: 2, ADMIN: 5, EMPLOYEE: 11};
+
   const [userType, setUserType] = useState(null);
   const [userId, setUserId] = useState(1);
   console.log("API URL:", import.meta.env.VITE_API_URL);
 
   useEffect(() => {
     // Temporarily Hardcode for testing -> Change when Merge with Auth Branch
-    // 1 -> Customer
-    // 2 -> Admin (WIP)
-    // 4 -> Salon Owner
-    // 6 -> Employee
 
     fetch(`${import.meta.env.VITE_API_URL}/api/auth/user-type/${userId}`)
       .then((res) => res.json())
@@ -50,13 +49,30 @@ function App() {
       })
   },[userId]);
 
+  const pickRole = (role) => {
+    if (!DEMO_IDS[role]) return;
+    setUserId(DEMO_IDS[role]);
+  };
+
+  const cycleRole = () => {
+    const order = ["CUSTOMER", "OWNER", "ADMIN", "EMPLOYEE"];
+    const i = order.indexOf(userType);
+    const next = order[(i + 1) % order.length] || "CUSTOMER";
+    pickRole(next);
+  };
+
   const toggleUser = () => {
     setUserId((prevId) => (prevId === 1 ? 8 : 1));
   }
 
   return (
     <>
-      <Header userType={userType} userId={userId} toggleUser={toggleUser} />
+      <Header
+        userType={userType}
+        userId={userId}
+        onPickRole={pickRole}
+        onCycleRole={cycleRole}
+      />
       <hr />
       <Routes>
         <Route path="/" element={<LandingPage />} />

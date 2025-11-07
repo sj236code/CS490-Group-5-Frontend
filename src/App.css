@@ -81,9 +81,9 @@ body {
   position: fixed;
   top: 0;
   left: 0;
-  width: 250px;
+  width: 310px;
   height: 100vh;
-  background-color: #D9E9CF;
+  background-color: #66785F;
   padding: 1rem;
   z-index: 1000;
   display: flex;
@@ -469,13 +469,13 @@ body {
   align-items: flex-start;
   gap: 12px;
   margin-top: 2.5rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 150px;
 }
 
 .nb-profile-icon {
   width: 45px;
   height: 45px;
-  color: #4B5945;
+  color: #F0F0F0;
 }
 
 .nb-profile-info {
@@ -485,15 +485,15 @@ body {
 }
 
 .nb-user-name {
-  font-weight: bold;
-  color: #4b5945;
+  font-weight: 400;
+  color: #F0F0F0;
   margin: 0;
   font-size: 1.5rem;
 }
 
 .nb-user-tag {
   font-size: 0.9rem;
-  color: #4b5945;
+  color: #F0F0F0;
   margin: 3px 0;
 }
 
@@ -501,7 +501,7 @@ body {
   display: flex;
   align-items: center;
   font-size: 0.9rem;
-  color: grey;
+  color: #F0F0F0;
 }
 
 .nb-verified-icon {
@@ -1170,3 +1170,96 @@ body {
   font-weight: 700;
   color: #2F3A2B;
 }
+
+/* SalonOwner CartPanel */
+
+.empty-card {
+  background-color: #EEF6E8;
+  border: 1px solid #B6CEB4;
+  border-radius: 12px;
+  padding: 16px;
+  margin: 16px 8px 0 36px; /* room for close button */
+  text-align: left;
+}
+
+.empty-icon {
+  width: 40px; height: 40px;
+  background-color: #D9E9CF;
+  border: 2px solid #4B5945;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 10px;
+  font-size: 18px;
+}
+
+.empty-title {
+  color: #2F3A2B;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.empty-text {
+  color: #4B5945;
+  margin: 0 0 12px 0;
+  line-height: 1.35;
+}
+
+.logout-button {
+  background-color: #D9E9CF;
+  color: #4B5945;
+  border: 2px solid #4B5945;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+}
+.logout-button:hover { background-color: #B6CEB4; }
+
+/* Nav bar-salon owner implemented */
+.nb-section { margin: 18px 6px; }
+.nb-section-title {
+  font-weight: 700;
+  color: #FFFFFF;
+  margin-bottom: 10px;
+  font-size: 2rem;
+}
+
+.nb-text-link {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  color: #FFFFFF;
+  font-size: 1.05rem;
+  padding: 10px 0;
+  cursor: pointer;
+  display: block;
+}
+.nb-text-link:hover {
+  background: rgba(246,255,242,0.12);
+  border-radius: 6px;
+  padding-left: 8px;
+}
+
+/* Footer */
+.nb-footer {
+  position: absolute;
+  left: 14px;
+  bottom: 10px;
+  right: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #FFFFFF;
+}
+
+.nb-footer-link {
+  background: transparent;
+  border: none;
+  color: #FFFFFF;
+  cursor: pointer;
+  padding: 4px 0;
+}
+.nb-footer-link:hover { text-decoration: underline; }

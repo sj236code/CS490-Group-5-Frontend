@@ -6,11 +6,16 @@ function SalonOwnerNavBar({onClose}){
 
     const navigate = useNavigate();
 
+    const navTo = (path) => {
+        navigate(path);
+        onClose();
+    }
+
     const navToDashboard = () => {
         navigate('/salonDashboard', {
             state: {
                 salon: {
-                    id: 6
+                    id: 1
                 }
             }
         });
@@ -37,11 +42,29 @@ function SalonOwnerNavBar({onClose}){
             </div>
 
             {/* Navigation Links */}
-            <div className="nb-links-section">
-                <button className="nb-link-button" onClick={navToDashboard}>
-                    <LayoutDashboard size={20} />
-                    <span>Dashboard</span>
-                </button>
+
+            {/* MyJade Account */}
+            <div className="nb-section">
+                <div className="nb-section-title">MyJade Account</div>
+                <button className="nb-text-link" onClick={() => navTo('/appointments')}>Appointments</button>
+                <button className="nb-text-link" onClick={() => navTo('/wallet')}>My Wallet</button>
+                <button className="nb-text-link" onClick={() => navTo('/signin')}>Log Out</button>
+            </div>
+
+            {/* Salon Owner */}
+            <div className="nb-section">
+                <div className="nb-section-title">Salon Owner</div>
+                <button className="nb-text-link" onClick={navToDashboard}>Dashboard</button>
+                <button className="nb-text-link" onClick={() => navTo('/owner/settings')}>Settings</button>
+                <button className="nb-text-link" onClick={() => navTo('/owner/payments')}>Payments</button>
+                <button className="nb-text-link" onClick={() => navTo('/owner/appointments')}>Appointments</button>
+            </div>
+
+            {/* Footer */}
+            <div className="nb-footer">
+                <button className="nb-footer-link" onClick={() => navTo('/contact')}>Contact</button>
+                <button className="nb-footer-link" onClick={() => navTo('/faq')}>FAQ</button>
+                <div className="nb-footer-link">Copywright ©</div>
             </div>
 
         </div>
