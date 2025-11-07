@@ -53,17 +53,6 @@ function CustomerNavBar({onClose}){
                 <button className="nb-text-link" onClick={handleLogout}>Log Out</button>
             </div>
 
-            {/* Salon Owner? */}
-            <div className="nb-section">
-                <div className="nb-section-title">Salon Owner?</div>
-                <button className="nb-text-link" onClick={() => navTo('/register-salon')}>Register your salon</button>
-            </div>
-
-            {/* Payments (standalone)
-            <div className="nb-section">
-                <button className="nb-text-link" onClick={() => navTo('/payments')}>Payments</button>
-            </div> */}
-
             {/* Footer */}
             <div className="nb-footer">
                 <button className="nb-footer-link" onClick={() => navTo('/contact')}>Contact</button>

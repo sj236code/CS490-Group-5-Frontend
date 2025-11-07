@@ -39,12 +39,6 @@ function EmployeeNavBar({onClose}){
                 <button className="nb-text-link" onClick={() => navTo('/messages')}>Messages</button>
             </div>
 
-            {/* Salon Owner? */}
-            <div className="nb-section">
-                <div className="nb-section-title">Salon Owner?</div>
-                <button className="nb-text-link" onClick={() => navTo('/register-salon')}>Register your salon</button>
-            </div>
-
             {/* Footer */}
             <div className="nb-footer">
                 <button className="nb-footer-link" onClick={() => navTo('/contact')}>Contact</button>
