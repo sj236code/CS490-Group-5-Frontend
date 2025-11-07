@@ -2,7 +2,7 @@ import { ChevronLeft, CircleUserRound, ShieldCheck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 /* NavBar component for an employee user */
-function EmployeeNavBar({onClose}){
+function EmployeeNavBar({onClose, onLogout}){
 
     const navigate = useNavigate();
 
@@ -10,6 +10,15 @@ function EmployeeNavBar({onClose}){
         navigate(path);
         onClose();
     }
+    
+    const handleLogout = () => {
+        console.log('Logout button clicked');
+        if(onLogout) {
+            onLogout();
+            console.log('Logout succeeded');
+        }
+        onClose();
+    };
 
     return(
         <div className="nav-bar">
@@ -37,6 +46,8 @@ function EmployeeNavBar({onClose}){
                 <button className="nb-text-link" onClick={() => navTo('/scheduling')}>Scheduling</button>
                 <button className="nb-text-link" onClick={() => navTo('/paymentportal')}>Payment Portal</button>
                 <button className="nb-text-link" onClick={() => navTo('/messages')}>Messages</button>
+                <button className="nb-text-link" onClick={handleLogout}>Log Out</button>
+
             </div>
 
             {/* Footer */}

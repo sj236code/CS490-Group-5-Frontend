@@ -2,7 +2,7 @@ import { ChevronLeft, CircleUserRound, ShieldCheck, LayoutDashboard } from 'luci
 import { useNavigate} from 'react-router-dom';
 
 /* NavBar component for an salon owner user */
-function SalonOwnerNavBar({onClose}){
+function SalonOwnerNavBar({onClose, onLogout}){
 
     const navigate = useNavigate();
 
@@ -21,6 +21,15 @@ function SalonOwnerNavBar({onClose}){
         });
         onClose();
     }
+
+    const handleLogout = () => {
+        console.log('Logout button clicked');
+        if(onLogout) {
+            onLogout();
+            console.log('Logout succeeded');
+        }
+        onClose();
+    };
 
     return(
         <div className="nav-bar">
@@ -48,7 +57,7 @@ function SalonOwnerNavBar({onClose}){
                 <div className="nb-section-title">MyJade Account</div>
                 <button className="nb-text-link" onClick={() => navTo('/appointments')}>Appointments</button>
                 <button className="nb-text-link" onClick={() => navTo('/wallet')}>My Wallet</button>
-                <button className="nb-text-link" onClick={() => navTo('/signin')}>Log Out</button>
+                <button className="nb-text-link" onClick={handleLogout}>Log Out</button>
             </div>
 
             {/* Salon Owner */}

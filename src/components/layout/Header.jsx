@@ -49,16 +49,16 @@ function Header({userType, userId, onPickRole, onCycleRole, onLogout }){
     // NavBar based on User Tag
     const whichNavBar = () => {
         if(userType === 'CUSTOMER'){
-            return <CustomerNavBar onClose={toggleNavBar} onLogout={onLogout}/>
+            return <CustomerNavBar onClose={toggleNavBar} onLogout={onLogout} userId={userId} />
         }
         else if(userType === 'EMPLOYEE'){
-            return <EmployeeNavBar onClose={toggleNavBar} onLogout={onLogout}/>
+            return <EmployeeNavBar onClose={toggleNavBar} onLogout={onLogout} userId={userId} />
         }
         else if(userType === 'OWNER'){
-            return <SalonOwnerNavBar onClose={toggleNavBar} onLogout={onLogout}/>
+            return <SalonOwnerNavBar onClose={toggleNavBar} onLogout={onLogout} userId={userId}/>
         }
         else if(userType === 'ADMIN'){
-            return <AdminNavBar onClose={toggleNavBar} onLogout={onLogout}/>
+            return <AdminNavBar onClose={toggleNavBar} onLogout={onLogout} />
         }
         else{
             return <NavBar onClose={toggleNavBar} />
