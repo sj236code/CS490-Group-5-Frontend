@@ -20,10 +20,14 @@ import EmployeeRegistrationSuccess from './pages/Sign_up/Employee_registration_s
 import ResetPassword from './pages/Sign_in/Reset_pass.jsx';
 import AdminDashboard from './pages/AdminDashboard.jsx';
 //import CustomerAppointments from './pages/CustomerAppointments.jsx'
+import Checkout from './pages/checkout&payment/Checkout.jsx';
+
 
 // Firebase
 import { auth } from "./firebase";
 import { onAuthStateChanged } from "firebase/auth";
+import PaymentConfirmation from './pages/checkout&payment/PaymentConfirmation.jsx';
+
 
 function App() {
 
@@ -77,7 +81,9 @@ function App() {
       />
       <hr />
       <Routes>
+        {/* */}
         <Route path="/" element={<LandingPage />} />
+
         {/* Auth */}
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
@@ -101,6 +107,9 @@ function App() {
         <Route path="/faq" element={<FAQPage />} />
         {/* <Route path="/customerAppointments" element={<CustomerAppointments} /> */}
 
+
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/payment-confirmation" element={<PaymentConfirmation />} />
       </Routes>
     </>
   );
