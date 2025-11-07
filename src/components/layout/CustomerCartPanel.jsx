@@ -86,6 +86,11 @@ function CustomerCartPanel({ onClose }) {
         }
     };
 
+    const navTo = (path) => {
+        navigate(path);
+        onClose();
+    }
+
     const services = (cart?.items || []).filter(i => i.item_type === 'service');
     const products = (cart?.items || []).filter(i => i.item_type === 'product');
 
@@ -239,7 +244,7 @@ function CustomerCartPanel({ onClose }) {
                 <span>Total</span>
                 <span>{money(total)}</span>
                 </div>
-                <button className="cart-checkout-button">Checkout</button>
+                <button className="cart-checkout-button" onClick={() => navTo('/checkout')}>Checkout</button>
             </div>
 
         </div>
