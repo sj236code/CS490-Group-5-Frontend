@@ -17,8 +17,6 @@ function PaymentConfirmation({ bookingData }) {
         navigate("/");
     }
 
-
-
     return (
         <div className="confirmation-container">
         <div className="confirmation-header">
