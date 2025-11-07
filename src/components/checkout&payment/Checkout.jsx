@@ -1,10 +1,17 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Checkout.css";
 
 function Checkout() {
 
+    const navigate = useNavigate();
+
     const [paymentMethod, setPaymentMethod] = useState("card");
     const [tip, setTip] = useState(0.0);
+
+    const confirmPayment = () => {
+        navigate("/payment-confirmation");
+    }
 
     return(
         <div className="payment-container">
@@ -15,7 +22,7 @@ function Checkout() {
                 </div> 
                 <p className ="summary-text">130 min - $85</p>              
             </div>
-            
+
             <div className="selected-section">
                 <div className="selected-tags">
                     <p>Selected: </p>               {/*modify to have db values*/}
@@ -36,20 +43,21 @@ function Checkout() {
 
 
             <div className="payment-method">
-                <h4>Select Payment Method</h4>
-                <div
-                    className={`method-card ${paymentMethod === "card" ? "active" : ""}`}
-                    onClick={() => setPaymentMethod("card")}
-                >
-                    Credit or Debit Card
-                </div>
+                <h4>Select Payment Method</h4>   
+            </div>
 
-                <div
-                    className={`method-card ${paymentMethod === "paypal" ? "active" : ""}`}
-                    onClick={() => setPaymentMethod("paypal")}
-                >
-                    Paypal
-                </div>
+            <div
+                className={`method-card ${paymentMethod === "card" ? "active" : ""}`}
+                onClick={() => setPaymentMethod("card")}
+            >
+                Credit or Debit Card
+            </div>
+
+            <div
+                className={`method-card ${paymentMethod === "paypal" ? "active" : ""}`}
+                onClick={() => setPaymentMethod("paypal")}
+            >
+                Paypal
             </div>
 
             {paymentMethod === "card" && (
@@ -62,7 +70,7 @@ function Checkout() {
                         <label>Card Number</label>
                         <input type="text" placeholder="1234 5678 9012 3456" />
                     </div>
-                
+
                     <div className="card-details">
                         <div className="form-group">
                             <label>Expiration Date</label>
@@ -89,7 +97,11 @@ function Checkout() {
                 </p>
             </div>
 
-            <button className="pay-btn">Pay $85.00</button>
+            <button 
+                className="pay-btn"
+                onClick={confirmPayment}
+            >
+                Pay $85.00</button>
         </div>
     );
 }

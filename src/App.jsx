@@ -24,6 +24,7 @@ import Checkout from './components/checkout&payment/Checkout.jsx';
 // Firebase
 import { auth } from "./firebase";
 import { onAuthStateChanged } from "firebase/auth";
+import PaymentConfirmation from './components/checkout&payment/PaymentConfirmation.jsx';
 
 
 function App() {
@@ -62,7 +63,9 @@ function App() {
       <Header userType={userType} userId={userId} toggleUser={toggleUser} />
       <hr />
       <Routes>
+        {/* */}
         <Route path="/" element={<LandingPage />} />
+
         {/* Auth */}
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
@@ -83,6 +86,7 @@ function App() {
         <Route path="/faq" element={<FAQPage />} />
 
         <Route path="/checkout" element={<Checkout />} />
+        <Route path="/payment-confirmation" element={<PaymentConfirmation />} />
       </Routes>
     </>
   );
