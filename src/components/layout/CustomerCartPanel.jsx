@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react';
+import { useNavigate} from 'react-router-dom';
 import { ChevronRight, Trash2, ShoppingCart, Scissors, Milk } from 'lucide-react';
 
 function CustomerCartPanel({ onClose }) {
 
     const [cart, setCart] = useState(null); // Cart data
+
+    const navigate = useNavigate();
 
     // Runs once component mounts
     useEffect(() => {
@@ -85,6 +88,11 @@ function CustomerCartPanel({ onClose }) {
             console.error('Delete request error:', err);
         }
     };
+
+    const navTo = (path) => {
+        navigate(path);
+        onClose();
+    }
 
     const services = (cart?.items || []).filter(i => i.item_type === 'service');
     const products = (cart?.items || []).filter(i => i.item_type === 'product');
@@ -239,7 +247,7 @@ function CustomerCartPanel({ onClose }) {
                 <span>Total</span>
                 <span>{money(total)}</span>
                 </div>
-                <button className="cart-checkout-button">Checkout</button>
+                <button className="cart-checkout-button" onClick={() => navTo('/checkout')}>Checkout</button>
             </div>
 
         </div>
