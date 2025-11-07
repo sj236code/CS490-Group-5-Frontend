@@ -1,0 +1,166 @@
+body {
+  background-color: #80690e;
+  font-family: "Inter", sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.payment-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  background-color: #f9f8f4;
+  padding: 2rem;
+  border-radius: 10px;
+  color: #2c2c2c;
+}
+
+.payment-header {
+  background-color: #e5f0db;
+  padding: 1.5rem;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.payment-header h2 {
+  margin: 0;
+}
+
+.payment-header p {
+  margin: 0.2rem 0;
+}
+
+.summary-text {
+  font-weight: 500;
+}
+
+.selected-section {
+  margin-top: 1.5rem;
+}
+
+.selected-tags {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap; 
+  gap: 0.5rem; 
+}
+
+.selected-tags p {
+  margin: 0;
+  font-weight: 500;
+  color: #333;
+}
+
+.selected-tags span {
+  background-color: #ffffff;
+  border: 1px solid #e1e1e1;
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+
+.secure-message {
+  background-color: #f3f3f3;
+  text-align: center;
+  padding: 0.7rem;
+  border-radius: 8px;
+  margin: 1rem 0;
+  color: #6a6a6a;
+  font-size: 0.9rem;
+}
+
+.amount-section {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin: 1.2rem 0;
+}
+
+.tip-input {
+  width: 70px;
+  padding: 0.4rem;
+  border-radius: 6px;
+  padding-block-start: 8px;
+  border: 1px solid #ccc;
+  text-align: right;
+}
+
+.payment-method {
+  margin-bottom: 0.8rem;
+}
+
+.method-card {
+  border: 1px solid #ccc;
+  padding: 0.8rem;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  transition: 0.2s;
+  background-color: #fff;
+}
+
+.method-card.active {
+  border-color: #6b9c5a;
+  background-color: #e5f0db;
+}
+
+
+.card-form {
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 1rem;
+  margin-top: 1rem;
+  border: 1px solid #e2e2e2;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+
+.form-group input {
+  padding: 0.6rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  margin-top: 0.3rem;
+}
+
+.card-details {
+  display: flex;
+  gap: 1rem;
+}
+
+.card-details div {
+  flex: 1;
+}
+
+.encryption-box {
+  background-color: #f3f3f3;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+  color: #5f5f5f;
+}
+
+.pay-btn {
+  width: 100%;
+  background-color: #719466;
+  color: white;
+  padding: 1rem;
+  border: none;
+  border-radius: 8px;
+  margin-top: 1.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.pay-btn:hover {
+  background-color: #5b874d;
+}

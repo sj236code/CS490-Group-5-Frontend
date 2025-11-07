@@ -18,24 +18,27 @@ import RegisterSalonSuccess from './pages/Sign_up/Salon_registration_success.jsx
 import EmployeeRegistration from './pages/Sign_up/Employee_registration.jsx';
 import EmployeeRegistrationSuccess from './pages/Sign_up/Employee_registration_success.jsx';
 import ResetPassword from './pages/Sign_in/Reset_pass.jsx';
+import Checkout from './pages/checkout&payment/Checkout.jsx';
+
 
 // Firebase
 import { auth } from "./firebase";
 import { onAuthStateChanged } from "firebase/auth";
+import PaymentConfirmation from './pages/checkout&payment/PaymentConfirmation.jsx';
+
 
 function App() {
 
   // Temp hardcode until endpoint created
+
+  const DEMO_IDS = { CUSTOMER: 7, OWNER: 2, ADMIN: 5, EMPLOYEE: 11};
+
   const [userType, setUserType] = useState(null);
   const [userId, setUserId] = useState(1);
   console.log("API URL:", import.meta.env.VITE_API_URL);
 
   useEffect(() => {
     // Temporarily Hardcode for testing -> Change when Merge with Auth Branch
-    // 1 -> Customer
-    // 2 -> Admin (WIP)
-    // 4 -> Salon Owner
-    // 6 -> Employee
 
     fetch(`${import.meta.env.VITE_API_URL}/api/auth/user-type/${userId}`)
       .then((res) => res.json())
@@ -50,16 +53,35 @@ function App() {
       })
   },[userId]);
 
+  const pickRole = (role) => {
+    if (!DEMO_IDS[role]) return;
+    setUserId(DEMO_IDS[role]);
+  };
+
+  const cycleRole = () => {
+    const order = ["CUSTOMER", "OWNER", "ADMIN", "EMPLOYEE"];
+    const i = order.indexOf(userType);
+    const next = order[(i + 1) % order.length] || "CUSTOMER";
+    pickRole(next);
+  };
+
   const toggleUser = () => {
-    setUserId((prevId) => (prevId === 1 ? 4 : 1));
+    setUserId((prevId) => (prevId === 1 ? 8 : 1));
   }
 
   return (
     <>
-      <Header userType={userType} userId={userId} toggleUser={toggleUser} />
+      <Header
+        userType={userType}
+        userId={userId}
+        onPickRole={pickRole}
+        onCycleRole={cycleRole}
+      />
       <hr />
       <Routes>
+        {/* */}
         <Route path="/" element={<LandingPage />} />
+
         {/* Auth */}
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
@@ -78,6 +100,9 @@ function App() {
         <Route path="/salonDashboard" element={<SalonDashboard />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/faq" element={<FAQPage />} />
+
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/payment-confirmation" element={<PaymentConfirmation />} />
       </Routes>
     </>
   );
