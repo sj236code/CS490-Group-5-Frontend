@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react'
 import './App.css'
 import './components/Common.css'
@@ -22,53 +22,64 @@ import AdminDashboard from './pages/AdminDashboard.jsx';
 //import CustomerAppointments from './pages/CustomerAppointments.jsx'
 import Checkout from './pages/checkout&payment/Checkout.jsx';
 
-
 // Firebase
-import { auth } from "./firebase";
-import { onAuthStateChanged } from "firebase/auth";
 import PaymentConfirmation from './pages/checkout&payment/PaymentConfirmation.jsx';
 
+function parseJwt(token) {
+  try {
+    const base = token.split('.')[1];
+    const json = atob(base.replace(/-/g, '+').replace(/_/g, '/'));
+    return JSON.parse(decodeURIComponent(escape(json)));
+  } catch {
+    return null;
+  }
+}
 
 function App() {
 
   // Temp hardcode until endpoint created
-
-  const DEMO_IDS = { CUSTOMER: 7, OWNER: 2, ADMIN: 5, EMPLOYEE: 11};
-
   const [userType, setUserType] = useState(null);
-  const [userId, setUserId] = useState(1);
+  const [userId, setUserId] = useState(null);
   console.log("API URL:", import.meta.env.VITE_API_URL);
 
-  useEffect(() => {
-    // Temporarily Hardcode for testing -> Change when Merge with Auth Branch
+  const navigate = useNavigate();
 
+  // On first load, hydrate from token from present
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    const payload = parseJwt(token);
+    if (!payload || (payload.exp && payload.exp * 1000 < Date.now())) {
+      ['token','user_id','role','email'].forEach(k => localStorage.removeItem(k));
+      navigate('/signin');
+      return;
+    }
+
+    setUserId(payload.user_id ?? null);
+    setUserType(payload.role ?? null);
+  }, [navigate]);
+
+  // Verify role with backend
+  useEffect(() => {
+    if (!userId) return;
     fetch(`${import.meta.env.VITE_API_URL}/api/auth/user-type/${userId}`)
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("Response from /user-type:", data);
-        if (data.status === "success"){
+      .then(r => r.json())
+      .then(data => {
+        if (data.status === 'success' && data.role) {
           setUserType(data.role);
         }
-        else{
-          setUserType("user");
-        }
       })
-  },[userId]);
+      .catch(() => {});
+  }, [userId]);
 
-  const pickRole = (role) => {
-    if (!DEMO_IDS[role]) return;
-    setUserId(DEMO_IDS[role]);
-  };
-
-  const cycleRole = () => {
-    const order = ["CUSTOMER", "OWNER", "ADMIN", "EMPLOYEE"];
-    const i = order.indexOf(userType);
-    const next = order[(i + 1) % order.length] || "CUSTOMER";
-    pickRole(next);
-  };
-
-  const toggleUser = () => {
-    setUserId((prevId) => (prevId === 1 ? 8 : 1));
+  const logout = () => {
+    ['token', 'user_id', 'role', 'email'].forEach(k => localStorage.removeItem(k));
+    setUserId(null);
+    setUserType(null);
+    console.log('User logged out successfully.');
+    console.log('userId:', userId, '| userType:', userType);
+    navigate('/');
   }
 
   return (
@@ -76,8 +87,9 @@ function App() {
       <Header
         userType={userType}
         userId={userId}
-        onPickRole={pickRole}
-        onCycleRole={cycleRole}
+        onPickRole={() => {}}
+        onCycleRole={() => {}}
+        onLogout={logout}
       />
       <hr />
       <Routes>

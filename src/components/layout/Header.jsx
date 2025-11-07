@@ -16,7 +16,7 @@ import LoginButton from './LoginButton.jsx';
 import AdminNavBar from './AdminNavBar.jsx';
 
 
-function Header({userType, userId, onPickRole, onCycleRole }){
+function Header({userType, userId, onPickRole, onCycleRole, onLogout }){
 
     // Is NavBar open
     const[navBar, setNavBar] = useState(false);
@@ -49,16 +49,16 @@ function Header({userType, userId, onPickRole, onCycleRole }){
     // NavBar based on User Tag
     const whichNavBar = () => {
         if(userType === 'CUSTOMER'){
-            return <CustomerNavBar onClose={toggleNavBar} />
+            return <CustomerNavBar onClose={toggleNavBar} onLogout={onLogout}/>
         }
         else if(userType === 'EMPLOYEE'){
-            return <EmployeeNavBar onClose={toggleNavBar} />
+            return <EmployeeNavBar onClose={toggleNavBar} onLogout={onLogout}/>
         }
         else if(userType === 'OWNER'){
-            return <SalonOwnerNavBar onClose={toggleNavBar} />
+            return <SalonOwnerNavBar onClose={toggleNavBar} onLogout={onLogout}/>
         }
         else if(userType === 'ADMIN'){
-            return <AdminNavBar onClose={toggleNavBar} />
+            return <AdminNavBar onClose={toggleNavBar} onLogout={onLogout}/>
         }
         else{
             return <NavBar onClose={toggleNavBar} />
@@ -82,6 +82,10 @@ function Header({userType, userId, onPickRole, onCycleRole }){
             return <CartPanel onClose={toggleCartPanel} />
         }
     }
+
+    useEffect(() => {
+        console.log(`Header loaded- UserId: ${userId}, UserType: ${userType}`);
+    }, [userId, userType]);
 
     return(
         <>
