@@ -21,6 +21,7 @@ import ResetPassword from './pages/Sign_in/Reset_pass.jsx';
 import AdminDashboard from './pages/AdminDashboard.jsx';
 //import CustomerAppointments from './pages/CustomerAppointments.jsx'
 import Checkout from './pages/checkout&payment/Checkout.jsx';
+import CustomerLoyalty from './pages/CustomerLoyalty.jsx';
 
 
 // Firebase
@@ -102,6 +103,8 @@ function App() {
         <Route path="/salonDashboard" element={<SalonDashboard />} />
 
         <Route path="/adminDashboard" element={<AdminDashboard />} />
+
+        <Route path="/customerLoyalty" element={<CustomerLoyalty />} />
 
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/faq" element={<FAQPage />} />
