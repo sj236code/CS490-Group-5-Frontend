@@ -102,6 +102,12 @@ function SignUp() {
             setError('First name and last name are required');
             return false;
         }
+
+        if (!formData.phoneNumber) {
+            setError('Phone number is required');
+            return false;
+        }
+
         return true;
     };
 
@@ -122,7 +128,7 @@ function SignUp() {
                     password: formData.password,
                     first_name: formData.firstName,
                     last_name: formData.lastName,
-                    phone_number: formData.phoneNumber || null,
+                    phone_number: formData.phoneNumber,
                     address: formData.address || null,
                     role: formData.role
                 })
@@ -131,7 +137,7 @@ function SignUp() {
             const data = await response.json();
 
             if (data.status === 'success') {
-                console.log('✅ Sign up successful!');
+                console.log('Sign up successful!');
                 navigate('/', { 
                     state: { 
                         message: 'Account created successfully!',
@@ -171,13 +177,6 @@ function SignUp() {
                 </button>
 
                 <h1 className="signup-title">Sign Up</h1>
-
-                {/* Progress Indicator */}
-                <div className="step-indicator">
-                    <div className={`step-dot ${currentStep >= 1 ? 'active' : ''}`}></div>
-                    <div className={`step-line ${currentStep >= 2 ? 'active' : ''}`}></div>
-                    <div className={`step-dot ${currentStep >= 2 ? 'active' : ''}`}></div>
-                </div>
 
                 <div className="tabs">
                     <button 
@@ -252,10 +251,10 @@ function SignUp() {
                                 Have an account? <a href="/signin" className="link">Sign In</a>
                             </p>
                             <p className="link-text">
-                                Salon Owner? <a href="/register-salon" className="link">Register Salon</a>
+                                Own a Salon? <a href="/register-salon" className="link">Create Salon Owner Account</a>
                             </p>
                             <p className="link-text">
-                                Employee? <a href="/employee-registration" className="link">Create Employee Acct</a>
+                                Employee? <a href="/employee-registration" className="link">Create Employee Account</a>
                             </p>
                         </div>
                     </div>
@@ -294,10 +293,11 @@ function SignUp() {
                             <input
                                 type="tel"
                                 name="phoneNumber"
-                                placeholder="Phone Number (Optional)"
+                                placeholder="Phone Number"
                                 value={formData.phoneNumber}
                                 onChange={handleChange}
                                 className="input-field"
+                                required
                                 disabled={loading}
                             />
                         </div>
