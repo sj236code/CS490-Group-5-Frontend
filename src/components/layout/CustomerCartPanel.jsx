@@ -100,29 +100,47 @@ function CustomerCartPanel({ onClose }) {
     const money = (n) => `$${n.toFixed(2)}`;
 
     const changeQty = async (item, direction) => {
-        if (!cart) return;
-        const current = Number(item.quantity) || 1;
-        const next = direction === 'up' ? current + 1 : current - 1;
-        if (next < 1) return;
+    if (!cart) return;
 
-        try {
-        await fetch(`${import.meta.env.VITE_API_URL}/api/cart/update-quantity`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                cart_id: cart.cart_id,
-                item_id: item.product_id,
-                kind: 'product',
-                quantity: next,
-            }),
-        });s
-        // just refetch cart
+    const current = Number(item.quantity) || 1;
+    const next = direction === 'up' ? current + 1 : current - 1;
+    if (next < 1) return; // or call handleDeleteItem(item)
+
+    try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/cart/update-item-quantity`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            cart_id: cart.cart_id,
+            item_id: item.product_id,  
+            kind: 'product',
+            quantity: next,
+        }),
+        });
+
+        const payload = await res.text();
+        let json;
+        try { json = JSON.parse(payload); } catch { json = { raw: payload }; }
+        console.log('Qty PATCH status:', res.status, 'body:', json);
+
+        if (!res.ok) return;
+
+        // Optional: optimistic UI
+        setCart(prev => {
+        if (!prev) return prev;
+        const items = (prev.items || []).map(it =>
+            it.product_id === item.product_id ? { ...it, quantity: next } : it
+        );
+        return { ...prev, items };
+        });
+
+        // Authoritative refresh
         fetchCart();
-        } 
-        catch (err) {
+    } catch (err) {
         console.error('Qty update error:', err);
-        }
+    }
     };
+
 
     return (
         <div className="cart-panel">
