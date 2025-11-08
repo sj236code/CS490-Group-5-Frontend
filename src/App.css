@@ -391,6 +391,14 @@ body {
   gap: 20px;
   cursor: pointer;
   text-align: pointer;
+  transition: all 0.2s ease;
+}
+
+.service-card:hover {
+  border-color: #66785F;
+  background-color: #f8fbf3;
+  box-shadow: 0 4px 12px rgba(75, 89, 69, 0.12);
+  transform: translateY(-3px);
 }
 
 .service-icon {
@@ -420,33 +428,29 @@ body {
 
 /* Landing Page Salons Grid */
 .salons-section {
-  height: 450px;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  padding: 40px;
   background-color: #4B5945;
-  /* text-align: center;
-  align-items: center; */
+  padding: 0;
 }
 
 .salons-section-title {
   font-size: 2.0rem;
-  margin-top: 10px;
-  margin-bottom: 40px;
+  padding-top: 50px;
+  margin-bottom: 20px;
   text-align: center;
   color: #F0F0F0;
 }
 
 .salon-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 1.5rem;
-  justify-content: center;
   align-items: center;
-  margin-left: 200px;
-  margin-top: 100px;
+  justify-content: center;
+  justify-items: center;
   text-align: center;
+  padding: 100px 0;
 }
 
 /* Salon Card Styling */
@@ -458,6 +462,13 @@ body {
   cursor: pointer;
   text-align: center;
   background-color: #f0f0f0;
+  transition: all 0.2s ease;
+}
+
+.salon-card:hover {
+  background-color: #D9E9CF;
+  box-shadow: 0 4px 12px rgba(75, 89, 69, 0.15);
+  transform: translateY(-4px);
 }
 
 .salon-info {
@@ -693,6 +704,13 @@ body {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  transition: all 0.2s ease;
+}
+
+.salon-service-card:hover {
+  border-color: #66785F;
+  box-shadow: 0 4px 12px rgba(75, 89, 69, 0.12);
+  transform: translateY(-3px);
 }
 
 .salon-service-image {
