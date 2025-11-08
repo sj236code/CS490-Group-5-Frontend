@@ -678,9 +678,6 @@ body {
   border-bottom: none;
 }
 
-.salon-details-tab-content {
-
-}
 
 /* Salon ShopTab */
 
@@ -1987,4 +1984,124 @@ label {
 .booking-updated {
   font-weight: bold;
   color: #4b5945;
+}
+
+/* ===========================
+   Employee Availability Page
+   =========================== */
+.availability-container,
+.schedule-container {
+  background: #f7f7f5;
+  color: #4b5945;
+  padding: 2rem 5rem;
+  font-family: "Inter", sans-serif;
+  min-height: 100vh;
+}
+
+.tab-bar {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.tab-bar button {
+  padding: 0.5rem 1.2rem;
+  border: none;
+  border-radius: 8px;
+  background: #e7eddf;
+  cursor: pointer;
+}
+.active-tab {
+  background: #4b5945;
+  color: white;
+}
+
+.availability-status,
+.weekly-availability,
+.salon-hours,
+.schedule-header {
+  background: white;
+  border-radius: 12px;
+  padding: 1.2rem;
+  margin-bottom: 1.2rem;
+}
+.status-badge {
+  float: right;
+  background: #e7eddf;
+  padding: 0.3rem 1rem;
+  border-radius: 6px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.day-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.8rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+.unavailable {
+  color: gray;
+}
+.not-available {
+  background: #f0f0f0;
+  border-radius: 5px;
+  padding: 0.2rem 0.5rem;
+}
+
+/* Edit Modal */
+.edit-modal {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 480px;
+}
+.edit-row {
+  display: flex;
+  justify-content: space-between;
+  margin: 0.5rem 0;
+}
+.edit-times input {
+  margin: 0 0.3rem;
+}
+.edit-modal-actions {
+  text-align: right;
+  margin-top: 1rem;
+}
+.edit-modal-actions button {
+  margin-left: 0.6rem;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* ===========================
+   Employee Schedule Page
+   =========================== */
+.shift-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem;
+  border-bottom: 1px solid #ddd;
+}
+.no-shift {
+  background: #f0f0f0;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+}
+.footer-controls {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+.footer-controls button {
+  background: #e7eddf;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
 }

@@ -23,6 +23,9 @@ import MyAppointments from "./pages/MyAppointments";
 
 //import CustomerAppointments from './pages/CustomerAppointments.jsx'
 import Checkout from './pages/checkout&payment/Checkout.jsx';
+import EmployeeAvailability from "./pages/EmployeeAvailability";
+import EmployeeSchedule from "./pages/EmployeeSchedule";
+
 
 
 // Firebase
@@ -110,6 +113,8 @@ function App() {
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
         {/* <Route path="/customerAppointments" element={<CustomerAppointments} /> */}
         <Route path="/my-appointments" element={<MyAppointments />} />
+        <Route path="/employee-availability" element={<EmployeeAvailability />} />
+        <Route path="/employee-schedule" element={<EmployeeSchedule />} />
 
 
 
