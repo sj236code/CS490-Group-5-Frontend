@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
+
 import "../App.css";
 
 const EmployeeAvailability = () => {
@@ -11,10 +13,17 @@ const EmployeeAvailability = () => {
       </header>
 
       <div className="tab-bar">
-        <button>Overview</button>
-        <button>Schedule</button>
-        <button className="active-tab">Availability</button>
-      </div>
+  <Link to="/employee-overview">
+    <button>Overview</button>
+  </Link>
+  <Link to="/employee-schedule">
+    <button>Schedule</button>
+  </Link>
+  <Link to="/employee-availability">
+    <button className="active-tab">Availability</button>
+  </Link>
+</div>
+
 
       <section className="availability-status">
         <div>

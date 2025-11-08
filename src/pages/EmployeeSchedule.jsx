@@ -1,4 +1,6 @@
 import React from "react";
+import { Link } from "react-router-dom";
+
 import "../App.css";
 
 const EmployeeSchedule = () => {
@@ -9,10 +11,17 @@ const EmployeeSchedule = () => {
       </header>
 
       <div className="tab-bar">
-        <button>Overview</button>
-        <button className="active-tab">Schedule</button>
-        <button>Availability</button>
-      </div>
+  <Link to="/employee-overview">
+    <button>Overview</button>
+  </Link>
+  <Link to="/employee-schedule">
+    <button className="active-tab">Schedule</button>
+  </Link>
+  <Link to="/employee-availability">
+    <button>Availability</button>
+  </Link>
+</div>
+
 
       <div className="schedule-header">
         <h4>Work Schedule</h4>

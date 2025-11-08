@@ -2105,3 +2105,9 @@ label {
   border-radius: 8px;
   cursor: pointer;
 }
+
+.tab-bar button:hover {
+  background-color: #cddac0;
+  transition: 0.2s ease-in-out;
+}
+
