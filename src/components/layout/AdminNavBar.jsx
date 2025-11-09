@@ -1,15 +1,15 @@
-import { ChevronLeft, CircleUserRound, ShieldCheck, Logout } from 'lucide-react';
+import { ChevronLeft, CircleUserRound, ShieldCheck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 /* NavBar component for an customer user */
-function AdminNavBar({onClose}){
+function AdminNavBar({ onClose }) {
 
     const navigate = useNavigate();
 
     const navTo = (path) => {
         navigate(path);
         onClose();
-    } 
+    }
 
     return (
         <div className="nav-bar">
@@ -21,12 +21,12 @@ function AdminNavBar({onClose}){
             <div className="nb-profile-section">
                 <CircleUserRound className="nb-profile-icon" />
                 <div className="nb-profile-info">
-                <p className="nb-user-name">John Smith</p>
-                <p className="nb-user-tag">Admin</p>
-                <div className="nb-verified">
-                    <ShieldCheck className="nb-verified-icon" />
-                    <span>Verified</span>
-                </div>
+                    <p className="nb-user-name">John Smith</p>
+                    <p className="nb-user-tag">Admin</p>
+                    <div className="nb-verified">
+                        <ShieldCheck className="nb-verified-icon" />
+                        <span>Verified</span>
+                    </div>
                 </div>
 
             </div>
@@ -42,7 +42,7 @@ function AdminNavBar({onClose}){
                 <button className="nb-footer-link" onClick={() => navTo('/contact')}>Contact</button>
                 <button className="nb-footer-link" onClick={() => navTo('/faq')}>FAQ</button>
                 <div className="nb-footer-link">Copyright ©</div>
-            </div>  
+            </div>
 
         </div>
     );
