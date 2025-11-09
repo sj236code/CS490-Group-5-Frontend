@@ -27,6 +27,7 @@ import CustomerLoyalty from './pages/CustomerLoyalty.jsx';
 import MyWallet from './pages/MyWallet.jsx';
 import EmployeeAvailability from "./pages/EmployeeAvailability";
 import EmployeeSchedule from "./pages/EmployeeSchedule";
+import EmployeeAppointments from "./pages/EmployeeAppointments.jsx";
 
 
 
@@ -118,6 +119,8 @@ function App() {
         {/* <Route path="/admin-dashboard" element={<AdminDashboard />} /> */}
         {/* <Route path="/customerAppointments" element={<CustomerAppointments} /> */}
         <Route path="/my-appointments" element={<MyAppointments />} />
+
+        <Route path="/employee-appointments" element={<EmployeeAppointments />} />
         <Route path="/employee-availability" element={<EmployeeAvailability />} />
         <Route path="/employee-schedule" element={<EmployeeSchedule />} />
 

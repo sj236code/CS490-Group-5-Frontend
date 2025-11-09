@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { MapPin, Calendar, User } from "lucide-react";
 import "../App.css";
 
-const MyAppointments = () => {
+const EmployeeAppointments = () => {
   // Hardcoded for now, but easily replaceable with fetched data
   const [upcomingAppointments, setUpcomingAppointments] = useState([
     {
@@ -206,4 +206,4 @@ const MyAppointments = () => {
   );
 };
 
-export default MyAppointments;
+export default EmployeeAppointments;
