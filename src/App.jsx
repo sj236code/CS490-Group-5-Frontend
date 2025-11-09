@@ -19,9 +19,15 @@ import EmployeeRegistration from './pages/Sign_up/Employee_registration.jsx';
 import EmployeeRegistrationSuccess from './pages/Sign_up/Employee_registration_success.jsx';
 import ResetPassword from './pages/Sign_in/Reset_pass.jsx';
 import AdminDashboard from './pages/AdminDashboard.jsx';
+import MyAppointments from "./pages/MyAppointments";
+
 //import CustomerAppointments from './pages/CustomerAppointments.jsx'
 import Checkout from './pages/checkout&payment/Checkout.jsx';
 import CustomerLoyalty from './pages/CustomerLoyalty.jsx';
+import MyWallet from './pages/MyWallet.jsx';
+import EmployeeAvailability from "./pages/EmployeeAvailability";
+import EmployeeSchedule from "./pages/EmployeeSchedule";
+
 
 
 // Firebase
@@ -105,11 +111,16 @@ function App() {
         <Route path="/adminDashboard" element={<AdminDashboard />} />
 
         <Route path="/customerLoyalty" element={<CustomerLoyalty />} />
+        <Route path="/myWallet" element={<MyWallet />} />
 
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/faq" element={<FAQPage />} />
-        <Route path="/admin-dashboard" element={<AdminDashboard />} />
+        {/* <Route path="/admin-dashboard" element={<AdminDashboard />} /> */}
         {/* <Route path="/customerAppointments" element={<CustomerAppointments} /> */}
+        <Route path="/my-appointments" element={<MyAppointments />} />
+        <Route path="/employee-availability" element={<EmployeeAvailability />} />
+        <Route path="/employee-schedule" element={<EmployeeSchedule />} />
+
 
 
         <Route path="/checkout" element={<Checkout />} />

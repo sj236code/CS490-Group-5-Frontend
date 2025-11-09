@@ -1,13 +1,25 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import "./Checkout.css";
 
 function Checkout() {
-
     const navigate = useNavigate();
+    const location = useLocation();
+    const cartItems = (location.state && location.state.cartItems) || [];
 
     const [paymentMethod, setPaymentMethod] = useState("card");
-    const [tip, setTip] = useState(0.0);
+    const [tip, setTip] = useState();
+    const [employeeName] = useState("Alex Rivera");
+    const [appointmentDateTime, setAppointmentDateTime] = useState(null);
+
+    const presubtotal = cartItems.reduce(
+        (sum, item) => sum + (item.item_price || 0) * (item.quantity || 1), 0
+    );
+
+    const taxRate = Number(import.meta.env.VITE_TAX_RATE) || 0.066;
+    const salesTax = presubtotal * taxRate; 
+    const subtotal = salesTax + presubtotal;
+    const total = parseFloat(subtotal) + parseFloat(tip || 0); 
 
     const [cardDetails, setCardDetails] = useState({
         name: "",
@@ -19,36 +31,24 @@ function Checkout() {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-
         let newValue = value;
 
-        // Input-specific validation rules
         switch (name) {
             case "name":
-                // Allow only letters and spaces
                 newValue = value.replace(/[^A-Za-z\s]/g, "");
                 break;
-
             case "number":
-                // Allow only digits, max 16
                 newValue = value.replace(/\D/g, "").slice(0, 16);
                 break;
-
             case "expiry":
-                // Allow only digits, max 4 (MMYY)
                 newValue = value.replace(/\D/g, "").slice(0, 4);
                 break;
-
             case "cvv":
-                // Allow only digits, max 3
                 newValue = value.replace(/\D/g, "").slice(0, 3);
                 break;
-
             case "zip":
-                // Allow only digits, max 5
                 newValue = value.replace(/\D/g, "").slice(0, 5);
                 break;
-
             default:
                 break;
         }
@@ -64,30 +64,79 @@ function Checkout() {
                 alert("Please fill out all card details before proceeding.");
                 return;
             }
-
             if (number.length < 16) {
                 alert("Card number must be 16 digits.");
                 return;
             }
-
             if (expiry.length < 4) {
                 alert("Expiration date must be 4 digits (MMYY).");
                 return;
             }
-
             if (cvv.length < 3) {
                 alert("CVV must be 3 digits.");
                 return;
             }
-
             if (zip.length < 5) {
                 alert("ZIP code must be 5 digits.");
                 return;
             }
         }
 
-        navigate("/payment-confirmation");
+        const maskedCard = 
+            paymentMethod === "card"
+                ? `${"*".repeat(12)} ${cardDetails.number.slice(-4)}`
+                : null;
+        
+        const totalServiceDuration = cartItems
+            .filter(item => item.item_type === "service")
+            .reduce((sum, service) => sum + (service.service_duration || 0), 0)
+
+
+        const firstStartItem = cartItems.find(
+            item => item.start_at && item.start_at !== null
+        );
+
+        let appointmentDate = "N/A";
+        let appointmentTime = "N/A";
+
+        if (firstStartItem) {
+            const dateObj = new Date(firstStartItem.start_at);
+            if (!isNaN(dateObj.getTime())) {
+                appointmentDate = dateObj.toLocaleDateString("en-US", {
+                    weekday: "long",
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                });
+                appointmentTime = dateObj.toLocaleTimeString("en-US", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                });
+            } else {
+                console.warn("Invalid start_at date:", firstStartItem.start_at);
+            }
+        } else {
+            console.warn("No valid start_at found in cartItems:", cartItems);
+        }
+        
+        const bookingData = {
+            date: appointmentDate,
+            time: appointmentTime,
+            duration: totalServiceDuration,
+            staff: employeeName,
+            paymentMethod, 
+            maskedCard, 
+            cartItems,
+            total,
+            salesTax,
+        };
+
+        navigate("/payment-confirmation", {state: { bookingData } });
     };
+
+    useEffect(() => {
+        console.log("Checkout received cartItems:", JSON.stringify(cartItems, null, 2));
+    }, [cartItems]);
 
     return (
         <div className="payment-container">
@@ -96,15 +145,22 @@ function Checkout() {
                     <h2>Payment</h2>
                     <p>Complete your payment to confirm booking</p>
                 </div>
-                <p className="summary-text">130 min - $85</p>
             </div>
 
             <div className="selected-section">
                 <div className="selected-tags">
                     <p>Selected: </p>
-                    <span>Classic Fade</span>
-                    <span>Beard Trim</span>
-                    <span>Haircut & Style</span>
+                    {cartItems.length > 0 ? (
+                        cartItems.map((item, index) => (
+                            <span key={index}>
+                                    {(item.service_name || item.product_name)} - $
+                                    {(item.item_price * item.quantity).toFixed(2)}{" "}
+                                    {item.quantity > 1 ? `(${item.quantity}x)` : " "}
+                            </span>
+                        ))
+                    ) : (
+                        <span>No Items Selected.</span>
+                    )}
                 </div>
             </div>
 
@@ -116,10 +172,14 @@ function Checkout() {
                 <label>Add Tip?</label>
                 <input
                     className="tip-input"
-                    placeholder="0.0"
+                    placeholder="0.00"
                     value={tip}
-                    onChange={(e) => setTip(e.target.value)}
+                    onChange={(e) => setTip(e.target.value.replace(/[^0-9.]/g, ""))}
                 />
+                <p className="summary-text">
+                    Subtotal: ${subtotal.toFixed(2)} <br />
+                    Total (with tip): ${total.toFixed(2)}
+                </p>
             </div>
 
             <div className="payment-method">
@@ -209,7 +269,7 @@ function Checkout() {
             </div>
 
             <button className="pay-btn" onClick={confirmPayment}>
-                Pay $85.00
+                Pay ${total.toFixed(2)}
             </button>
         </div>
     );
