@@ -46,8 +46,6 @@ function SalonOwnerNavBar({onClose}){
             {/* MyJade Account */}
             <div className="nb-section">
                 <div className="nb-section-title">MyJade Account</div>
-                <button className="nb-text-link" onClick={() => navTo('/appointments')}>Appointments</button>
-                <button className="nb-text-link" onClick={() => navTo('/wallet')}>My Wallet</button>
                 <button className="nb-text-link" onClick={() => navTo('/signin')}>Log Out</button>
             </div>
 
@@ -55,7 +53,7 @@ function SalonOwnerNavBar({onClose}){
             <div className="nb-section">
                 <div className="nb-section-title">Salon Owner</div>
                 <button className="nb-text-link" onClick={navToDashboard}>Dashboard</button>
-                <button className="nb-text-link" onClick={() => navTo('/owner/settings')}>Settings</button>
+                <button className="nb-text-link" onClick={() => navTo('/salonSettings')}>Settings</button>
                 <button className="nb-text-link" onClick={() => navTo('/owner/payments')}>Payments</button>
                 <button className="nb-text-link" onClick={() => navTo('/owner/appointments')}>Appointments</button>
             </div>
