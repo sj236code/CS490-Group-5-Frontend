@@ -678,9 +678,6 @@ body {
   border-bottom: none;
 }
 
-.salon-details-tab-content {
-
-}
 
 /* Salon ShopTab */
 
@@ -1835,6 +1832,56 @@ body {
   border-radius: 8px;
   background: #e6f0dd;
   color: #2a3823;
+
+.appointments-container {
+  background-color: #f7f7f5;
+  min-height: 100vh;
+  padding: 2rem 5rem;
+  color: #4b5945;
+  font-family: "Inter", sans-serif;
+}
+
+/* Header */
+.jade-header h1 {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+}
+
+/* Section titles */
+.section-title {
+  border-bottom: 3px solid #4b5945;
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 2rem 0 1rem;
+}
+
+/* Appointment cards */
+.appointment-card {
+  background-color: #4b5945;
+  color: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.appt-info h3 {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.appt-info p {
+  margin: 0.2rem 0;
+}
+
+.appt-buttons button {
+  margin-left: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  border: none;
   cursor: pointer;
   font-weight: 500;
 }
