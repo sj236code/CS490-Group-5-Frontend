@@ -20,12 +20,14 @@ import EmployeeRegistrationSuccess from './pages/Sign_up/Employee_registration_s
 import ResetPassword from './pages/Sign_in/Reset_pass.jsx';
 import AdminDashboard from './pages/AdminDashboard.jsx';
 import MyAppointments from "./pages/MyAppointments";
-
-//import CustomerAppointments from './pages/CustomerAppointments.jsx'
 import Checkout from './pages/checkout&payment/Checkout.jsx';
+import CustomerLoyalty from './pages/CustomerLoyalty.jsx';
+import MyWallet from './pages/MyWallet.jsx';
 import EmployeeAvailability from "./pages/EmployeeAvailability";
 import EmployeeSchedule from "./pages/EmployeeSchedule";
-
+import EmployeeAppointments from "./pages/EmployeeAppointments.jsx";
+import UserGallery from "./pages/UserGallery.jsx";
+import SalonSettings from "./pages/SalonSettings.jsx";
 
 
 // Firebase
@@ -104,22 +106,32 @@ function App() {
     
         <Route path="/search" element={<SearchPage />} />
         <Route path="/salon" element={<SalonDetailsPage />} />
-        <Route path="/salonDashboard" element={<SalonDashboard />} />
 
+        {/* Salon Owner Nav Bar Routes */}
+        <Route path="/salonDashboard" element={<SalonDashboard />} />
+        <Route path="/salonSettings" element={<SalonSettings />} />
+
+        {/* Admin Nav Bar Routes */}
         <Route path="/adminDashboard" element={<AdminDashboard />} />
 
-        <Route path="/contact" element={<ContactPage />} />
-        <Route path="/faq" element={<FAQPage />} />
-        <Route path="/admin-dashboard" element={<AdminDashboard />} />
-        {/* <Route path="/customerAppointments" element={<CustomerAppointments} /> */}
+        {/* Customer Nav Bar Routes */}
+        <Route path="/customerLoyalty" element={<CustomerLoyalty />} />
+        <Route path="/myWallet" element={<MyWallet />} />
         <Route path="/my-appointments" element={<MyAppointments />} />
+        <Route path="/userGallery" element={<UserGallery />} />
+
+        {/* Employee Nav Bar Routes */}
+        <Route path="/employee-appointments" element={<EmployeeAppointments />} />
         <Route path="/employee-availability" element={<EmployeeAvailability />} />
         <Route path="/employee-schedule" element={<EmployeeSchedule />} />
 
-
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/faq" element={<FAQPage />} />
 
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/payment-confirmation" element={<PaymentConfirmation />} />
+
+        
       </Routes>
     </>
   );
