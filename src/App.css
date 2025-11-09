@@ -2672,6 +2672,10 @@ label {
 }
 
 .loyalty-input:focus {
+  outline: none;
+  border-color: #4b5945;
+}
+
 /* Salon Settings Page */
 
 .salon-settings-page {
@@ -2925,6 +2929,8 @@ label {
 .loyalty-table-name {
   font-weight: 500;
   color: #4B5945;
+}
+
 .settings-inline-buttons {
   display: flex;
   gap: 8px;
