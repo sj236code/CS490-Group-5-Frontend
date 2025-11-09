@@ -23,6 +23,7 @@ import MyAppointments from "./pages/MyAppointments";
 
 //import CustomerAppointments from './pages/CustomerAppointments.jsx'
 import Checkout from './pages/checkout&payment/Checkout.jsx';
+import CustomerLoyalty from './pages/CustomerLoyalty.jsx';
 import MyWallet from './pages/MyWallet.jsx';
 import EmployeeAvailability from "./pages/EmployeeAvailability";
 import EmployeeSchedule from "./pages/EmployeeSchedule";
@@ -109,6 +110,7 @@ function App() {
 
         <Route path="/adminDashboard" element={<AdminDashboard />} />
 
+        <Route path="/customerLoyalty" element={<CustomerLoyalty />} />
         <Route path="/myWallet" element={<MyWallet />} />
 
         <Route path="/contact" element={<ContactPage />} />

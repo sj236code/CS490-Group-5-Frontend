@@ -48,7 +48,7 @@ function CustomerNavBar({onClose}){
                 <button className="nb-text-link" onClick={() => navTo('/my-appointments')}>Appointments</button>
                 <button className="nb-text-link" onClick={() => navTo('/myWallet')}>My Wallet</button>
                 <button className="nb-text-link" onClick={() => navTo('/gallery')}>Gallery</button>
-                <button className="nb-text-link" onClick={() => navTo('/rewards')}>Loyalty &amp; Rewards</button>
+                <button className="nb-text-link" onClick={() => navTo('/customerLoyalty')}>Loyalty &amp; Rewards</button>
                 <button className="nb-text-link" onClick={() => navTo('/payments')}>Payments</button>
                 <button className="nb-text-link" onClick={handleLogout}>Log Out</button>
             </div>
