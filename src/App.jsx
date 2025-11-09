@@ -27,6 +27,7 @@ import EmployeeAvailability from "./pages/EmployeeAvailability";
 import EmployeeSchedule from "./pages/EmployeeSchedule";
 import EmployeeAppointments from "./pages/EmployeeAppointments.jsx";
 import UserGallery from "./pages/UserGallery.jsx";
+import SalonSettings from "./pages/SalonSettings.jsx";
 
 
 // Firebase
@@ -106,6 +107,7 @@ function App() {
         <Route path="/search" element={<SearchPage />} />
         <Route path="/salon" element={<SalonDetailsPage />} />
         <Route path="/salonDashboard" element={<SalonDashboard />} />
+        <Route path="/salonSettings" element={<SalonSettings />} />
 
         <Route path="/adminDashboard" element={<AdminDashboard />} />
 
