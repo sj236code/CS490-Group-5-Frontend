@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { Plus, Trash2, Check } from "lucide-react";
 
 function MyWallet() {
+  // TODO: replace with real logged-in customer id
+  const customerId = 1;
 
   const [methods, setMethods] = useState([]);
 
@@ -9,23 +11,28 @@ function MyWallet() {
     fetchMethods();
   }, []);
 
-  // Fetch payment methods for customer (temp hardcoded)
+  // Fetch payment methods for customer
   const fetchMethods = async () => {
-    const customerId = 1; // TODO: replace with real customer id
-
     try {
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/api/payments/${customerId}/methods`
       );
+
+      if (!response.ok) {
+        console.error("Failed to fetch payment methods");
+        setMethods([]);
+        return;
+      }
+
       const data = await response.json();
 
       const mapped = (data || []).map((method) => ({
         id: method.id,
-        brand: method.brand,                        // "Visa", "MasterCard", etc.
+        brand: method.brand, // "Visa", "MasterCard", etc.
         last4: method.last4,
-        name: "John Doe",                           // placeholder
-        exp: formatExpiration(method.expiration),   // "MM/YYYY"
-        added: formatCreatedAt(method.created_at),  // "Nov 8, 2025"
+        name: "John Doe", // placeholder
+        exp: formatExpiration(method.expiration), // "MM/YYYY"
+        added: formatCreatedAt(method.created_at), // "Nov 8, 2025"
         isDefault: !!method.is_default,
       }));
 
@@ -56,8 +63,55 @@ function MyWallet() {
     });
   };
 
-  const setDefault = (id) =>
-    setMethods((prev) => prev.map((m) => ({ ...m, isDefault: m.id === id })));
+  // Call backend to set default payment method
+  const setDefault = async (methodId) => {
+    try {
+      const url = `${import.meta.env.VITE_API_URL}/api/payments/${customerId}/methods/${methodId}/set-default`;
+
+      const res = await fetch(url, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (res.status === 404) {
+        console.error("Customer or payment method not found");
+        return;
+      }
+
+      if (res.status === 403) {
+        console.error("Payment method does not belong to this customer");
+        return;
+      }
+
+      if (!res.ok) {
+        console.error("Failed to set default payment method");
+        return;
+      }
+
+      const updated = await res.json();
+      console.log("Default method updated:", updated);
+
+      // Update local state: only this method is default
+      setMethods((prev) =>
+        prev.map((m) =>
+          m.id === methodId
+            ? {
+                ...m,
+                isDefault: !!updated.is_default,
+                exp: formatExpiration(updated.expiration || m.exp),
+                added: formatCreatedAt(
+                  updated.updated_at || updated.created_at || m.added
+                ),
+              }
+            : { ...m, isDefault: false }
+        )
+      );
+    } catch (err) {
+      console.error("Error setting default payment method:", err);
+    }
+  };
 
   const removeMethod = (id) =>
     setMethods((prev) => prev.filter((m) => m.id !== id));
