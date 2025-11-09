@@ -2574,3 +2574,275 @@ label {
 .gallery-info-list li {
   margin-bottom: 4px;
 }
+
+/* Loyalty Tab Layout */
+
+.loyalty-tab-container {
+  padding: 40px 60px;
+  background-color: #f5f7f3; /* very light green/gray */
+}
+
+.loyalty-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 24px;
+}
+
+/* stack on small screens */
+@media (max-width: 900px) {
+  .loyalty-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* columns just help spacing */
+.loyalty-left-column,
+.loyalty-right-column {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ----- Cards ----- */
+
+.loyalty-card {
+  background-color: #f3f8ee;
+  border-radius: 16px;
+  padding: 20px 24px;
+  text-align: left;
+  box-shadow: 0 4px 10px rgba(75, 89, 69, 0.08);
+}
+
+.program-summary-card,
+.program-settings-card,
+.engagement-card,
+.customer-points-card {
+  border: 1px solid #d2e2cd;
+}
+
+.loyalty-card-title {
+  font-size: 1.2rem;
+  color: #4B5945;
+  margin: 0 0 12px 0;
+}
+
+/* ----- Small Text + Labels ----- */
+
+.loyalty-text-line {
+  margin: 4px 0;
+  color: #66785F;
+  font-size: 0.95rem;
+}
+
+.loyalty-subtitle {
+  margin: 0 0 12px 0;
+  font-size: 0.9rem;
+  color: #66785F;
+}
+
+.loyalty-subtitle-light {
+  font-weight: 400;
+  font-size: 0.85rem;
+  color: #8b9a84;
+}
+
+/* ----- Form Rows ----- */
+
+.loyalty-field-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  gap: 12px;
+}
+
+.loyalty-label {
+  flex: 1;
+  font-size: 0.95rem;
+  color: #4B5945;
+}
+
+.loyalty-input {
+  flex: 1;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid #c1d3bc;
+  font-size: 0.9rem;
+  background-color: #ffffff;
+}
+
+.loyalty-input:focus {
+  outline: none;
+  border-color: #4B5945;
+}
+
+/* ----- Buttons ----- */
+
+.loyalty-button-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.loyalty-primary-btn,
+.loyalty-secondary-btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.loyalty-primary-btn {
+  background-color: #4B5945;
+  color: #F0F0F0;
+}
+
+.loyalty-primary-btn:hover {
+  background-color: #66785F;
+}
+
+.loyalty-secondary-btn {
+  background-color: #e4ecdd;
+  color: #4B5945;
+}
+
+.loyalty-secondary-btn:hover {
+  background-color: #d3e0c9;
+}
+
+/* ----- Card Header with Icon ----- */
+
+.loyalty-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.loyalty-card-icon {
+  color: #4B5945;
+}
+
+/* ----- Simple Chart Styles ----- */
+
+.loyalty-chart {
+  border-radius: 8px;
+  background-color: #ffffff;
+  border: 1px solid #e2eadc;
+  padding: 12px;
+}
+
+.loyalty-chart-body {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  height: 160px;
+  margin-bottom: 10px;
+}
+
+.loyalty-chart-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+}
+
+.loyalty-chart-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  width: 100%;
+}
+
+.loyalty-bar-earned,
+.loyalty-bar-redeemed {
+  flex: 1;
+  border-radius: 4px 4px 0 0;
+}
+
+/* colors can be adjusted, just keeping it soft */
+.loyalty-bar-earned {
+  background-color: #bfd4b5;
+}
+
+.loyalty-bar-redeemed {
+  background-color: #8faa84;
+}
+
+.loyalty-chart-label {
+  font-size: 0.8rem;
+  color: #4B5945;
+}
+
+/* Chart legend */
+
+.loyalty-chart-legend {
+  display: flex;
+  gap: 16px;
+  font-size: 0.8rem;
+  color: #66785F;
+}
+
+.loyalty-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.loyalty-legend-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+}
+
+.loyalty-legend-earned {
+  background-color: #bfd4b5;
+}
+
+.loyalty-legend-redeemed {
+  background-color: #8faa84;
+}
+
+/* ----- Customer Table ----- */
+
+.loyalty-table {
+  margin-top: 8px;
+  border-radius: 8px;
+  background-color: #ffffff;
+  border: 1px solid #e2eadc;
+  overflow: hidden;
+  font-size: 0.9rem;
+}
+
+.loyalty-table-header,
+.loyalty-table-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  padding: 8px 12px;
+}
+
+.loyalty-table-header {
+  background-color: #e7f0df;
+  font-weight: 600;
+  color: #4B5945;
+}
+
+.loyalty-table-row:nth-child(odd) {
+  background-color: #f8fbf3;
+}
+
+.loyalty-table-row:nth-child(even) {
+  background-color: #ffffff;
+}
+
+.loyalty-table-col {
+  display: flex;
+  align-items: center;
+}
+
+.loyalty-table-name {
+  font-weight: 500;
+  color: #4B5945;
+}

@@ -105,15 +105,20 @@ function App() {
     
         <Route path="/search" element={<SearchPage />} />
         <Route path="/salon" element={<SalonDetailsPage />} />
+
+        {/* Salon Owner Nav Bar Routes */}
         <Route path="/salonDashboard" element={<SalonDashboard />} />
 
+        {/* Admin Nav Bar Routes */}
         <Route path="/adminDashboard" element={<AdminDashboard />} />
 
+        {/* Customer Nav Bar Routes */}
         <Route path="/customerLoyalty" element={<CustomerLoyalty />} />
         <Route path="/myWallet" element={<MyWallet />} />
         <Route path="/my-appointments" element={<MyAppointments />} />
         <Route path="/userGallery" element={<UserGallery />} />
 
+        {/* Employee Nav Bar Routes */}
         <Route path="/employee-appointments" element={<EmployeeAppointments />} />
         <Route path="/employee-availability" element={<EmployeeAvailability />} />
         <Route path="/employee-schedule" element={<EmployeeSchedule />} />
