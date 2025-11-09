@@ -34,7 +34,7 @@ function EmployeeNavBar({onClose}){
             <div className="nb-section">
                 <div className="nb-section-title">MyJade Account</div>
                 <button className="nb-text-link" onClick={() => navTo('/appointments')}>Appointments</button>
-                <button className="nb-text-link" onClick={() => navTo('/scheduling')}>Scheduling</button>
+                <button className="nb-text-link" onClick={() => navTo('/employee-schedule')}>Scheduling</button>
                 <button className="nb-text-link" onClick={() => navTo('/paymentportal')}>Payment Portal</button>
                 <button className="nb-text-link" onClick={() => navTo('/messages')}>Messages</button>
             </div>
