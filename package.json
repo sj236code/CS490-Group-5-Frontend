@@ -10,14 +10,16 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@vercel/analytics": "^1.5.0",
+    "firebase": "^12.4.0",
     "imagesloaded": "^5.0.0",
     "lightgallery": "^2.9.0",
-    "firebase": "^12.4.0",
     "lucide-react": "^0.546.0",
     "masonry-layout": "^4.2.2",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
-    "react-router-dom": "^7.9.4"
+    "react-router-dom": "^7.9.5",
+    "recharts": "^3.3.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",

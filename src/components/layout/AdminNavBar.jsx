@@ -1,8 +1,8 @@
 import { ChevronLeft, CircleUserRound, ShieldCheck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-/* NavBar component for an employee user */
-function EmployeeNavBar({onClose}){
+/* NavBar component for an customer user */
+function AdminNavBar({ onClose }) {
 
     const navigate = useNavigate();
 
@@ -11,7 +11,7 @@ function EmployeeNavBar({onClose}){
         onClose();
     }
 
-    return(
+    return (
         <div className="nav-bar">
             <button className="nav-close-button" onClick={onClose}>
                 <ChevronLeft strokeWidth={3} />
@@ -22,21 +22,19 @@ function EmployeeNavBar({onClose}){
                 <CircleUserRound className="nb-profile-icon" />
                 <div className="nb-profile-info">
                     <p className="nb-user-name">John Smith</p>
-                    <p className="nb-user-tag">Approved Employee</p>
+                    <p className="nb-user-tag">Admin</p>
                     <div className="nb-verified">
                         <ShieldCheck className="nb-verified-icon" />
                         <span>Verified</span>
                     </div>
                 </div>
+
             </div>
 
             {/* MyJade Account */}
             <div className="nb-section">
                 <div className="nb-section-title">MyJade Account</div>
-                <button className="nb-text-link" onClick={() => navTo('/employee-appointments')}>Appointments</button>
-                <button className="nb-text-link" onClick={() => navTo('/employee-schedule')}>Scheduling</button>
-                <button className="nb-text-link" onClick={() => navTo('/paymentportal')}>Payment Portal</button>
-                <button className="nb-text-link" onClick={() => navTo('/messages')}>Messages</button>
+                <button className="nb-text-link" onClick={() => navTo('/adminDashboard')}>Dashboard</button>
             </div>
 
             {/* Footer */}
@@ -44,11 +42,11 @@ function EmployeeNavBar({onClose}){
                 <button className="nb-footer-link" onClick={() => navTo('/contact')}>Contact</button>
                 <button className="nb-footer-link" onClick={() => navTo('/faq')}>FAQ</button>
                 <div className="nb-footer-link">Copyright ©</div>
-            </div>  
+            </div>
 
         </div>
     );
 
 }
 
-export default EmployeeNavBar;
+export default AdminNavBar;

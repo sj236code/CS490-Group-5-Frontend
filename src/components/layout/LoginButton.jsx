@@ -1,7 +1,7 @@
 function LoginButton({ onClick, style }) {
   return (
-    <div onClick={onClick} style={style}>
-      Sign In / Sign Out-- TEST
+    <div onClick={onClick} className="sign-in-button" style={style}>
+      Sign In / Sign Up
     </div>
   );
 }

@@ -18,24 +18,35 @@ import RegisterSalonSuccess from './pages/Sign_up/Salon_registration_success.jsx
 import EmployeeRegistration from './pages/Sign_up/Employee_registration.jsx';
 import EmployeeRegistrationSuccess from './pages/Sign_up/Employee_registration_success.jsx';
 import ResetPassword from './pages/Sign_in/Reset_pass.jsx';
+import AdminDashboard from './pages/AdminDashboard.jsx';
+import MyAppointments from "./pages/MyAppointments";
+import Checkout from './pages/checkout&payment/Checkout.jsx';
+import CustomerLoyalty from './pages/CustomerLoyalty.jsx';
+import MyWallet from './pages/MyWallet.jsx';
+import EmployeeAvailability from "./pages/EmployeeAvailability";
+import EmployeeSchedule from "./pages/EmployeeSchedule";
+import EmployeeAppointments from "./pages/EmployeeAppointments.jsx";
+import UserGallery from "./pages/UserGallery.jsx";
+
 
 // Firebase
 import { auth } from "./firebase";
 import { onAuthStateChanged } from "firebase/auth";
+import PaymentConfirmation from './pages/checkout&payment/PaymentConfirmation.jsx';
+
 
 function App() {
 
   // Temp hardcode until endpoint created
+
+  const DEMO_IDS = { CUSTOMER: 7, OWNER: 2, ADMIN: 5, EMPLOYEE: 11};
+
   const [userType, setUserType] = useState(null);
+  const [userId, setUserId] = useState(1);
   console.log("API URL:", import.meta.env.VITE_API_URL);
 
   useEffect(() => {
     // Temporarily Hardcode for testing -> Change when Merge with Auth Branch
-    // 1 -> Customer
-    // 2 -> Admin (WIP)
-    // 4 -> Salon Owner
-    // 6 -> Employee
-    const userId = 4;
 
     fetch(`${import.meta.env.VITE_API_URL}/api/auth/user-type/${userId}`)
       .then((res) => res.json())
@@ -48,15 +59,37 @@ function App() {
           setUserType("user");
         }
       })
-  },[]);
+  },[userId]);
+
+  const pickRole = (role) => {
+    if (!DEMO_IDS[role]) return;
+    setUserId(DEMO_IDS[role]);
+  };
+
+  const cycleRole = () => {
+    const order = ["CUSTOMER", "OWNER", "ADMIN", "EMPLOYEE"];
+    const i = order.indexOf(userType);
+    const next = order[(i + 1) % order.length] || "CUSTOMER";
+    pickRole(next);
+  };
+
+  const toggleUser = () => {
+    setUserId((prevId) => (prevId === 1 ? 8 : 1));
+  }
 
   return (
     <>
-      <Header userType={userType} />
+      <Header
+        userType={userType}
+        userId={userId}
+        onPickRole={pickRole}
+        onCycleRole={cycleRole}
+      />
       <hr />
       <Routes>
+        {/* */}
         <Route path="/" element={<LandingPage />} />
-        
+
         {/* Auth */}
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
@@ -73,8 +106,25 @@ function App() {
         <Route path="/search" element={<SearchPage />} />
         <Route path="/salon" element={<SalonDetailsPage />} />
         <Route path="/salonDashboard" element={<SalonDashboard />} />
+
+        <Route path="/adminDashboard" element={<AdminDashboard />} />
+
+        <Route path="/customerLoyalty" element={<CustomerLoyalty />} />
+        <Route path="/myWallet" element={<MyWallet />} />
+        <Route path="/my-appointments" element={<MyAppointments />} />
+        <Route path="/userGallery" element={<UserGallery />} />
+
+        <Route path="/employee-appointments" element={<EmployeeAppointments />} />
+        <Route path="/employee-availability" element={<EmployeeAvailability />} />
+        <Route path="/employee-schedule" element={<EmployeeSchedule />} />
+
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/faq" element={<FAQPage />} />
+
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/payment-confirmation" element={<PaymentConfirmation />} />
+
+        
       </Routes>
     </>
   );

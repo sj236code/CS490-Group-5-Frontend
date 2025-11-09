@@ -1,21 +1,15 @@
-import { ChevronRight } from 'lucide-react';
+import RestrictedCartPanel from './RestrictedCartPanel';
 
-/* CartPanel component for any user */
-function SalonOwnerCartPanel({onClose}){
-
-    return(
-        <div className="cart-panel">
-            <button className="cart-panel-close-button" onClick={onClose}>
-                <ChevronRight strokeWidth={3} />
-            </button>
-            <ul>
-                <li>Checkout</li>
-                <li>Sorry You're Broke</li>
-                <li>Salon Owner Cart Panel</li>
-            </ul>
-        </div>
-    )
-
+function SalonOwnerCartPanel({ onClose, userId, userName, onLogout }) {
+  return (
+    <RestrictedCartPanel
+      onClose={onClose}
+      userType="Salon Owner"
+      userId={userId}
+      userName={userName}
+      onLogout={onLogout}
+    />
+  );
 }
 
-export default SalonOwnerCartPanel
+export default SalonOwnerCartPanel;

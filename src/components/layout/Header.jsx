@@ -11,10 +11,12 @@ import CartPanel from './CartPanel'; // Unregistered User Nav Bar
 import CustomerCartPanel from './CustomerCartPanel';
 import EmployeeCartPanel from './EmployeeCartPanel';
 import SalonOwnerCartPanel from './SalonOwnerCartPanel';
+import AdminCartPanel from './AdminCartPanel';
 import LoginButton from './LoginButton.jsx';
+import AdminNavBar from './AdminNavBar.jsx';
 
 
-function Header({userType}){
+function Header({userType, userId, onPickRole, onCycleRole }){
 
     // Is NavBar open
     const[navBar, setNavBar] = useState(false);
@@ -55,6 +57,9 @@ function Header({userType}){
         else if(userType === 'OWNER'){
             return <SalonOwnerNavBar onClose={toggleNavBar} />
         }
+        else if(userType === 'ADMIN'){
+            return <AdminNavBar onClose={toggleNavBar} />
+        }
         else{
             return <NavBar onClose={toggleNavBar} />
         }
@@ -65,10 +70,13 @@ function Header({userType}){
             return <CustomerCartPanel onClose={toggleCartPanel} />
         }
         else if(userType === 'EMPLOYEE'){
-            return <EmployeeCartPanel onClose={toggleCartPanel} />
+            return <EmployeeCartPanel onClose={toggleCartPanel} userId={userId}/>
         }
         else if(userType === 'OWNER'){
-            return <SalonOwnerCartPanel onClose={toggleCartPanel} />
+            return <SalonOwnerCartPanel onClose={toggleCartPanel} userId={userId}/>
+        }
+        else if(userType === 'ADMIN'){
+            return <AdminCartPanel onClose={toggleCartPanel} userId={userId}/>
         }
         else{
             return <CartPanel onClose={toggleCartPanel} />
@@ -80,13 +88,20 @@ function Header({userType}){
             <header className='header'>
                 {/* If MenuButton clicked, open NavBar */}
                 <MenuButton onClick={toggleNavBar} /> 
+
+                {/* simple role switch pills */}
+                <div className="role-switch">
+                    <button className={`role-btn ${userType === 'CUSTOMER' ? 'active' : ''}`} onClick={() => onPickRole('CUSTOMER')}>Customer</button>
+                    <button className={`role-btn ${userType === 'OWNER' ? 'active' : ''}`} onClick={() => onPickRole('OWNER')}>Owner</button>
+                    <button className={`role-btn ${userType === 'ADMIN' ? 'active' : ''}`} onClick={() => onPickRole('ADMIN')}>Admin</button>
+                    <button className={`role-btn ${userType === 'EMPLOYEE' ? 'active' : ''}`} onClick={() => onPickRole('EMPLOYEE')}>Employee</button>
+                </div>
                 {/* Logo (todo: if clicked, return back to LandingPage) */}
                 <div className='logo' onClick={navigateToLanding} style={{cursor: 'pointer'}}>
                     <img src={jade_logo} className="logo-img" />    
                 </div>
                 {/* Sign In/ Sign Out Button */}
                 <div>
-                    <p> this is a test</p>
                     <LoginButton onClick={navigateToLogin} style={{cursor: 'pointer'}}/>
                 </div>
                 {/* If CartButton clicked, open CartPanel */}
