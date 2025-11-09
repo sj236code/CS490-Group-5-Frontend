@@ -1797,6 +1797,163 @@ body {
 }
 .nb-footer-link:hover { text-decoration: underline; }
 
+/* Customer Loyalty */
+/* Page */
+.loy-page { 
+  padding: 24px 32px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.loy-title {
+  display: flex; 
+  align-items: center; 
+  gap: 8px;
+  color: #2F3A2B; 
+  font-weight: 700; 
+  font-size: 1.25rem; 
+  margin-bottom: 12px;
+  width: 100%;
+  max-width: 1100px;
+}
+
+/* Stat cards */
+.loy-stats { 
+  display: flex; 
+  gap: 12px; 
+  flex-wrap: wrap; 
+  margin-bottom: 12px; 
+  justify-content: center;
+}
+
+.loy-card {
+  display: flex; 
+  gap: 8px; 
+  align-items: center;
+  background: #fff; 
+  border: 1px solid #E3E7E1; 
+  border-radius: 10px;
+  padding: 10px 12px; 
+  min-width: 300px;
+  height: 100px;
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
+.loy-card-label { 
+  color: #6B7C67; font-size: 0.85rem; 
+}
+
+.loy-card-value { 
+  color: #2F3A2B; font-weight: 700; 
+}
+
+.loy-subtitle { margin: 14px 0 8px 0; color: #2F3A2B; }
+
+/* Program */
+.loy-program {
+  background: #fff; 
+  border: 1px solid #E3E7E1; 
+  border-radius: 12px; 
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  width: 1100px;
+  margin: 0 auto;
+  margin-bottom: 40px;
+  margin-top: 20px;
+}
+.loy-program-head {
+  background: #4B5945; color: #F6FFF2; padding: 12px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.loy-program-id { display: flex; align-items: center; gap: 10px; }
+.loy-diamond {
+  width: 28px; height: 28px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(246,255,242,0.15); border: 1px solid rgba(246,255,242,0.4);
+}
+.loy-program-name { font-weight: 700; }
+.loy-program-rule { font-size: 0.85rem; opacity: 0.9; }
+.loy-badge {
+  background: #C9B15A; color: #2F3A2B; font-weight: 700;
+  padding: 3px 8px; border-radius: 8px; font-size: 0.8rem;
+}
+
+/* metrics */
+.loy-metrics {
+  display: flex; gap: 24px; padding: 10px 12px; border-bottom: 1px solid #EAEDE8;
+}
+.loy-metric-label { color: #6B7C67; font-size: 0.85rem; }
+.loy-metric-value { color: #2F3A2B; font-weight: 700; }
+
+/* next reward + progress */
+.loy-next { padding: 10px 12px; border-bottom: 1px solid #EAEDE8; }
+.loy-next-row { display: flex; justify-content: space-between; margin-bottom: 6px; }
+.loy-next-left { display: inline-flex; align-items: center; color: #2F3A2B; font-weight: 600; }
+.loy-next-right { color: #6B7C67; font-size: 0.85rem; }
+.loy-progress { height: 8px; background: #E5E9E2; border-radius: 999px; overflow: hidden; }
+.loy-progress-fill { height: 100%; background: #4B5945; }
+.loy-info {
+  margin-top: 8px; background: #E6F2E1; color: #2F3A2B;
+  border: 1px solid #CFE1C8; border-radius: 8px; padding: 8px; font-size: 0.9rem;
+}
+
+/* tabs */
+.loy-tabs { display: flex; gap: 8px; padding: 10px 12px; border-bottom: 1px solid #EAEDE8; }
+.loy-tab {
+  background: #EEF6E8; color: #2F3A2B; border: 1px solid #CFE1C8;
+  border-radius: 8px; padding: 6px 10px; cursor: pointer; font-weight: 600;
+}
+.loy-tab-active { background: #4B5945; color: #F6FFF2; border-color: #4B5945; }
+
+/* activity */
+.loy-activity { list-style: none; padding: 0; margin: 0; }
+.loy-activity-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px; border-bottom: 1px solid #EAEDE8;
+}
+.loy-activity-left { display: flex; align-items: center; gap: 10px; }
+.loy-activity-title { color: #2F3A2B; }
+.loy-activity-date { color: #6B7C67; font-size: 0.85rem; }
+.loy-activity-pts { color: #2F3A2B; font-weight: 700; }
+
+.loy-last { padding: 10px 12px; color: #6B7C67; font-size: 0.85rem; }
+/* Customer MyWallet */
+.wallet-container {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 24px 16px 80px;
+}
+
+.wallet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.wallet-title {
+  margin: 0;
+  font-size: 20px;
+  color: #1f2328;
+}
+
+.wallet-subtitle {
+  margin: 6px 0 0;
+  font-size: 14px;
+  color: #6b6f76;
+}
+
+.wallet-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #cdd6c7;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: #e6f0dd;
+  color: #2a3823;
+}
 
 .appointments-container {
   background-color: #f7f7f5;
@@ -1851,17 +2008,144 @@ body {
   font-weight: 500;
 }
 
-.btn-send {
-  background-color: #dbe5d2;
-  color: #4b5945;
+.wallet-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border: 1px solid #e6e7e9;
+  background: #fff;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 12px;
 }
-.btn-edit {
-  background-color: #66785f;
+
+.wallet-brand {
   color: #fff;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  width: 44px;
+  text-align: center;
 }
-.btn-cancel {
-  background-color: #9e9e9e;
-  color: #fff;
+
+.wallet-brand.visa {
+  background-color: #356ae6;
+}
+
+.wallet-brand.mc {
+  background-color: #e53935;
+}
+
+.wallet-info {
+  text-align: left;
+}
+
+.wallet-number {
+  font-weight: 600;
+  color: #1f2328;
+}
+
+.wallet-default-badge {
+  margin-left: 6px;
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: #e6f0dd;
+  color: #2a3823;
+}
+
+.wallet-text {
+  font-size: 14px;
+  color: #6b6f76;
+  margin-top: 3px;
+}
+
+.wallet-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.wallet-set-btn,
+.wallet-remove-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.wallet-set-btn {
+  border: 1px solid #e6e7e9;
+  background: #fff;
+}
+
+.wallet-remove-btn {
+  border: 1px solid #f1d4d2;
+  background: #fdeeee;
+  color: #a12b25;
+}
+
+.wallet-security-box {
+  border: 1px solid #e6e7e9;
+  background: #fafbfb;
+  border-radius: 10px;
+  padding: 16px;
+  margin-top: 20px;
+}
+
+.wallet-security-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.wallet-info-icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid #cfd3d8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: #6b6f76;
+}
+
+.wallet-security-title {
+  font-weight: 600;
+  color: #1f2328;
+}
+
+/* Edit Modal */
+.edit-modal {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 480px;
+}
+.edit-row {
+  display: flex;
+  justify-content: space-between;
+  margin: 0.5rem 0;
+}
+.edit-times input {
+  margin: 0 0.3rem;
+}
+.edit-modal-actions {
+  text-align: right;
+  margin-top: 1rem;
+}
+.edit-modal-actions button {
+  margin-left: 0.6rem;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
 }
 
 /* --- Modal Styling --- */
@@ -1985,129 +2269,3 @@ label {
   font-weight: bold;
   color: #4b5945;
 }
-
-/* ===========================
-   Employee Availability Page
-   =========================== */
-.availability-container,
-.schedule-container {
-  background: #f7f7f5;
-  color: #4b5945;
-  padding: 2rem 5rem;
-  font-family: "Inter", sans-serif;
-  min-height: 100vh;
-}
-
-.tab-bar {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-}
-.tab-bar button {
-  padding: 0.5rem 1.2rem;
-  border: none;
-  border-radius: 8px;
-  background: #e7eddf;
-  cursor: pointer;
-}
-.active-tab {
-  background: #4b5945;
-  color: white;
-}
-
-.availability-status,
-.weekly-availability,
-.salon-hours,
-.schedule-header {
-  background: white;
-  border-radius: 12px;
-  padding: 1.2rem;
-  margin-bottom: 1.2rem;
-}
-.status-badge {
-  float: right;
-  background: #e7eddf;
-  padding: 0.3rem 1rem;
-  border-radius: 6px;
-}
-
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.day-row {
-  display: flex;
-  justify-content: space-between;
-  padding: 0.8rem;
-  border-bottom: 1px solid #e0e0e0;
-}
-.unavailable {
-  color: gray;
-}
-.not-available {
-  background: #f0f0f0;
-  border-radius: 5px;
-  padding: 0.2rem 0.5rem;
-}
-
-/* Edit Modal */
-.edit-modal {
-  background: #fff;
-  padding: 2rem;
-  border-radius: 12px;
-  width: 480px;
-}
-.edit-row {
-  display: flex;
-  justify-content: space-between;
-  margin: 0.5rem 0;
-}
-.edit-times input {
-  margin: 0 0.3rem;
-}
-.edit-modal-actions {
-  text-align: right;
-  margin-top: 1rem;
-}
-.edit-modal-actions button {
-  margin-left: 0.6rem;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-/* ===========================
-   Employee Schedule Page
-   =========================== */
-.shift-row {
-  display: flex;
-  justify-content: space-between;
-  padding: 1rem;
-  border-bottom: 1px solid #ddd;
-}
-.no-shift {
-  background: #f0f0f0;
-  padding: 0.3rem 0.6rem;
-  border-radius: 6px;
-}
-.footer-controls {
-  display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
-  margin-top: 1rem;
-}
-.footer-controls button {
-  background: #e7eddf;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.tab-bar button:hover {
-  background-color: #cddac0;
-  transition: 0.2s ease-in-out;
-}
-
