@@ -1,35 +1,23 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
 import "../../App.css";
 
-const pendingVerifications = [
-  { name: "Salon Lumière", verified: false },
-  { name: "Salon A", verified: false },
-  { name: "The Styling Loft", verified: true },
-  { name: "Chic Cuts", verified: false },
-];
-
-const topSalons = ["Salon A", "Salon B", "Salon C", "Salon D", "Salon E"];
-
-const appointmentTrend = [
-  { day: "Mon", count: 40 },
-  { day: "Tue", count: 60 },
-  { day: "Wed", count: 70 },
-  { day: "Thu", count: 80 },
-  { day: "Fri", count: 90 },
-  { day: "Sat", count: 100 },
-  { day: "Sun", count: 120 },
-];
-
 function SalonActivityPage() {
+  const [pendingVerifications, setPendingVerifications] = useState([]);
+  const [topSalons, setTopSalons] = useState([]);
+  const [appointmentTrend, setAppointmentTrend] = useState([]);
+  const [metrics, setMetrics] = useState({ avgTime: "" });
+
+  useEffect(() => {
+    axios.get("/api/admin/salons/pending").then(res => setPendingVerifications(res.data));
+    axios.get("/api/admin/salons/top").then(res => setTopSalons(res.data));
+    axios.get("/api/admin/salons/trends").then(res => setAppointmentTrend(res.data));
+    axios.get("/api/admin/salons/metrics").then(res => setMetrics(res.data));
+  }, []);
+
   return (
     <div className="salon-activity-page">
       <div className="salon-header">
@@ -47,15 +35,19 @@ function SalonActivityPage() {
           <div className="panel-section">
             <h4>Pending Verifications</h4>
             <ul className="verification-list">
-              {pendingVerifications.map((s, i) => (
-                <li key={i}>
-                  {s.name}
-                  <span className="status-icons">
-                    <span className="verify-icon">✅</span>
-                    <span className="reject-icon">❌</span>
-                  </span>
-                </li>
-              ))}
+              {pendingVerifications.length > 0 ? (
+                pendingVerifications.map((s) => (
+                  <li key={s.id}>
+                    {s.name}
+                    <span className="status-icons">
+                      <span className="verify-icon">✅</span>
+                      <span className="reject-icon">❌</span>
+                    </span>
+                  </li>
+                ))
+              ) : (
+                <li>No pending verifications</li>
+              )}
             </ul>
           </div>
         </div>
@@ -65,8 +57,8 @@ function SalonActivityPage() {
           <div className="card">
             <h4>Top Salons</h4>
             <ul>
-              {topSalons.map((salon, i) => (
-                <li key={i}>{salon}</li>
+              {topSalons.map((s, i) => (
+                <li key={i}>{s.name} ({s.appointments})</li>
               ))}
             </ul>
           </div>
@@ -79,12 +71,7 @@ function SalonActivityPage() {
                 <XAxis dataKey="day" />
                 <YAxis />
                 <Tooltip />
-                <Line
-                  type="monotone"
-                  dataKey="count"
-                  stroke="#4B5945"
-                  strokeWidth={2}
-                />
+                <Line type="monotone" dataKey="count" stroke="#4B5945" strokeWidth={2} />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -94,7 +81,7 @@ function SalonActivityPage() {
         <div className="salon-right">
           <div className="card highlight">
             <h4>Avg. Appointment Time</h4>
-            <p className="metric-value">45 min</p>
+            <p className="metric-value">{metrics.avgTime}</p>
           </div>
 
           <div className="card">
@@ -105,12 +92,7 @@ function SalonActivityPage() {
                 <XAxis dataKey="day" hide />
                 <YAxis hide />
                 <Tooltip />
-                <Line
-                  type="monotone"
-                  dataKey="count"
-                  stroke="#66785F"
-                  strokeWidth={2}
-                />
+                <Line type="monotone" dataKey="count" stroke="#66785F" strokeWidth={2} />
               </LineChart>
             </ResponsiveContainer>
           </div>
