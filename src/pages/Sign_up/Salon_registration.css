@@ -303,3 +303,56 @@
     color: #E74C3C;
     text-align: center;
 }
+
+.file-helper-text {
+    font-size: 12px;
+    color: #999999;
+    margin-top: 8px;
+}
+
+.file-preview-container {
+    margin-top: 12px;
+    padding: 16px;
+    background: #FFFFFF;
+    border: 1px solid #BEBEBE;
+    border-radius: 10px;
+}
+
+.file-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.file-name {
+    font-size: 14px;
+    color: #000000;
+}
+
+.remove-file-btn {
+    background: none;
+    border: none;
+    color: #E74C3C;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+}
+
+.remove-file-btn:hover {
+    color: #C0392B;
+}
+
+.license-preview-img {
+    max-width: 100%;
+    max-height: 300px;
+    border-radius: 8px;
+    display: block;
+}
+
+.import-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
