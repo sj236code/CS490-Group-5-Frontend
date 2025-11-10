@@ -53,11 +53,11 @@ function App() {
       .then((res) => res.json())
       .then((data) => {
         console.log("Response from /user-type:", data);
-        if (data.status === "success"){
-          setUserType(data.role);
-        }
-        else{
-          setUserType("user");
+
+        if (data.role) {
+          setUserType(data.role.toUpperCase()); 
+        } else {
+          setUserType(null);
         }
       })
   },[userId]);
