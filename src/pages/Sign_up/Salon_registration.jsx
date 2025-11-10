@@ -8,6 +8,7 @@ function RegisterSalon() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const fileInputRef = useRef(null);
+    const serviceImageInputRefs = useRef([]);
     
     // All form data in ONE state - preserves data when going back/forward
     const [formData, setFormData] = useState({
@@ -40,9 +41,9 @@ function RegisterSalon() {
             sunday: { open: '', close: '', closed: true }
         },
         
-        // Step 4: Services
+        // Step 4: Services - now with image support
         services: [
-            { name: '', price: '', duration: '', description: '' }
+            { name: '', price: '', duration: '', description: '', image: null, imagePreview: null }
         ],
         
         // Step 5: Payment
@@ -94,10 +95,58 @@ function RegisterSalon() {
         }));
     };
 
+    const handleServiceImageClick = (index) => {
+        if (serviceImageInputRefs.current[index]) {
+            serviceImageInputRefs.current[index].click();
+        }
+    };
+
+    const handleServiceImageSelected = (index, event) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        // Validate file type
+        const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+        if (!validTypes.includes(file.type)) {
+            setError('Please upload a JPG or PNG file for service images');
+            return;
+        }
+
+        // Validate file size (5MB max)
+        if (file.size > 5 * 1024 * 1024) {
+            setError('Image size must be less than 5MB');
+            return;
+        }
+
+        const newServices = [...formData.services];
+        newServices[index].image = file;
+        newServices[index].imagePreview = URL.createObjectURL(file);
+        
+        setFormData(prev => ({
+            ...prev,
+            services: newServices
+        }));
+        setError('');
+    };
+
+    const handleRemoveServiceImage = (index) => {
+        const newServices = [...formData.services];
+        if (newServices[index].imagePreview) {
+            URL.revokeObjectURL(newServices[index].imagePreview);
+        }
+        newServices[index].image = null;
+        newServices[index].imagePreview = null;
+        
+        setFormData(prev => ({
+            ...prev,
+            services: newServices
+        }));
+    };
+
     const addService = () => {
         setFormData(prev => ({
             ...prev,
-            services: [...prev.services, { name: '', price: '', duration: '', description: '' }]
+            services: [...prev.services, { name: '', price: '', duration: '', description: '', image: null, imagePreview: null }]
         }));
     };
 
@@ -216,65 +265,140 @@ function RegisterSalon() {
         setLoading(true);
         
         try {
-            // Use FormData to handle file upload
-            const formDataToSend = new FormData();
+            // Check if we have any files to upload
+            const hasFiles = formData.businessLicense || formData.services.some(s => s.image);
             
-            // Add owner info
-            formDataToSend.append('owner_first_name', formData.firstName);
-            formDataToSend.append('owner_last_name', formData.lastName);
-            formDataToSend.append('owner_email', formData.email);
-            formDataToSend.append('owner_phone', formData.phone);
-            formDataToSend.append('owner_password', formData.password);
-            
-            // Add salon info
-            formDataToSend.append('salon_name', formData.salonName);
-            formDataToSend.append('salon_type', formData.salonType);
-            formDataToSend.append('salon_address1', formData.address1);
-            formDataToSend.append('salon_address2', formData.address2);
-            formDataToSend.append('salon_city', formData.city);
-            formDataToSend.append('salon_state', formData.state);
-            formDataToSend.append('salon_zip', formData.zip);
-            formDataToSend.append('salon_phone', formData.salonPhone);
-            
-            // Add hours as JSON string
-            formDataToSend.append('hours', JSON.stringify(formData.hours));
-            
-            // Add services as JSON string
-            formDataToSend.append('services', JSON.stringify(formData.services.filter(s => s.name && s.price)));
-            
-            // Add payment methods as JSON string
-            formDataToSend.append('payment_methods', JSON.stringify({
-                card: formData.paymentCard,
-                cash: formData.paymentCash,
-                venmo: formData.paymentVenmo,
-                zelle: formData.paymentZelle,
-                check: formData.paymentCheck,
-                other: formData.paymentOther,
-                other_details: formData.paymentOtherDetails
-            }));
-            
-            // Add verification
-            formDataToSend.append('terms_agreed', formData.termsAgreed.toString());
-            formDataToSend.append('business_confirmed', formData.businessConfirmed.toString());
-            
-            // Add business license file if present
-            if (formData.businessLicense) {
-                formDataToSend.append('business_license', formData.businessLicense);
-            }
+            if (hasFiles) {
+                // Use FormData if we have files
+                const formDataToSend = new FormData();
+                
+                // Add owner info
+                formDataToSend.append('owner_first_name', formData.firstName);
+                formDataToSend.append('owner_last_name', formData.lastName);
+                formDataToSend.append('owner_email', formData.email);
+                formDataToSend.append('owner_phone', formData.phone);
+                formDataToSend.append('owner_password', formData.password);
+                
+                // Add salon info
+                formDataToSend.append('salon_name', formData.salonName);
+                formDataToSend.append('salon_type', formData.salonType);
+                formDataToSend.append('salon_address1', formData.address1);
+                formDataToSend.append('salon_address2', formData.address2);
+                formDataToSend.append('salon_city', formData.city);
+                formDataToSend.append('salon_state', formData.state);
+                formDataToSend.append('salon_zip', formData.zip);
+                formDataToSend.append('salon_phone', formData.salonPhone);
+                
+                // Add hours as JSON string
+                formDataToSend.append('hours', JSON.stringify(formData.hours));
+                
+                // Add services (without images in JSON)
+                const servicesWithoutImages = formData.services
+                    .filter(s => s.name && s.price)
+                    .map(s => ({
+                        name: s.name,
+                        price: s.price,
+                        duration: s.duration,
+                        description: s.description
+                    }));
+                
+                formDataToSend.append('services', JSON.stringify(servicesWithoutImages));
+                
+                // Add service images with index reference
+                formData.services.forEach((service, index) => {
+                    if (service.image && service.name && service.price) {
+                        formDataToSend.append(`service_image_${index}`, service.image);
+                    }
+                });
+                
+                // Add payment methods as JSON string
+                formDataToSend.append('payment_methods', JSON.stringify({
+                    card: formData.paymentCard,
+                    cash: formData.paymentCash,
+                    venmo: formData.paymentVenmo,
+                    zelle: formData.paymentZelle,
+                    check: formData.paymentCheck,
+                    other: formData.paymentOther,
+                    other_details: formData.paymentOtherDetails
+                }));
+                
+                // Add verification
+                formDataToSend.append('terms_agreed', formData.termsAgreed.toString());
+                formDataToSend.append('business_confirmed', formData.businessConfirmed.toString());
+                
+                // Add business license file if present
+                if (formData.businessLicense) {
+                    formDataToSend.append('business_license', formData.businessLicense);
+                }
 
-            // API Call with FormData (NO Content-Type header - browser sets it automatically)
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/salon_register/register`, {
-                method: 'POST',
-                body: formDataToSend
-            });
+                // API Call with FormData
+                const response = await fetch(`${import.meta.env.VITE_API_URL}/api/salon_register/register`, {
+                    method: 'POST',
+                    body: formDataToSend
+                });
 
-            const data = await response.json();
+                const data = await response.json();
 
-            if (data.status === 'success' || response.ok) {
-                console.log('Salon registration successful:', data);
-                navigate('/register-salon-success');
+                if (data.status === 'success' || response.ok) {
+                    console.log('Salon registration successful:', data);
+                    navigate('/register-salon-success');
+                } else {
+                    setError(data.message || data.error || 'Unable to register salon. Please try again.');
+                }
             } else {
-                setError(data.message || data.error || 'Unable to register salon. Please try again.');
+                // Use JSON if no files (original approach)
+                const requestData = {
+                    owner: {
+                        name: `${formData.firstName} ${formData.lastName}`,
+                        email: formData.email,
+                        phone: formData.phone,
+                        password: formData.password
+                    },
+                    salon: {
+                        name: formData.salonName,
+                        type: formData.salonType,
+                        address: formData.address1,
+                        city: formData.city,
+                        state: formData.state,
+                        zip: formData.zip,
+                        phone: formData.salonPhone
+                    },
+                    hours: formData.hours,
+                    services: formData.services.filter(s => s.name && s.price).map(s => ({
+                        name: s.name,
+                        price: s.price,
+                        duration: s.duration,
+                        description: s.description
+                    })),
+                    payment_methods: {
+                        card: formData.paymentCard,
+                        cash: formData.paymentCash,
+                        venmo: formData.paymentVenmo,
+                        zelle: formData.paymentZelle,
+                        check: formData.paymentCheck,
+                        other: formData.paymentOther,
+                        other_details: formData.paymentOtherDetails
+                    },
+                    terms_agreed: formData.termsAgreed,
+                    business_confirmed: formData.businessConfirmed
+                };
+
+                const response = await fetch(`${import.meta.env.VITE_API_URL}/api/salon_register/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestData)
+                });
+
+                const data = await response.json();
+
+                if (data.status === 'success' || response.ok) {
+                    console.log('Salon registration successful:', data);
+                    navigate('/register-salon-success');
+                } else {
+                    setError(data.message || data.error || 'Unable to register salon. Please try again.');
+                }
             }
         } catch (err) {
             console.error('Salon registration error:', err);
@@ -551,8 +675,50 @@ function RegisterSalon() {
                                             onChange={(e) => handleServiceChange(index, 'duration', e.target.value)}
                                             disabled={loading}
                                         />
-                                        <button type="button" className="upload-btn" disabled={loading}>+ Upload Images</button>
+                                        
+                                        {!service.image ? (
+                                            <>
+                                                <button 
+                                                    type="button" 
+                                                    className="upload-btn" 
+                                                    onClick={() => handleServiceImageClick(index)}
+                                                    disabled={loading}
+                                                >
+                                                    <Upload size={14} /> Upload Images
+                                                </button>
+                                                <input
+                                                    type="file"
+                                                    accept="image/jpeg,image/jpg,image/png"
+                                                    ref={(el) => serviceImageInputRefs.current[index] = el}
+                                                    style={{ display: "none" }}
+                                                    onChange={(e) => handleServiceImageSelected(index, e)}
+                                                />
+                                            </>
+                                        ) : (
+                                            <div className="service-image-preview-container">
+                                                <span className="service-image-name">{service.image.name}</span>
+                                                <button 
+                                                    type="button"
+                                                    onClick={() => handleRemoveServiceImage(index)}
+                                                    className="remove-service-image-btn"
+                                                    disabled={loading}
+                                                >
+                                                    <X size={14} />
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
+                                    
+                                    {service.imagePreview && (
+                                        <div className="service-image-preview">
+                                            <img 
+                                                src={service.imagePreview} 
+                                                alt={`Service ${index + 1} preview`} 
+                                                className="service-preview-img"
+                                            />
+                                        </div>
+                                    )}
+                                    
                                     <textarea 
                                         placeholder="Description/ Notes" 
                                         className="full textarea"
