@@ -3088,3 +3088,249 @@ label {
 .settings-save-btn:hover {
   background-color: #66785F;
 }
+
+/* Edit Appointment Modal */
+
+.edit-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+}
+
+.edit-modal-box {
+  background-color: #f7f7f5;
+  border-radius: 24px;
+  padding: 24px 24px 20px;
+  width: 90%;
+  max-width: 640px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  color: #4B5945;
+}
+
+/* Header row */
+
+.edit-modal-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.edit-back-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  border: 2px solid #4B5945;
+  background-color: #D9E9CF;
+  color: #4B5945;
+  cursor: pointer;
+}
+
+.edit-back-btn:hover {
+  background-color: #B6CEB4;
+}
+
+.edit-modal-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #2f3a2b;
+}
+
+/* Sections / labels */
+
+.edit-section {
+  margin-top: 14px;
+  margin-bottom: 10px;
+}
+
+.edit-label {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #4B5945;
+  margin-bottom: 6px;
+}
+
+/* Service select bar */
+
+.edit-service-select {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: none;
+  background-color: #4B5945;
+  color: #ffffff;
+  font-size: 0.95rem;
+  appearance: none;
+}
+
+/* Experts row */
+
+.edit-experts-row {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 4px 2px 6px;
+}
+
+.edit-expert-card {
+  border: 1px solid #d0ddc6;
+  background-color: #f0f3ee;
+  border-radius: 18px;
+  padding: 10px 10px 8px;
+  width: 96px;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+.edit-expert-card-selected {
+  background-color: #D9E9CF;
+  border-color: #4B5945;
+}
+
+.edit-expert-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 20px;
+  background-color: #d3d9cf;
+  margin: 0 auto 6px;
+}
+
+.edit-expert-name {
+  font-size: 0.8rem;
+  color: #4B5945;
+}
+
+/* Helper text */
+
+.edit-helper-text {
+  font-size: 0.85rem;
+  color: #6B7C67;
+  margin-top: 4px;
+}
+
+/* Date & time */
+
+.edit-date-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.edit-date-input {
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid #c8d4c1;
+  background-color: #ffffff;
+  font-size: 0.9rem;
+  color: #2f3a2b;
+}
+
+.edit-date-input:focus {
+  outline: none;
+  border-color: #4B5945;
+  box-shadow: 0 0 0 2px rgba(75, 89, 69, 0.1);
+}
+
+.edit-date-header {
+  font-size: 0.9rem;
+  color: #6B7C67;
+}
+
+/* Time buttons grid */
+
+.edit-times-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.edit-time-btn {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #d0ddc6;
+  background-color: #e7eddf;
+  font-size: 0.85rem;
+  color: #2f3a2b;
+  cursor: pointer;
+}
+
+.edit-time-btn:hover {
+  background-color: #d9e9cf;
+}
+
+.edit-time-btn-selected {
+  background-color: #4B5945;
+  border-color: #4B5945;
+  color: #F6FFF2;
+  font-weight: 600;
+}
+
+/* Footer buttons */
+
+.edit-modal-footer {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.edit-delete-btn,
+.edit-save-btn {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: none;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Delete = pink pill */
+
+.edit-delete-btn {
+  background-color: #F9CFCF;
+  color: #a12b25;
+}
+
+.edit-delete-btn:hover {
+  background-color: #f4b7b7;
+}
+
+/* Save = jade green pill */
+
+.edit-save-btn {
+  background-color: #4B5945;
+  color: #F6FFF2;
+}
+
+.edit-save-btn:hover {
+  background-color: #66785F;
+}
+
+.edit-save-btn:disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+
+.edit-time-free {
+  background-color: #d9e9cf;
+  border-color: #c1d6b9;
+  color: #2f3a2b;
+}
+
+.edit-time-busy {
+  background-color: #f9cfcf;
+  border-color: #f0a9a9;
+  color: #a12b25;
+}
