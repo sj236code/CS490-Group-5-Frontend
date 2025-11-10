@@ -73,9 +73,9 @@ function SalonProductCard({product, onClick}) {
                         <span><Sparkle /></span>
                     </div>
                 )}
-                <div className="salon-service-placeholder">
+                {/* <div className="salon-service-placeholder">
                     <span><Sparkle /></span>
-                </div>
+                </div> */}
             </div>
 
             {/* Service Name */}
