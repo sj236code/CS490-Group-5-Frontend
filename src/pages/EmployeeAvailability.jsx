@@ -2,6 +2,16 @@ import { useEffect, useState } from "react";
 import { Clock, Info, Edit3, Check } from "lucide-react";
 import "../App.css";
 
+const WEEKDAY_LABELS = [
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+  "Sunday",
+];
+
 function EmployeeAvailability() {
   // TODO: replace with real logged-in employee id
   const employeeId = 1;
@@ -53,18 +63,54 @@ function EmployeeAvailability() {
   // Fetch weekly availability (later replace with endpoint)
   const loadWeeklyAvailability = async () => {
     try {
-      const mockAvailability = [
-        { day: "Monday", start: "09:00", end: "17:00", hours: 8, isAvailable: true },
-        { day: "Tuesday", start: "09:00", end: "17:00", hours: 8, isAvailable: true },
-        { day: "Wednesday", start: "09:00", end: "17:00", hours: 8, isAvailable: true },
-        { day: "Thursday", start: "09:00", end: "17:00", hours: 8, isAvailable: true },
-        { day: "Friday", start: "09:00", end: "17:00", hours: 8, isAvailable: true },
-        { day: "Saturday", start: null, end: null, hours: 0, isAvailable: false },
-        { day: "Sunday", start: null, end: null, hours: 0, isAvailable: false },
-      ];
-      setWeeklyAvailability(mockAvailability);
-      console.log("Weekly availability loaded:", mockAvailability);
-    } catch (err) {
+      const url = `${import.meta.env.VITE_API_URL}/api/appointments/${employeeId}/availability`;
+
+      const res = await fetch(url);
+
+      if (!res.ok) {
+        console.error("Failed to fetch weekly availability");
+        setWeeklyAvailability([]);
+        return;
+      }
+
+      const data = await res.json();
+      console.log("Employee availability from backend:", data);
+
+      const baseWeek = WEEKDAY_LABELS.map((day) => ({ day, start: null, end: null, hours: 0,isAvailable: false,}));
+
+      // Merge backend data into baseWeek
+      const filledWeek = baseWeek.map((dayObj, index) => {
+        // Find any availability entry that matches this weekday
+        const matchesForDay = data.filter((slot) => {
+
+          const backendDayName = typeof slot.weekday === "number" ? WEEKDAY_LABELS[slot.weekday] : slot.weekday;
+
+          return backendDayName === dayObj.day;
+        });
+
+        if (matchesForDay.length === 0) {
+          return dayObj;
+        }
+
+        // For now, take the first slot if multiple exist
+        const slot = matchesForDay[0];
+
+        const start = formatTimeFromIso(slot.start_time);
+        const end = formatTimeFromIso(slot.end_time);
+        const hours = computeHours(start, end);
+
+        return {
+          ...dayObj,
+          start,
+          end,
+          hours,
+          isAvailable: !!start && !!end,
+        };
+      });
+
+      setWeeklyAvailability(filledWeek);
+    }
+    catch (err) {
       console.error("Unable to load weekly availability:", err);
       setWeeklyAvailability([]);
     }
