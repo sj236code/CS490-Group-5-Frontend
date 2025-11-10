@@ -1999,3 +1999,91 @@ body {
   font-weight: 600;
   color: #1f2328;
 }
+
+/* AddPaymentMethod form styling */
+
+.wallet-add-form {
+  background-color: #f9faf9;
+  border: 1px solid #d6dfd1;
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 16px;
+  text-align: left;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  max-width: 400px;
+}
+
+.wallet-form-row {
+  margin-bottom: 14px;
+}
+
+.wallet-label {
+  display: block;
+  font-size: 0.95rem;
+  color: #4b5945;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.wallet-input {
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 0.95rem;
+  border: 1px solid #c8d4c1;
+  border-radius: 8px;
+  background-color: #fff;
+  color: #333;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.wallet-input:focus {
+  border-color: #8ca47c;
+  box-shadow: 0 0 0 2px rgba(140, 164, 124, 0.15);
+}
+
+.wallet-checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #4b5945;
+  font-size: 0.9rem;
+}
+
+.wallet-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+/* Match your existing wallet button styles */
+.wallet-set-btn {
+  background-color: #4b5945;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.wallet-set-btn:hover {
+  background-color: #5f7155;
+}
+
+.wallet-remove-btn {
+  background-color: #e5ebe0;
+  color: #4b5945;
+  border: 1px solid #c9d4c3;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.wallet-remove-btn:hover {
+  background-color: #d9e9cf;
+}
