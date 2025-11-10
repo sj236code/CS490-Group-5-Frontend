@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   PieChart,
   Pie,
@@ -13,22 +13,58 @@ import {
 } from "recharts";
 import "../../App.css";
 
-const genderData = [
-  { name: "Female", value: 45 },
-  { name: "Male", value: 45 },
-  { name: "Other", value: 15 },
-];
-
-const ageGroupData = [
-  { age: "18–24", count: 30 },
-  { age: "25–34", count: 70 },
-  { age: "35–44", count: 60 },
-  { age: "45+", count: 40 },
-];
-
 const COLORS = ["#4B5945", "#7E8E6F", "#A3B18A"];
 
 function DemographicsPage() {
+  const [genderData, setGenderData] = useState([]);
+  const [ageGroupData, setAgeGroupData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch demographics from backend
+  useEffect(() => {
+    const fetchDemographics = async () => {
+      try {
+        const base = import.meta.env.VITE_API_URL;
+
+        // Fetch gender data
+        const genderRes = await fetch(`${base}/api/admin/users/gender`);
+        const ageRes = await fetch(`${base}/api/admin/users/age-distribution`);
+
+        if (!genderRes.ok || !ageRes.ok) throw new Error("Failed to fetch demographics");
+
+        const genderJson = await genderRes.json();
+        const ageJson = await ageRes.json();
+
+        setGenderData(genderJson);
+        setAgeGroupData(ageJson);
+      } catch (err) {
+        console.error("Error loading demographics:", err);
+        setError("Unable to load demographics data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDemographics();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="demographics-page">
+        <h3>Loading demographics...</h3>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="demographics-page">
+        <h3 style={{ color: "red" }}>{error}</h3>
+      </div>
+    );
+  }
+
   return (
     <div className="demographics-page">
       <div className="header-section">
