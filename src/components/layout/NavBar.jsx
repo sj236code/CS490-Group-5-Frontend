@@ -8,10 +8,7 @@ function NavBar({onClose}){
             <button className="nav-close-button" onClick={onClose}>
                 <ChevronLeft strokeWidth={3} />
             </button>
-            <ul>
-                <li>Sign In</li>
-                <li>Sign Up</li>
-            </ul>
+            <h1>Login to see the Navigation Bar</h1>
         </div>
         
     );
