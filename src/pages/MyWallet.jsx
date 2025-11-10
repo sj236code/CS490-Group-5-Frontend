@@ -113,8 +113,41 @@ function MyWallet() {
     }
   };
 
-  const removeMethod = (id) =>
-    setMethods((prev) => prev.filter((m) => m.id !== id));
+  // Remove Payment Method given a customer id
+  const removeMethod = async(methodId) => {
+    const confirmation = window.confirm("Are you sure you want to remove this payment method?");
+    if (!confirmation){
+      return
+    };
+
+    try{
+      const url = `${import.meta.env.VITE_API_URL}/api/payments/${customerId}/methods/${methodId}`;
+
+      const response = await fetch(url, {
+        method: "DELETE", 
+        headers:{"Content-Type": "application/json",},
+      });
+
+      if(response.status === 404){
+        console.error("Customer or payment not found");
+        return;
+      }
+
+      if (!response.ok) {
+        const errBody = await res.json().catch(() => ({}));
+        console.error("Failed to delete payment method:", errBody);
+        return;
+      }
+
+      const body = await response.json();
+      console.log("Delete method: ", body);
+
+      setMethods((prev) => prev.filter((m) => m.id !== methodId));
+    }
+    catch(err){
+      console.error("Error deleting payment method: ", err);
+    }
+  };
 
   const addMethod = () => {
     setShowAddPayment(true);
