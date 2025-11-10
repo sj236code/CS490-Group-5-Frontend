@@ -2387,11 +2387,27 @@ label {
   padding: 1.2rem;
   margin-bottom: 1.2rem;
 }
+
 .status-badge {
   float: right;
   background: #e7eddf;
   padding: 0.3rem 1rem;
   border-radius: 6px;
+}
+
+.status-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.status-badge {
+  background-color: #d9e9cf;
+  color: #4b5945;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: 8px;
+  align-self: flex-start;
 }
 
 .section-header {
@@ -2419,7 +2435,7 @@ label {
   background: #fff;
   padding: 2rem;
   border-radius: 12px;
-  width: 480px;
+  width: 550px;
 }
 .edit-row {
   display: flex;
@@ -2439,6 +2455,102 @@ label {
   padding: 0.5rem 1rem;
   border-radius: 8px;
   cursor: pointer;
+}
+
+.edit-hours-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #D9E9CF;
+  color: #4B5945;
+  border: 1.5px solid #4B5945;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.edit-hours-btn:hover {
+  background-color: #CBE2BE;
+  transform: translateY(-1px);
+}
+
+.edit-hours-btn:active {
+  background-color: #B8D6A9;
+  transform: translateY(0);
+}
+
+/* Edit Weekly Hours modal layout */
+
+.edit-modal {
+  padding: 24px 30px;
+}
+
+/* 2 columns: Day | controls */
+.edit-row {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  align-items: center;
+  column-gap: 18px;
+  margin-bottom: 10px;
+}
+
+/* Day label column */
+.edit-day-label {
+  font-weight: 500;
+  color: #4B5945;
+}
+
+/* Right side: time inputs + checkbox in a tight grid */
+.edit-times {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+/* The dash between the times */
+.edit-dash {
+  color: #555;
+}
+
+/* Time inputs */
+.edit-times input[type="time"] {
+  width: 100%;
+  padding: 4px 6px;
+  border-radius: 6px;
+  border: 1px solid #c1d3bc;
+  font-size: 0.9rem;
+}
+
+.edit-time-range {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.edit-times input[type="time"]:disabled {
+  background-color: #f3f3f3;
+  color: #a0a0a0;
+}
+
+/* "Available" checkbox + label */
+.edit-available-label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.85rem;
+  color: #4B5945;
+  white-space: nowrap;
+}
+
+/* Optional: faint row separator to help the eye */
+.edit-row + .edit-row {
+  border-top: 1px solid #f0f0f0;
+  padding-top: 6px;
 }
 
 /* ===========================
