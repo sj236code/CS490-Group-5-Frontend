@@ -2225,6 +2225,8 @@ body {
 
 .wallet-remove-btn:hover {
   background-color: #d9e9cf;
+}
+
 /* --- Modal Styling --- */
 .modal-overlay {
   position: fixed;
