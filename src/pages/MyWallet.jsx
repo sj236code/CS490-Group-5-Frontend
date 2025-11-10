@@ -73,9 +73,7 @@ function MyWallet() {
 
       const res = await fetch(url, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: {"Content-Type": "application/json",},
       });
 
       if (res.status === 404) {
@@ -103,7 +101,7 @@ function MyWallet() {
             ...m,
             isDefault: !!updated.is_default,
             exp: formatExpiration(updated.expiration || m.exp),
-            added: formatCreatedAt(updated.updated_at || updated.created_at || m.added),
+            // added: formatCreatedAt(updated.updated_at || updated.created_at || m.added),
           } : { ...m, isDefault: false }
         )
       );
@@ -134,7 +132,7 @@ function MyWallet() {
       }
 
       if (!response.ok) {
-        const errBody = await res.json().catch(() => ({}));
+        const errBody = await response.json().catch(() => ({}));
         console.error("Failed to delete payment method:", errBody);
         return;
       }
