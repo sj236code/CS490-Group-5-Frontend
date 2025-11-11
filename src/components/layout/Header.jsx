@@ -170,12 +170,12 @@ function Header({userType, userId, onPickRole, onCycleRole, onLogout }){
                 <MenuButton onClick={toggleNavBar} /> 
 
                 {/* simple role switch pills */}
-                <div className="role-switch">
+                {/* <div className="role-switch">
                     <button className={`role-btn ${userType === 'CUSTOMER' ? 'active' : ''}`} onClick={() => onPickRole('CUSTOMER')}>Customer</button>
                     <button className={`role-btn ${userType === 'OWNER' ? 'active' : ''}`} onClick={() => onPickRole('OWNER')}>Owner</button>
                     <button className={`role-btn ${userType === 'ADMIN' ? 'active' : ''}`} onClick={() => onPickRole('ADMIN')}>Admin</button>
                     <button className={`role-btn ${userType === 'EMPLOYEE' ? 'active' : ''}`} onClick={() => onPickRole('EMPLOYEE')}>Employee</button>
-                </div>
+                </div> */}
                 {/* Logo (todo: if clicked, return back to LandingPage) */}
                 <div className='logo' onClick={navigateToLanding} style={{cursor: 'pointer'}}>
                     <img src={jade_logo} className="logo-img" />    
