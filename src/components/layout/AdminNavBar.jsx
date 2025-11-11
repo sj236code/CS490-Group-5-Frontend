@@ -2,7 +2,7 @@ import { ChevronLeft, CircleUserRound, ShieldCheck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 /* NavBar component for an customer user */
-function AdminNavBar({ onClose }) {
+function AdminNavBar({onClose, onLogout, userId, user}){
 
     const navigate = useNavigate();
 
@@ -10,6 +10,15 @@ function AdminNavBar({ onClose }) {
         navigate(path);
         onClose();
     }
+
+    const handleLogout = () => {
+        console.log('Logout button clicked');
+        if(onLogout) {
+            onLogout();
+            console.log('Logout succeeded');
+        }
+        onClose();
+    };
 
     return (
         <div className="nav-bar">
