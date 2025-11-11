@@ -3687,3 +3687,24 @@ label {
   color: #999;
   margin-top: 4px;
 }
+
+.payment-refund-row {
+  background: #f7f7f7;
+  margin-top: 8px;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 0.85rem;
+  color: #555;
+}
+
+.payment-refund-label {
+  font-weight: 600;
+  margin-right: 4px;
+}
+
+/* ---------- Empty state ---------- */
+.payments-empty-state {
+  text-align: center;
+  color: #777;
+  margin: 40px 0;
+}
