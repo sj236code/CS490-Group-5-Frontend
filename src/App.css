@@ -689,6 +689,36 @@ body {
   border-bottom: none;
 }
 
+/* Salon AboutTab */
+
+.about-container {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}
+
+.about-textbox {
+  background-color: #f3f3f3;
+  border-radius: 6px;
+  padding: 20px 25px;
+  max-width: 800px;
+  width: 100%;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.about-textbox h2 {
+  margin-bottom: 12px;
+  color: #4b5945;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.about-textbox p {
+  color: #333;
+  line-height: 1.6;
+  font-size: 1rem;
+  white-space: pre-line; 
+}
 
 /* Salon ShopTab */
 
@@ -3445,4 +3475,330 @@ label {
   background-color: #f9cfcf;
   border-color: #f0a9a9;
   color: #a12b25;
+}
+
+/* ---------- Page layout ---------- */
+.payments-page {
+  background-color: #f9f8f6;
+  min-height: 100vh;
+  padding: 30px 50px;
+  font-family: "Inter", sans-serif;
+  color: #333;
+}
+
+/* ---------- Tabs ---------- */
+.payments-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 25px;
+}
+
+.payments-tab {
+  border: none;
+  background: #e5edd8;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 500;
+  color: #4b5945;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.payments-tab--active {
+  background: #4b5945;
+  color: white;
+}
+
+.payments-tab:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ---------- Summary cards ---------- */
+.payments-summary-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.payments-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 18px 22px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.payments-card-label {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.payments-card-value {
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin: 6px 0;
+  color: #33422c;
+}
+
+.payments-card-sub {
+  font-size: 0.8rem;
+  color: #4b5945;
+}
+
+/* ---------- Filters Section ---------- */
+.payments-filters-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 18px 22px;
+  margin-bottom: 25px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.payments-filters-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.payments-filters-title {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.payments-filters-sub {
+  font-size: 0.85rem;
+  color: #777;
+}
+
+.payments-export-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #4b5945;
+  background: #f3f7ef;
+  color: #4b5945;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.payments-export-btn:hover {
+  background: #e4ecdc;
+}
+
+/* ---------- Filter inputs ---------- */
+.payments-filters-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 20px;
+  align-items: flex-end;
+}
+
+.payments-filter {
+  display: flex;
+  flex-direction: column;
+}
+
+.payments-input-wrapper {
+  display: flex;
+  align-items: center;
+  background: #f5f5f5;
+  border-radius: 6px;
+  padding: 6px 10px;
+}
+
+.payments-input {
+  border: none;
+  outline: none;
+  background: transparent;
+  flex: 1;
+  font-size: 0.9rem;
+}
+
+.payments-input-icon {
+  margin-right: 6px;
+  color: #777;
+}
+
+.payments-select,
+.payments-date-btn {
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fdfdfd;
+  padding: 6px 10px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.payments-filter-label {
+  font-size: 0.8rem;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.payments-date-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #555;
+}
+
+.payments-filters-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16px;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.payments-sort-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.payments-sort-btn {
+  border: 1px solid #ccc;
+  background: #f8f8f8;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: #444;
+}
+
+.payments-sort-btn--active {
+  background: #4b5945;
+  color: white;
+  border-color: #4b5945;
+}
+
+/* ---------- Transactions list ---------- */
+.payments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.payment-row {
+  background: #fff;
+  border-radius: 10px;
+  padding: 14px 18px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.payment-row-main {
+  display: grid;
+  grid-template-columns: 140px 180px 1fr 140px 140px;
+  gap: 10px;
+  align-items: start;
+}
+
+.payment-date {
+  font-weight: 600;
+  color: #333;
+}
+
+.payment-time {
+  font-size: 0.8rem;
+  color: #777;
+}
+
+.payment-name {
+  font-weight: 600;
+}
+
+.payment-email {
+  font-size: 0.8rem;
+  color: #777;
+}
+
+.payment-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.payment-tag {
+  background: #e5edd8;
+  color: #4b5945;
+  font-size: 0.75rem;
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+
+.payment-stylist {
+  font-size: 0.8rem;
+  color: #777;
+  margin-top: 4px;
+}
+
+.payment-amount {
+  font-weight: 600;
+  color: #333;
+}
+
+.payment-method {
+  font-size: 0.8rem;
+  color: #777;
+}
+
+.payment-txn-id {
+  font-size: 0.8rem;
+  color: #999;
+  margin-top: 4px;
+}
+
+/* ---------- Status pills ---------- */
+.status-pill {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  color: white;
+}
+
+.status-pill--success {
+  background: #4b5945;
+}
+
+.status-pill--pending {
+  background: #e7b400;
+}
+
+.status-pill--failed {
+  background: #b83535;
+}
+
+.status-pill--refunded {
+  background: #999;
+}
+
+/* ---------- Refund reason ---------- */
+.payment-refund-row {
+  background: #f7f7f7;
+  margin-top: 8px;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 0.85rem;
+  color: #555;
+}
+
+.payment-refund-label {
+  font-weight: 600;
+  margin-right: 4px;
+}
+
+/* ---------- Empty state ---------- */
+.payments-empty-state {
+  text-align: center;
+  color: #777;
+  margin: 40px 0;
 }

@@ -1,14 +1,12 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, Upload, X } from 'lucide-react';
+import { ChevronLeft } from 'lucide-react';
 import './Salon_registration.css';
 
 function RegisterSalon() {
     const [currentStep, setCurrentStep] = useState(1);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const fileInputRef = useRef(null);
-    const serviceImageInputRefs = useRef([]);
     
     // All form data in ONE state - preserves data when going back/forward
     const [formData, setFormData] = useState({
@@ -41,9 +39,9 @@ function RegisterSalon() {
             sunday: { open: '', close: '', closed: true }
         },
         
-        // Step 4: Services - now with image support
+        // Step 4: Services
         services: [
-            { name: '', price: '', duration: '', description: '', image: null, imagePreview: null }
+            { name: '', price: '', duration: '', description: '' }
         ],
         
         // Step 5: Payment
@@ -57,9 +55,7 @@ function RegisterSalon() {
         
         // Step 6: Verification
         termsAgreed: false,
-        businessConfirmed: false,
-        businessLicense: null,
-        businessLicensePreview: null
+        businessConfirmed: false
     });
 
     const navigate = useNavigate();
@@ -95,100 +91,10 @@ function RegisterSalon() {
         }));
     };
 
-    const handleServiceImageClick = (index) => {
-        if (serviceImageInputRefs.current[index]) {
-            serviceImageInputRefs.current[index].click();
-        }
-    };
-
-    const handleServiceImageSelected = (index, event) => {
-        const file = event.target.files?.[0];
-        if (!file) return;
-
-        // Validate file type
-        const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-        if (!validTypes.includes(file.type)) {
-            setError('Please upload a JPG or PNG file for service images');
-            return;
-        }
-
-        // Validate file size (5MB max)
-        if (file.size > 5 * 1024 * 1024) {
-            setError('Image size must be less than 5MB');
-            return;
-        }
-
-        const newServices = [...formData.services];
-        newServices[index].image = file;
-        newServices[index].imagePreview = URL.createObjectURL(file);
-        
-        setFormData(prev => ({
-            ...prev,
-            services: newServices
-        }));
-        setError('');
-    };
-
-    const handleRemoveServiceImage = (index) => {
-        const newServices = [...formData.services];
-        if (newServices[index].imagePreview) {
-            URL.revokeObjectURL(newServices[index].imagePreview);
-        }
-        newServices[index].image = null;
-        newServices[index].imagePreview = null;
-        
-        setFormData(prev => ({
-            ...prev,
-            services: newServices
-        }));
-    };
-
     const addService = () => {
         setFormData(prev => ({
             ...prev,
-            services: [...prev.services, { name: '', price: '', duration: '', description: '', image: null, imagePreview: null }]
-        }));
-    };
-
-    const handleChooseFilesClick = () => {
-        if (fileInputRef.current) {
-            fileInputRef.current.click();
-        }
-    };
-
-    const handleFileSelected = (event) => {
-        const file = event.target.files?.[0];
-        if (!file) return;
-
-        // Validate file type
-        const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
-        if (!validTypes.includes(file.type)) {
-            setError('Please upload a JPG, PNG, or PDF file');
-            return;
-        }
-
-        // Validate file size (5MB max)
-        if (file.size > 5 * 1024 * 1024) {
-            setError('File size must be less than 5MB');
-            return;
-        }
-
-        setFormData(prev => ({
-            ...prev,
-            businessLicense: file,
-            businessLicensePreview: URL.createObjectURL(file)
-        }));
-        setError('');
-    };
-
-    const handleRemoveFile = () => {
-        if (formData.businessLicensePreview) {
-            URL.revokeObjectURL(formData.businessLicensePreview);
-        }
-        setFormData(prev => ({
-            ...prev,
-            businessLicense: null,
-            businessLicensePreview: null
+            services: [...prev.services, { name: '', price: '', duration: '', description: '' }]
         }));
     };
 
@@ -265,54 +171,29 @@ function RegisterSalon() {
         setLoading(true);
         
         try {
-            // Check if we have any files to upload
-            const hasFiles = formData.businessLicense || formData.services.some(s => s.image);
-            
-            if (hasFiles) {
-                // Use FormData if we have files
-                const formDataToSend = new FormData();
-                
-                // Add owner info
-                formDataToSend.append('owner_first_name', formData.firstName);
-                formDataToSend.append('owner_last_name', formData.lastName);
-                formDataToSend.append('owner_email', formData.email);
-                formDataToSend.append('owner_phone', formData.phone);
-                formDataToSend.append('owner_password', formData.password);
-                
-                // Add salon info
-                formDataToSend.append('salon_name', formData.salonName);
-                formDataToSend.append('salon_type', formData.salonType);
-                formDataToSend.append('salon_address1', formData.address1);
-                formDataToSend.append('salon_address2', formData.address2);
-                formDataToSend.append('salon_city', formData.city);
-                formDataToSend.append('salon_state', formData.state);
-                formDataToSend.append('salon_zip', formData.zip);
-                formDataToSend.append('salon_phone', formData.salonPhone);
-                
-                // Add hours as JSON string
-                formDataToSend.append('hours', JSON.stringify(formData.hours));
-                
-                // Add services (without images in JSON)
-                const servicesWithoutImages = formData.services
-                    .filter(s => s.name && s.price)
-                    .map(s => ({
-                        name: s.name,
-                        price: s.price,
-                        duration: s.duration,
-                        description: s.description
-                    }));
-                
-                formDataToSend.append('services', JSON.stringify(servicesWithoutImages));
-                
-                // Add service images with index reference
-                formData.services.forEach((service, index) => {
-                    if (service.image && service.name && service.price) {
-                        formDataToSend.append(`service_image_${index}`, service.image);
-                    }
-                });
-                
-                // Add payment methods as JSON string
-                formDataToSend.append('payment_methods', JSON.stringify({
+            // Prepare data matching Flask pattern and new auth_user table
+            const requestData = {
+                owner: {
+                    first_name: formData.firstName,
+                    last_name: formData.lastName,
+                    email: formData.email,
+                    phone_number: formData.phone,
+                    address: null,  // Salon address is separate
+                    password: formData.password,
+                    role: 'OWNER'
+                },
+                salon: {
+                    name: formData.salonName,
+                    type: formData.salonType,
+                    address: `${formData.address1}${formData.address2 ? ' ' + formData.address2 : ''}`,
+                    city: formData.city,
+                    state: formData.state,
+                    zip: formData.zip,
+                    phone: formData.salonPhone
+                },
+                hours: formData.hours,
+                services: formData.services.filter(s => s.name && s.price),
+                payment_methods: {
                     card: formData.paymentCard,
                     cash: formData.paymentCash,
                     venmo: formData.paymentVenmo,
@@ -320,85 +201,28 @@ function RegisterSalon() {
                     check: formData.paymentCheck,
                     other: formData.paymentOther,
                     other_details: formData.paymentOtherDetails
-                }));
-                
-                // Add verification
-                formDataToSend.append('terms_agreed', formData.termsAgreed.toString());
-                formDataToSend.append('business_confirmed', formData.businessConfirmed.toString());
-                
-                // Add business license file if present
-                if (formData.businessLicense) {
-                    formDataToSend.append('business_license', formData.businessLicense);
-                }
+                },
+                terms_agreed: formData.termsAgreed,
+                business_confirmed: formData.businessConfirmed
+            };
 
-                // API Call with FormData
-                const response = await fetch(`${import.meta.env.VITE_API_URL}/api/salon_register/register`, {
-                    method: 'POST',
-                    body: formDataToSend
-                });
+            // API Call - matches your salon_register.py /api/salon_register/register endpoint
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/salon_register/register`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestData)
+            });
 
-                const data = await response.json();
+            const data = await response.json();
 
-                if (data.status === 'success' || response.ok) {
-                    console.log('Salon registration successful:', data);
-                    navigate('/register-salon-success');
-                } else {
-                    setError(data.message || data.error || 'Unable to register salon. Please try again.');
-                }
+            // Check Flask response format
+            if (data.status === 'success' || response.ok) {
+                console.log('Salon registration successful:', data);
+                navigate('/register-salon-success');
             } else {
-                // Use JSON if no files (original approach)
-                const requestData = {
-                    owner: {
-                        name: `${formData.firstName} ${formData.lastName}`,
-                        email: formData.email,
-                        phone: formData.phone,
-                        password: formData.password
-                    },
-                    salon: {
-                        name: formData.salonName,
-                        type: formData.salonType,
-                        address: formData.address1,
-                        city: formData.city,
-                        state: formData.state,
-                        zip: formData.zip,
-                        phone: formData.salonPhone
-                    },
-                    hours: formData.hours,
-                    services: formData.services.filter(s => s.name && s.price).map(s => ({
-                        name: s.name,
-                        price: s.price,
-                        duration: s.duration,
-                        description: s.description
-                    })),
-                    payment_methods: {
-                        card: formData.paymentCard,
-                        cash: formData.paymentCash,
-                        venmo: formData.paymentVenmo,
-                        zelle: formData.paymentZelle,
-                        check: formData.paymentCheck,
-                        other: formData.paymentOther,
-                        other_details: formData.paymentOtherDetails
-                    },
-                    terms_agreed: formData.termsAgreed,
-                    business_confirmed: formData.businessConfirmed
-                };
-
-                const response = await fetch(`${import.meta.env.VITE_API_URL}/api/salon_register/register`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(requestData)
-                });
-
-                const data = await response.json();
-
-                if (data.status === 'success' || response.ok) {
-                    console.log('Salon registration successful:', data);
-                    navigate('/register-salon-success');
-                } else {
-                    setError(data.message || data.error || 'Unable to register salon. Please try again.');
-                }
+                setError(data.message || data.error || 'Unable to register salon. Please try again.');
             }
         } catch (err) {
             console.error('Salon registration error:', err);
@@ -675,50 +499,8 @@ function RegisterSalon() {
                                             onChange={(e) => handleServiceChange(index, 'duration', e.target.value)}
                                             disabled={loading}
                                         />
-                                        
-                                        {!service.image ? (
-                                            <>
-                                                <button 
-                                                    type="button" 
-                                                    className="upload-btn" 
-                                                    onClick={() => handleServiceImageClick(index)}
-                                                    disabled={loading}
-                                                >
-                                                    <Upload size={14} /> Upload Images
-                                                </button>
-                                                <input
-                                                    type="file"
-                                                    accept="image/jpeg,image/jpg,image/png"
-                                                    ref={(el) => serviceImageInputRefs.current[index] = el}
-                                                    style={{ display: "none" }}
-                                                    onChange={(e) => handleServiceImageSelected(index, e)}
-                                                />
-                                            </>
-                                        ) : (
-                                            <div className="service-image-preview-container">
-                                                <span className="service-image-name">{service.image.name}</span>
-                                                <button 
-                                                    type="button"
-                                                    onClick={() => handleRemoveServiceImage(index)}
-                                                    className="remove-service-image-btn"
-                                                    disabled={loading}
-                                                >
-                                                    <X size={14} />
-                                                </button>
-                                            </div>
-                                        )}
+                                        <button type="button" className="upload-btn" disabled={loading}>+ Upload Images</button>
                                     </div>
-                                    
-                                    {service.imagePreview && (
-                                        <div className="service-image-preview">
-                                            <img 
-                                                src={service.imagePreview} 
-                                                alt={`Service ${index + 1} preview`} 
-                                                className="service-preview-img"
-                                            />
-                                        </div>
-                                    )}
-                                    
                                     <textarea 
                                         placeholder="Description/ Notes" 
                                         className="full textarea"
@@ -817,53 +599,8 @@ function RegisterSalon() {
                         <div className="form-step">
                             <div className="upload-section">
                                 <span>Upload Business License:</span>
-                                
-                                {!formData.businessLicense ? (
-                                    <>
-                                        <button 
-                                            type="button" 
-                                            className="import-btn" 
-                                            onClick={handleChooseFilesClick}
-                                            disabled={loading}
-                                        >
-                                            <Upload size={16} /> Import Image
-                                        </button>
-                                        <input
-                                            type="file"
-                                            accept="image/jpeg,image/jpg,image/png,application/pdf"
-                                            ref={fileInputRef}
-                                            style={{ display: "none" }}
-                                            onChange={handleFileSelected}
-                                        />
-                                    </>
-                                ) : (
-                                    <div className="file-preview-container">
-                                        <div className="file-info">
-                                            <span className="file-name">{formData.businessLicense.name}</span>
-                                            <button 
-                                                type="button"
-                                                onClick={handleRemoveFile}
-                                                className="remove-file-btn"
-                                                disabled={loading}
-                                            >
-                                                <X size={16} />
-                                            </button>
-                                        </div>
-                                        {formData.businessLicense.type.startsWith('image/') && (
-                                            <img 
-                                                src={formData.businessLicensePreview} 
-                                                alt="Business license preview" 
-                                                className="license-preview-img"
-                                            />
-                                        )}
-                                    </div>
-                                )}
+                                <button type="button" className="import-btn" disabled={loading}>+ Import Image</button>
                             </div>
-                            
-                            <p className="file-helper-text">
-                                Supported: JPG, PNG, PDF • Max size: 5MB
-                            </p>
-                            
                             <div className="checkbox-list">
                                 <label>
                                     <input 

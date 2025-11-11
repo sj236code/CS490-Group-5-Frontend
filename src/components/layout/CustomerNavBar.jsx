@@ -2,27 +2,25 @@ import { ChevronLeft, CircleUserRound, ShieldCheck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 /* NavBar component for an customer user */
-function CustomerNavBar({onClose, onLogout, userId, user}){
+function CustomerNavBar({ onClose }) {
 
     const navigate = useNavigate();
 
     const navTo = (path) => {
-        navigate(path, {state: {userId, user}});
+        navigate(path);
         onClose();
     }
 
-    const handleLogout = () => {
-        console.log('Logout button clicked');
-        if(onLogout) {
-            onLogout();
-            console.log('Logout succeeded');
+    const handleLogout = async () => {
+        try {
+            await signOut(auth); // Sign out Firebase user
+            navigate('/signup');  // Redirect to SignUp page
+            onClose();            // Close navbar
         }
-        onClose();
+        catch (error) {
+            console.error("Logout failed:", error);
+        }
     };
-
-    const displayName = user?.first_name ? `${user.first_name} ${user.last_name ?? ''}`.trim(): 'Customer';
-
-    const customerNumber = user?.profile_id ?? userId ?? '-';
 
     return (
         <div className="nav-bar">
@@ -34,12 +32,12 @@ function CustomerNavBar({onClose, onLogout, userId, user}){
             <div className="nb-profile-section">
                 <CircleUserRound className="nb-profile-icon" />
                 <div className="nb-profile-info">
-                <p className="nb-user-name">{displayName}</p>
-                <p className="nb-user-tag">Customer #{customerNumber}</p>
-                <div className="nb-verified">
-                    <ShieldCheck className="nb-verified-icon" />
-                    <span>Verified</span>
-                </div>
+                    <p className="nb-user-name">John Smith</p>
+                    <p className="nb-user-tag">Customer</p>
+                    <div className="nb-verified">
+                        <ShieldCheck className="nb-verified-icon" />
+                        <span>Verified</span>
+                    </div>
                 </div>
 
             </div>
