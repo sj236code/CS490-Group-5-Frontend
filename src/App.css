@@ -689,6 +689,36 @@ body {
   border-bottom: none;
 }
 
+/* Salon AboutTab */
+
+.about-container {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}
+
+.about-textbox {
+  background-color: #f3f3f3;
+  border-radius: 6px;
+  padding: 20px 25px;
+  max-width: 800px;
+  width: 100%;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.about-textbox h2 {
+  margin-bottom: 12px;
+  color: #4b5945;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.about-textbox p {
+  color: #333;
+  line-height: 1.6;
+  font-size: 1rem;
+  white-space: pre-line; 
+}
 
 /* Salon ShopTab */
 
@@ -2139,6 +2169,94 @@ body {
   color: #1f2328;
 }
 
+/* AddPaymentMethod form styling */
+
+.wallet-add-form {
+  background-color: #f9faf9;
+  border: 1px solid #d6dfd1;
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 16px;
+  text-align: left;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  max-width: 400px;
+}
+
+.wallet-form-row {
+  margin-bottom: 14px;
+}
+
+.wallet-label {
+  display: block;
+  font-size: 0.95rem;
+  color: #4b5945;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.wallet-input {
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 0.95rem;
+  border: 1px solid #c8d4c1;
+  border-radius: 8px;
+  background-color: #fff;
+  color: #333;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.wallet-input:focus {
+  border-color: #8ca47c;
+  box-shadow: 0 0 0 2px rgba(140, 164, 124, 0.15);
+}
+
+.wallet-checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #4b5945;
+  font-size: 0.9rem;
+}
+
+.wallet-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+/* Match your existing wallet button styles */
+.wallet-set-btn {
+  background-color: #4b5945;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.wallet-set-btn:hover {
+  background-color: #5f7155;
+}
+
+.wallet-remove-btn {
+  background-color: #e5ebe0;
+  color: #4b5945;
+  border: 1px solid #c9d4c3;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.wallet-remove-btn:hover {
+  background-color: #d9e9cf;
+}
+
 /* --- Modal Styling --- */
 .modal-overlay {
   position: fixed;
@@ -2299,11 +2417,27 @@ label {
   padding: 1.2rem;
   margin-bottom: 1.2rem;
 }
+
 .status-badge {
   float: right;
   background: #e7eddf;
   padding: 0.3rem 1rem;
   border-radius: 6px;
+}
+
+.status-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.status-badge {
+  background-color: #d9e9cf;
+  color: #4b5945;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: 8px;
+  align-self: flex-start;
 }
 
 .section-header {
@@ -2331,7 +2465,7 @@ label {
   background: #fff;
   padding: 2rem;
   border-radius: 12px;
-  width: 480px;
+  width: 550px;
 }
 .edit-row {
   display: flex;
@@ -2351,6 +2485,102 @@ label {
   padding: 0.5rem 1rem;
   border-radius: 8px;
   cursor: pointer;
+}
+
+.edit-hours-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #D9E9CF;
+  color: #4B5945;
+  border: 1.5px solid #4B5945;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.edit-hours-btn:hover {
+  background-color: #CBE2BE;
+  transform: translateY(-1px);
+}
+
+.edit-hours-btn:active {
+  background-color: #B8D6A9;
+  transform: translateY(0);
+}
+
+/* Edit Weekly Hours modal layout */
+
+.edit-modal {
+  padding: 24px 30px;
+}
+
+/* 2 columns: Day | controls */
+.edit-row {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  align-items: center;
+  column-gap: 18px;
+  margin-bottom: 10px;
+}
+
+/* Day label column */
+.edit-day-label {
+  font-weight: 500;
+  color: #4B5945;
+}
+
+/* Right side: time inputs + checkbox in a tight grid */
+.edit-times {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+/* The dash between the times */
+.edit-dash {
+  color: #555;
+}
+
+/* Time inputs */
+.edit-times input[type="time"] {
+  width: 100%;
+  padding: 4px 6px;
+  border-radius: 6px;
+  border: 1px solid #c1d3bc;
+  font-size: 0.9rem;
+}
+
+.edit-time-range {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.edit-times input[type="time"]:disabled {
+  background-color: #f3f3f3;
+  color: #a0a0a0;
+}
+
+/* "Available" checkbox + label */
+.edit-available-label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.85rem;
+  color: #4B5945;
+  white-space: nowrap;
+}
+
+/* Optional: faint row separator to help the eye */
+.edit-row + .edit-row {
+  border-top: 1px solid #f0f0f0;
+  padding-top: 6px;
 }
 
 /* ===========================
@@ -3005,4 +3235,575 @@ label {
   color: #e74c3c;
   font-size: 0.85rem;
   margin-top: 4px;
+}
+/* Edit Appointment Modal */
+
+.edit-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+}
+
+.edit-modal-box {
+  background-color: #f7f7f5;
+  border-radius: 24px;
+  padding: 24px 24px 20px;
+  width: 90%;
+  max-width: 640px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  color: #4B5945;
+}
+
+/* Header row */
+
+.edit-modal-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.edit-back-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  border: 2px solid #4B5945;
+  background-color: #D9E9CF;
+  color: #4B5945;
+  cursor: pointer;
+}
+
+.edit-back-btn:hover {
+  background-color: #B6CEB4;
+}
+
+.edit-modal-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #2f3a2b;
+}
+
+/* Sections / labels */
+
+.edit-section {
+  margin-top: 14px;
+  margin-bottom: 10px;
+}
+
+.edit-label {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #4B5945;
+  margin-bottom: 6px;
+}
+
+/* Service select bar */
+
+.edit-service-select {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: none;
+  background-color: #4B5945;
+  color: #ffffff;
+  font-size: 0.95rem;
+  appearance: none;
+}
+
+/* Experts row */
+
+.edit-experts-row {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 4px 2px 6px;
+}
+
+.edit-expert-card {
+  border: 1px solid #d0ddc6;
+  background-color: #f0f3ee;
+  border-radius: 18px;
+  padding: 10px 10px 8px;
+  width: 96px;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+.edit-expert-card-selected {
+  background-color: #D9E9CF;
+  border-color: #4B5945;
+}
+
+.edit-expert-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 20px;
+  background-color: #d3d9cf;
+  margin: 0 auto 6px;
+}
+
+.edit-expert-name {
+  font-size: 0.8rem;
+  color: #4B5945;
+}
+
+/* Helper text */
+
+.edit-helper-text {
+  font-size: 0.85rem;
+  color: #6B7C67;
+  margin-top: 4px;
+}
+
+/* Date & time */
+
+.edit-date-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.edit-date-input {
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid #c8d4c1;
+  background-color: #ffffff;
+  font-size: 0.9rem;
+  color: #2f3a2b;
+}
+
+.edit-date-input:focus {
+  outline: none;
+  border-color: #4B5945;
+  box-shadow: 0 0 0 2px rgba(75, 89, 69, 0.1);
+}
+
+.edit-date-header {
+  font-size: 0.9rem;
+  color: #6B7C67;
+}
+
+/* Time buttons grid */
+
+.edit-times-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.edit-time-btn {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #d0ddc6;
+  background-color: #e7eddf;
+  font-size: 0.85rem;
+  color: #2f3a2b;
+  cursor: pointer;
+}
+
+.edit-time-btn:hover {
+  background-color: #d9e9cf;
+}
+
+.edit-time-btn-selected {
+  background-color: #4B5945;
+  border-color: #4B5945;
+  color: #F6FFF2;
+  font-weight: 600;
+}
+
+/* Footer buttons */
+
+.edit-modal-footer {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.edit-delete-btn,
+.edit-save-btn {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: none;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Delete = pink pill */
+
+.edit-delete-btn {
+  background-color: #F9CFCF;
+  color: #a12b25;
+}
+
+.edit-delete-btn:hover {
+  background-color: #f4b7b7;
+}
+
+/* Save = jade green pill */
+
+.edit-save-btn {
+  background-color: #4B5945;
+  color: #F6FFF2;
+}
+
+.edit-save-btn:hover {
+  background-color: #66785F;
+}
+
+.edit-save-btn:disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+
+.edit-time-free {
+  background-color: #d9e9cf;
+  border-color: #c1d6b9;
+  color: #2f3a2b;
+}
+
+.edit-time-busy {
+  background-color: #f9cfcf;
+  border-color: #f0a9a9;
+  color: #a12b25;
+}
+
+/* ---------- Page layout ---------- */
+.payments-page {
+  background-color: #f9f8f6;
+  min-height: 100vh;
+  padding: 30px 50px;
+  font-family: "Inter", sans-serif;
+  color: #333;
+}
+
+/* ---------- Tabs ---------- */
+.payments-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 25px;
+}
+
+.payments-tab {
+  border: none;
+  background: #e5edd8;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 500;
+  color: #4b5945;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.payments-tab--active {
+  background: #4b5945;
+  color: white;
+}
+
+.payments-tab:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ---------- Summary cards ---------- */
+.payments-summary-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.payments-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 18px 22px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.payments-card-label {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.payments-card-value {
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin: 6px 0;
+  color: #33422c;
+}
+
+.payments-card-sub {
+  font-size: 0.8rem;
+  color: #4b5945;
+}
+
+/* ---------- Filters Section ---------- */
+.payments-filters-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 18px 22px;
+  margin-bottom: 25px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.payments-filters-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.payments-filters-title {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.payments-filters-sub {
+  font-size: 0.85rem;
+  color: #777;
+}
+
+.payments-export-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #4b5945;
+  background: #f3f7ef;
+  color: #4b5945;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.payments-export-btn:hover {
+  background: #e4ecdc;
+}
+
+/* ---------- Filter inputs ---------- */
+.payments-filters-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 20px;
+  align-items: flex-end;
+}
+
+.payments-filter {
+  display: flex;
+  flex-direction: column;
+}
+
+.payments-input-wrapper {
+  display: flex;
+  align-items: center;
+  background: #f5f5f5;
+  border-radius: 6px;
+  padding: 6px 10px;
+}
+
+.payments-input {
+  border: none;
+  outline: none;
+  background: transparent;
+  flex: 1;
+  font-size: 0.9rem;
+}
+
+.payments-input-icon {
+  margin-right: 6px;
+  color: #777;
+}
+
+.payments-select,
+.payments-date-btn {
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fdfdfd;
+  padding: 6px 10px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.payments-filter-label {
+  font-size: 0.8rem;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.payments-date-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #555;
+}
+
+.payments-filters-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16px;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.payments-sort-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.payments-sort-btn {
+  border: 1px solid #ccc;
+  background: #f8f8f8;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: #444;
+}
+
+.payments-sort-btn--active {
+  background: #4b5945;
+  color: white;
+  border-color: #4b5945;
+}
+
+/* ---------- Transactions list ---------- */
+.payments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.payment-row {
+  background: #fff;
+  border-radius: 10px;
+  padding: 14px 18px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.payment-row-main {
+  display: grid;
+  grid-template-columns: 140px 180px 1fr 140px 140px;
+  gap: 10px;
+  align-items: start;
+}
+
+.payment-date {
+  font-weight: 600;
+  color: #333;
+}
+
+.payment-time {
+  font-size: 0.8rem;
+  color: #777;
+}
+
+.payment-name {
+  font-weight: 600;
+}
+
+.payment-email {
+  font-size: 0.8rem;
+  color: #777;
+}
+
+.payment-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.payment-tag {
+  background: #e5edd8;
+  color: #4b5945;
+  font-size: 0.75rem;
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+
+.payment-stylist {
+  font-size: 0.8rem;
+  color: #777;
+  margin-top: 4px;
+}
+
+.payment-amount {
+  font-weight: 600;
+  color: #333;
+}
+
+.payment-method {
+  font-size: 0.8rem;
+  color: #777;
+}
+
+.payment-txn-id {
+  font-size: 0.8rem;
+  color: #999;
+  margin-top: 4px;
+}
+
+/* ---------- Status pills ---------- */
+.status-pill {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  color: white;
+}
+
+.status-pill--success {
+  background: #4b5945;
+}
+
+.status-pill--pending {
+  background: #e7b400;
+}
+
+.status-pill--failed {
+  background: #b83535;
+}
+
+.status-pill--refunded {
+  background: #999;
+}
+
+/* ---------- Refund reason ---------- */
+.payment-refund-row {
+  background: #f7f7f7;
+  margin-top: 8px;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 0.85rem;
+  color: #555;
+}
+
+.payment-refund-label {
+  font-weight: 600;
+  margin-right: 4px;
+}
+
+/* ---------- Empty state ---------- */
+.payments-empty-state {
+  text-align: center;
+  color: #777;
+  margin: 40px 0;
 }
