@@ -2,14 +2,12 @@ import { ChevronLeft, CircleUserRound, ShieldCheck, LayoutDashboard } from 'luci
 import { useNavigate} from 'react-router-dom';
 
 /* NavBar component for an salon owner user */
-function SalonOwnerNavBar({onClose, onLogout, userId, user}){
+function SalonOwnerNavBar({onClose}){
 
     const navigate = useNavigate();
 
-    const salonId = user?.profile_id ?? userId ?? null;
-
     const navTo = (path) => {
-        navigate(path, {state: {userId, user}});
+        navigate(path);
         onClose();
     }
 
@@ -17,26 +15,12 @@ function SalonOwnerNavBar({onClose, onLogout, userId, user}){
         navigate('/salonDashboard', {
             state: {
                 salon: {
-                    id: salonId
-                },
-                userId, user,
+                    id: 1
+                }
             }
         });
         onClose();
     }
-
-    const displayName = user?.first_name ? `${user.first_name} ${user.last_name ?? ''}`.trim() : 'SalonOwner';
-
-    const employeeNumber = user?.profile_id ?? userId ?? '-';
-
-    const handleLogout = () => {
-        console.log('Logout button clicked');
-        if(onLogout) {
-            onLogout();
-            console.log('Logout succeeded');
-        }
-        onClose();
-    };
 
     return(
         <div className="nav-bar">
@@ -48,8 +32,8 @@ function SalonOwnerNavBar({onClose, onLogout, userId, user}){
             <div className="nb-profile-section">
                 <CircleUserRound className="nb-profile-icon" />
                 <div className="nb-profile-info">
-                    <p className="nb-user-name">{displayName}</p>
-                    <p className="nb-user-tag">Salon Owner #{employeeNumber}</p>
+                    <p className="nb-user-name">John Smith</p>
+                    <p className="nb-user-tag">[Salon Name] Owner</p>
                     <div className="nb-verified">
                         <ShieldCheck className="nb-verified-icon" />
                         <span>Verified</span>

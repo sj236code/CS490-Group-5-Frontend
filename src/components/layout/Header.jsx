@@ -16,10 +16,7 @@ import LoginButton from './LoginButton.jsx';
 import AdminNavBar from './AdminNavBar.jsx';
 
 
-function Header({userType, userId, onPickRole, onCycleRole, onLogout }){
-
-    // UserProfile with name, id, role, etc- result of userTypes endpoint
-    const [userProfile, setUserProfile] = useState(null);
+function Header({userType, userId, onPickRole, onCycleRole }){
 
     // Is NavBar open
     const[navBar, setNavBar] = useState(false);
@@ -49,38 +46,19 @@ function Header({userType, userId, onPickRole, onCycleRole, onLogout }){
         setCartPanel(prev => !prev);
     }
 
-    useEffect(() => {
-        const fetchUserProfile = async () => {
-            try {
-                const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/user-type/${userId}`);
-                const data = await res.json();
-                if (!res.ok) {
-                    console.error("Failed to fetch user profile:", data);
-                    return;
-                }
-                console.log("User profile:", data);
-                setUserProfile(data);
-            } 
-            catch (err) {
-                console.error("Error fetching user profile:", err);
-            }
-        }
-        fetchUserProfile();
-    }, [userId, userType]);
-
     // NavBar based on User Tag
     const whichNavBar = () => {
         if(userType === 'CUSTOMER'){
-            return <CustomerNavBar onClose={toggleNavBar} onLogout={onLogout} userId={userId} user={userProfile}/>
+            return <CustomerNavBar onClose={toggleNavBar} />
         }
         else if(userType === 'EMPLOYEE'){
-            return <EmployeeNavBar onClose={toggleNavBar} onLogout={onLogout} userId={userId}  user={userProfile}/>
+            return <EmployeeNavBar onClose={toggleNavBar} />
         }
         else if(userType === 'OWNER'){
-            return <SalonOwnerNavBar onClose={toggleNavBar} onLogout={onLogout} userId={userId} user={userProfile}/>
+            return <SalonOwnerNavBar onClose={toggleNavBar} />
         }
         else if(userType === 'ADMIN'){
-            return <AdminNavBar onClose={toggleNavBar} onLogout={onLogout} user={userProfile}/>
+            return <AdminNavBar onClose={toggleNavBar} />
         }
         else{
             return <NavBar onClose={toggleNavBar} />
@@ -104,10 +82,6 @@ function Header({userType, userId, onPickRole, onCycleRole, onLogout }){
             return <CartPanel onClose={toggleCartPanel} />
         }
     }
-
-    useEffect(() => {
-        console.log(`Header loaded- UserId: ${userId}, UserType: ${userType}`);
-    }, [userId, userType]);
 
     return(
         <>

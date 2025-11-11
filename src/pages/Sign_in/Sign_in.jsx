@@ -5,16 +5,6 @@ import { signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/aut
 import { auth } from '../../firebase';
 import './Sign_in.css';
 
-function parseJwt(token) {
-  try {
-    const base = token.split('.')[1];
-    const json = atob(base.replace(/-/g, '+').replace(/_/g, '/'));
-    return JSON.parse(decodeURIComponent(escape(json)));
-  } catch {
-    return null;
-  }
-}
-
 function Sign_in() {
     const [activeTab, setActiveTab] = useState('signin');
     const [email, setEmail] = useState('');
@@ -44,29 +34,20 @@ function Sign_in() {
             const data = await response.json();
 
             // Check Flask response format: { "status": "success" or "error", "token": "..." }
-            if (data.status === 'success' && data.token) {
+            if (data.status === 'success') {
                 // Success! Your auth.py returned a JWT token
                 
                 // Save JWT token to localStorage (for authenticated API calls)
                 localStorage.setItem('token', data.token);
-
                 
-                // Decode payload: { user_id, email, role, exp }
-                const payload = parseJwt(data.token);
-
-                if (!payload) throw new Error('Invalid token payload');
-
-                // Persist user info for the rest of the app
-                localStorage.setItem('user_id', String(payload.user_id));
-                localStorage.setItem('role', payload.role);
-                localStorage.setItem('email', payload.email);
-
-                console.log(`User signed in- ID: ${payload.user_id}, Role: ${payload.role}`)
-
-                // (Optional) guard against expired tokens
-                if (payload.exp && payload.exp * 1000 < Date.now()) {
-                    throw new Error('Session expired. Please sign in again.');
-                }
+                // Decode token to get user info (token contains: user_id, email, role)
+                // The token is created in auth.py with this payload:
+                // {
+                //   "user_id": user.id,
+                //   "email": user.email,
+                //   "role": user.role,
+                //   "exp": datetime (1 hour from now)
+                // }
                 
                 console.log('Sign in successful!');
                 console.log('JWT Token saved:', data.token);
@@ -75,7 +56,7 @@ function Sign_in() {
                 // You could call /api/auth/user-type/<user_id> here if needed
                 
                 // Navigate to home/dashboard
-                navigate('/', {replace: true});
+                navigate('/');
             } else {
                 // Show error message from server
                 // auth.py returns "Invalid credentials" if:
@@ -83,12 +64,10 @@ function Sign_in() {
                 // - Password doesn't match (bcrypt comparison fails)
                 setError(data.message || 'Invalid email or password');
             }
-        } 
-        catch (err) {
+        } catch (err) {
             console.error('Sign in error:', err);
-            setError(err.message || 'Unable to sign in. Please check your connection and try again.');
-        } 
-        finally {
+            setError('Unable to sign in. Please check your connection and try again.');
+        } finally {
             setLoading(false);
         }
     };

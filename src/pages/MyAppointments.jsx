@@ -1,17 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { MapPin, Calendar, User } from "lucide-react";
-import {useLocation} from "react-router-dom";
 import EditAppointmentModal from "../components/layout/EditAppointmentModal";
 import "../App.css";
 
 const MyAppointments = () => {
-  const location = useLocation();
-  const userFromState = location.state?.user;
-  const customerId = userFromState?.profile_id ?? userIdFromState ?? null;
-
-  console.log("Customer id:", customerId);
-
-  // const customerId = 2; // TODO: replace with real logged-in customer id
+  const customerId = 2; // TODO: replace with real logged-in customer id
 
   const [upcomingAppointments, setUpcomingAppointments] = useState([]);
   const [previousAppointments, setPreviousAppointments] = useState([]);
