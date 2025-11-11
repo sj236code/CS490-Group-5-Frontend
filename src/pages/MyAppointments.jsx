@@ -1,40 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { MapPin, Calendar, User } from "lucide-react";
+import {useLocation} from "react-router-dom";
+import EditAppointmentModal from "../components/layout/EditAppointmentModal";
 import "../App.css";
 
 const MyAppointments = () => {
-  // Hardcoded for now, but easily replaceable with fetched data
-  // const [upcomingAppointments, setUpcomingAppointments] = useState([
-  //   {
-  //     id: 1,
-  //     serviceName: "Classic Fade",
-  //     location: "JADE Boutique",
-  //     dateTime: "Monday, October 20 at 10:00 AM",
-  //     staffName: "Markus",
-  //     customerName: "John Smith",
-  //   },
-  //   {
-  //     id: 2,
-  //     serviceName: "Hot Towel Shave",
-  //     location: "JADE Boutique",
-  //     dateTime: "Saturday, October 25 at 8:00 AM",
-  //     staffName: "John Doe",
-  //     customerName: "Mike Scott",
-  //   },
-  // ]);
+  const location = useLocation();
+  const userFromState = location.state?.user;
+  const customerId = userFromState?.profile_id ?? userIdFromState ?? null;
 
-  // const [previousAppointments] = useState([
-  //   {
-  //     id: 3,
-  //     serviceName: "Hot Towel Shave",
-  //     location: "JADE Boutique",
-  //     dateTime: "Saturday, October 5 at 8:00 AM",
-  //     staffName: "John Doe",
-  //     customerName: "Mike Scott",
-  //   },
-  // ]);
+  console.log("Customer id:", customerId);
 
-  const customerId = 2;
+  // const customerId = 2; // TODO: replace with real logged-in customer id
 
   const [upcomingAppointments, setUpcomingAppointments] = useState([]);
   const [previousAppointments, setPreviousAppointments] = useState([]);
