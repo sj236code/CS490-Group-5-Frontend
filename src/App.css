@@ -3446,3 +3446,201 @@ label {
   border-color: #f0a9a9;
   color: #a12b25;
 }
+
+/* Employee payment portal */
+
+.payment-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.payment-summary {
+  background: white;
+  padding: 24px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  border: 1px solid #e0e0e0;
+}
+
+.payment-summary h2 {
+  margin-top: 0;
+  margin-bottom: 8px;
+  font-size: 24px;
+  color: #1a1a1a;
+}
+
+.period-dates {
+  display: flex;
+  align-items: center;
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.payment-stats {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.stat-card {
+  flex: 1;
+  min-width: 200px;
+  background: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  border: 1px solid #e8e8e8;
+}
+
+.stat-card.highlight {
+  background: #f0f8ff;
+  border: 1px solid #b8d8ff;
+}
+
+.stat-icon {
+  background: white;
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0066cc;
+  flex-shrink: 0;
+}
+
+.stat-info {
+  flex: 1;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: #666;
+  margin: 0 0 4px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-value {
+  font-size: 24px;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.stat-value.projected {
+  color: #0066cc;
+  font-size: 28px;
+}
+
+.stat-subtext {
+  font-size: 12px;
+  color: #888;
+  margin: 4px 0 0 0;
+}
+
+.period-info {
+  background: #f5f5f5;
+  padding: 12px 16px;
+  border-radius: 6px;
+  margin-top: 16px;
+}
+
+.period-info p {
+  margin: 0;
+  font-size: 14px;
+  color: #333;
+}
+
+.payment-history {
+  background: white;
+  padding: 24px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+.payment-history h2 {
+  margin-top: 0;
+  margin-bottom: 4px;
+  font-size: 24px;
+  color: #1a1a1a;
+}
+
+.section-subtitle {
+  color: #666;
+  font-size: 14px;
+  margin: 0 0 20px 0;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.history-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  background: #fafafa;
+  border-radius: 8px;
+  border: 1px solid #e8e8e8;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.history-period {
+  flex: 1;
+  min-width: 180px;
+}
+
+.history-dates {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  color: #1a1a1a;
+}
+
+.history-dates-detail {
+  margin: 0;
+  font-size: 12px;
+  color: #888;
+}
+
+.history-details {
+  display: flex;
+  gap: 16px;
+  flex: 1;
+  min-width: 200px;
+}
+
+.history-stat {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: #666;
+}
+
+.history-earnings {
+  text-align: right;
+  min-width: 120px;
+}
+
+.earnings-label {
+  margin: 0 0 4px 0;
+  font-size: 12px;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.earnings-value {
+  margin: 0;
+  font-size: 20px;
+  color: #0066cc;
+}
