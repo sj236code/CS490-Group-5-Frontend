@@ -28,6 +28,7 @@ import EmployeeSchedule from "./pages/EmployeeSchedule";
 import EmployeeAppointments from "./pages/EmployeeAppointments.jsx";
 import UserGallery from "./pages/UserGallery.jsx";
 import SalonSettings from "./pages/SalonSettings.jsx";
+import SalonPayments from "./pages/SalonPayments.jsx";
 
 
 // Firebase
@@ -53,11 +54,11 @@ function App() {
       .then((res) => res.json())
       .then((data) => {
         console.log("Response from /user-type:", data);
-        if (data.status === "success"){
-          setUserType(data.role);
-        }
-        else{
-          setUserType("user");
+
+        if (data.role) {
+          setUserType(data.role.toUpperCase()); 
+        } else {
+          setUserType(null);
         }
       })
   },[userId]);
@@ -110,6 +111,7 @@ function App() {
         {/* Salon Owner Nav Bar Routes */}
         <Route path="/salonDashboard" element={<SalonDashboard />} />
         <Route path="/salonSettings" element={<SalonSettings />} />
+        <Route path="/salonPayments" element={<SalonPayments />} />
 
         {/* Admin Nav Bar Routes */}
         <Route path="/adminDashboard" element={<AdminDashboard />} />
