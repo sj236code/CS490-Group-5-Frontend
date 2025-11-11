@@ -6,8 +6,10 @@ function AdminNavBar({onClose, onLogout, userId, user}){
 
     const navigate = useNavigate();
 
+    const displayName = user?.first_name ? `${user.first_name} ${user.last_name ?? ''}`.trim() : 'SalonOwner';
+
     const navTo = (path) => {
-        navigate(path);
+        navigate(path, {state: {userId, user}});
         onClose();
     }
 
@@ -30,7 +32,7 @@ function AdminNavBar({onClose, onLogout, userId, user}){
             <div className="nb-profile-section">
                 <CircleUserRound className="nb-profile-icon" />
                 <div className="nb-profile-info">
-                    <p className="nb-user-name">John Smith</p>
+                    <p className="nb-user-name">{displayName}</p>
                     <p className="nb-user-tag">Admin</p>
                     <div className="nb-verified">
                         <ShieldCheck className="nb-verified-icon" />
@@ -44,6 +46,7 @@ function AdminNavBar({onClose, onLogout, userId, user}){
             <div className="nb-section">
                 <div className="nb-section-title">MyJade Account</div>
                 <button className="nb-text-link" onClick={() => navTo('/adminDashboard')}>Dashboard</button>
+                <button className="nb-text-link" onClick={handleLogout}>Log Out</button>
             </div>
 
             {/* Footer */}

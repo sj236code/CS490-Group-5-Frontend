@@ -80,7 +80,7 @@ function SalonOwnerNavBar({onClose, onLogout, userId, user, salonId}){
                 <div className="nb-section-title">Salon Owner</div>
                 <button className="nb-text-link" onClick={navToDashboard}>Dashboard</button>
                 <button className="nb-text-link" onClick={navToSettings}>Settings</button>
-                <button className="nb-text-link" onClick={() => navTo('/owner/payments')}>Payments</button>
+                <button className="nb-text-link" onClick={() => navTo('/salonPayments')}>Payments</button>
                 <button className="nb-text-link" onClick={() => navTo('/owner/appointments')}>Appointments</button>
             </div>
 
