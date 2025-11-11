@@ -1,4 +1,4 @@
-import { ChevronLeft, CircleUserRound, ShieldCheck, Logout } from 'lucide-react';
+import { ChevronLeft, CircleUserRound, ShieldCheck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 /* NavBar component for an customer user */
@@ -9,7 +9,7 @@ function CustomerNavBar({onClose, onLogout, userId, user}){
     const navTo = (path) => {
         navigate(path, {state: {userId, user}});
         onClose();
-    } 
+    }
 
     const handleLogout = () => {
         console.log('Logout button clicked');
@@ -47,10 +47,10 @@ function CustomerNavBar({onClose, onLogout, userId, user}){
             {/* MyJade Account */}
             <div className="nb-section">
                 <div className="nb-section-title">MyJade Account</div>
-                <button className="nb-text-link" onClick={() => navTo('/customerAppointments')}>Appointments</button>
-                <button className="nb-text-link" onClick={() => navTo('/wallet')}>My Wallet</button>
-                <button className="nb-text-link" onClick={() => navTo('/gallery')}>Gallery</button>
-                <button className="nb-text-link" onClick={() => navTo('/rewards')}>Loyalty &amp; Rewards</button>
+                <button className="nb-text-link" onClick={() => navTo('/my-appointments')}>Appointments</button>
+                <button className="nb-text-link" onClick={() => navTo('/myWallet')}>My Wallet</button>
+                <button className="nb-text-link" onClick={() => navTo('/userGallery')}>Gallery</button>
+                <button className="nb-text-link" onClick={() => navTo('/customerLoyalty')}>Loyalty &amp; Rewards</button>
                 <button className="nb-text-link" onClick={() => navTo('/payments')}>Payments</button>
                 <button className="nb-text-link" onClick={handleLogout}>Log Out</button>
             </div>
@@ -60,7 +60,7 @@ function CustomerNavBar({onClose, onLogout, userId, user}){
                 <button className="nb-footer-link" onClick={() => navTo('/contact')}>Contact</button>
                 <button className="nb-footer-link" onClick={() => navTo('/faq')}>FAQ</button>
                 <div className="nb-footer-link">Copyright ©</div>
-            </div>  
+            </div>
 
         </div>
     );

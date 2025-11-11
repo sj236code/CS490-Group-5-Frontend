@@ -14,7 +14,7 @@ cd cs490-group-5-frontend/
 ### 2. Install dependencies
 ```bash
 npm install
-npm install recharts
+npm install recharts //for graphs and charts
 ```
 This installs everything listed in package.json, including React, Vite, and any UI libraries like lucide-react.
 
