@@ -7,7 +7,7 @@ function SalonOwnerNavBar({onClose, onLogout, userId, user, salonId}){
     const navigate = useNavigate();
 
     const navTo = (path) => {
-        navigate(path, {state: {userId, user}});
+        navigate(path, {state: {userId, user, salonId: effectiveSalonId}});
         onClose();
     }
 
@@ -23,9 +23,21 @@ function SalonOwnerNavBar({onClose, onLogout, userId, user, salonId}){
         onClose();
     }
 
+    const navToSettings = () => {
+        navigate('/salonSettings', {
+        state: {
+            salonId: effectiveSalonId,
+            user,
+        },
+        });
+        onClose();
+    };
+
     const displayName = user?.first_name ? `${user.first_name} ${user.last_name ?? ''}`.trim() : 'SalonOwner';
 
     const employeeNumber = user?.profile_id ?? userId ?? '-';
+
+    const effectiveSalonId = salonId ?? user?.profile_id ?? userId ?? null;
 
     const handleLogout = () => {
         console.log('Logout button clicked');
@@ -67,7 +79,7 @@ function SalonOwnerNavBar({onClose, onLogout, userId, user, salonId}){
             <div className="nb-section">
                 <div className="nb-section-title">Salon Owner</div>
                 <button className="nb-text-link" onClick={navToDashboard}>Dashboard</button>
-                <button className="nb-text-link" onClick={() => navTo('/salonSettings')}>Settings</button>
+                <button className="nb-text-link" onClick={navToSettings}>Settings</button>
                 <button className="nb-text-link" onClick={() => navTo('/owner/payments')}>Payments</button>
                 <button className="nb-text-link" onClick={() => navTo('/owner/appointments')}>Appointments</button>
             </div>
