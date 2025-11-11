@@ -28,6 +28,7 @@ import EmployeeSchedule from "./pages/EmployeeSchedule";
 import EmployeeAppointments from "./pages/EmployeeAppointments.jsx";
 import UserGallery from "./pages/UserGallery.jsx";
 import SalonSettings from "./pages/SalonSettings.jsx";
+import SalonPayments from "./pages/SalonPayments.jsx";
 
 
 // Firebase
@@ -110,6 +111,7 @@ function App() {
         {/* Salon Owner Nav Bar Routes */}
         <Route path="/salonDashboard" element={<SalonDashboard />} />
         <Route path="/salonSettings" element={<SalonSettings />} />
+        <Route path="/salonPayments" element={<SalonPayments />} />
 
         {/* Admin Nav Bar Routes */}
         <Route path="/adminDashboard" element={<AdminDashboard />} />
