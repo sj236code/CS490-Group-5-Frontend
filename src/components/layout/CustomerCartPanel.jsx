@@ -8,11 +8,24 @@ function CustomerCartPanel({ onClose, cartItems }) {
 
     // Correctly navigate and pass fetched cart items
     const handleCheckout = () => {
+
+        const customerId = cart.user_id
+
         if (!cart || !cart.items || cart.items.length === 0) {
             console.warn("Cart is empty — cannot proceed to checkout.");
             return;
         }
-        navigate("/checkout", { state: { cartItems: cart.items } });
+
+        if (customerId) {
+            sessionStorage.setItem("checkout_customer_id", customerId);
+        }
+
+        navigate("/checkout", { 
+            state: { 
+                cartItems: cart.items,
+                customer_id: customerId
+            } 
+        });
         onClose(); // close the cart panel after navigating
     };
 
