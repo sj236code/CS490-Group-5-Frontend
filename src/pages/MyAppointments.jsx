@@ -1,38 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { MapPin, Calendar, User } from "lucide-react";
+import {useLocation} from "react-router-dom";
+import EditAppointmentModal from "../components/layout/EditAppointmentModal";
 import "../App.css";
 
 const MyAppointments = () => {
-  // Hardcoded for now, but easily replaceable with fetched data
-  const [upcomingAppointments, setUpcomingAppointments] = useState([
-    {
-      id: 1,
-      serviceName: "Classic Fade",
-      location: "JADE Boutique",
-      dateTime: "Monday, October 20 at 10:00 AM",
-      staffName: "Markus",
-      customerName: "John Smith",
-    },
-    {
-      id: 2,
-      serviceName: "Hot Towel Shave",
-      location: "JADE Boutique",
-      dateTime: "Saturday, October 25 at 8:00 AM",
-      staffName: "John Doe",
-      customerName: "Mike Scott",
-    },
-  ]);
+  const location = useLocation();
+  const userFromState = location.state?.user;
+  const customerId = userFromState?.profile_id ?? userIdFromState ?? null;
 
-  const [previousAppointments] = useState([
-    {
-      id: 3,
-      serviceName: "Hot Towel Shave",
-      location: "JADE Boutique",
-      dateTime: "Saturday, October 5 at 8:00 AM",
-      staffName: "John Doe",
-      customerName: "Mike Scott",
-    },
-  ]);
+  console.log("Customer id:", customerId);
+
+  // const customerId = 2; // TODO: replace with real logged-in customer id
+
+  const [upcomingAppointments, setUpcomingAppointments] = useState([]);
+  const [previousAppointments, setPreviousAppointments] = useState([]);
 
   const [showEditModal, setShowEditModal] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -54,6 +36,110 @@ const MyAppointments = () => {
       prev.filter((appt) => appt.id !== apptId)
     );
   };
+
+  const formatApptDateTime = (isoString) => {
+    if (!isoString) return "Date & time TBD";
+    const d = new Date(isoString);
+    const datePart = d.toLocaleDateString(undefined, {
+      weekday: "long",
+      month: "long",
+      day: "numeric",
+    });
+    const timePart = d.toLocaleTimeString(undefined, {
+      hour: "numeric",
+      minute: "2-digit",
+    });
+    return `${datePart} at ${timePart}`;
+  };
+
+  // Load upcoming appointments from backend
+  useEffect(() => {
+    const fetchUpcomingAppointments = async () => {
+      try {
+        const url = `${import.meta.env.VITE_API_URL}/api/appointments/${customerId}/upcoming`;
+        const res = await fetch(url);
+
+        if (res.status === 404) {
+          console.error("Customer not found");
+          setUpcomingAppointments([]);
+          return;
+        }
+
+        if (!res.ok) {
+          console.error("Failed to fetch upcoming appointments");
+          setUpcomingAppointments([]);
+          return;
+        }
+
+        const data = await res.json(); // this should be the list returned by your endpoint
+
+        console.log("Upcoming appointments from backend:", data);
+
+        const mapped = data.map((apt) => ({
+          id: apt.id,
+          serviceName: apt.service_name || "Service",
+          location: apt.salon_name || "Salon",
+          dateTime: formatApptDateTime(apt.start_at),
+          staffName:
+            (apt.employee_first_name || "") +
+            (apt.employee_last_name ? ` ${apt.employee_last_name}` : ""),
+          // On "My Appointments" page, customer is the logged-in user
+          customerName: "You",
+        }));
+
+        setUpcomingAppointments(mapped);
+      } catch (err) {
+        console.error("Error fetching upcoming appointments:", err);
+        setUpcomingAppointments([]);
+      }
+    };
+
+    fetchUpcomingAppointments();
+  }, [customerId]);
+
+  // Load previous appointments from backend
+  useEffect(() => {
+    const fetchPreviousAppointments = async () => {
+      try {
+        const url = `${import.meta.env.VITE_API_URL}/api/appointments/${customerId}/previous`;
+        const res = await fetch(url);
+
+        if (res.status === 404) {
+          console.error("Customer not found");
+          setPreviousAppointments([]);
+          return;
+        }
+
+        if (!res.ok) {
+          console.error("Failed to fetch previous appointments");
+          setPreviousAppointments([]);
+          return;
+        }
+
+        const data = await res.json();
+
+        console.log("Previous appointments from backend:", data);
+
+        const mapped = data.map((apt) => ({
+          id: apt.id,
+          serviceName: apt.service_name || "Service",
+          location: apt.salon_name || "Salon",
+          dateTime: formatApptDateTime(apt.start_at),
+          staffName:
+            (apt.employee_first_name || "") +
+            (apt.employee_last_name ? ` ${apt.employee_last_name}` : ""),
+          customerName: "You",
+        }));
+
+        setPreviousAppointments(mapped);
+      } catch (err) {
+        console.error("Error fetching previous appointments:", err);
+        setPreviousAppointments([]);
+      }
+    };
+
+    fetchPreviousAppointments();
+  }, [customerId]);
 
   return (
     <div className="appointments-container">
