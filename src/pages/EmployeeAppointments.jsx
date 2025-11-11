@@ -4,6 +4,13 @@ import "../App.css";
 
 const EmployeeAppointments = () => {
   // Hardcoded for now, but easily replaceable with fetched data
+
+  const location = useLocation();
+  const userFromState = location.state?.user;
+  const employeeId = userFromState?.profile_id ?? userIdFromState ?? null;
+
+  console.log("Employee id:", employeeId);
+
   const [upcomingAppointments, setUpcomingAppointments] = useState([
     {
       id: 1,
