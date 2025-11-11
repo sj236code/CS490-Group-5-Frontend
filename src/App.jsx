@@ -26,6 +26,7 @@ import MyWallet from './pages/MyWallet.jsx';
 import EmployeeAvailability from "./pages/EmployeeAvailability";
 import EmployeeSchedule from "./pages/EmployeeSchedule";
 import EmployeeAppointments from "./pages/EmployeeAppointments.jsx";
+import EmployeePaymentPortal from "./pages/EmployeePaymentPortal.jsx";
 import UserGallery from "./pages/UserGallery.jsx";
 import SalonSettings from "./pages/SalonSettings.jsx";
 
@@ -136,6 +137,7 @@ function App() {
         <Route path="/employee-appointments" element={<EmployeeAppointments />} />
         <Route path="/employee-availability" element={<EmployeeAvailability />} />
         <Route path="/employee-schedule" element={<EmployeeSchedule />} />
+        <Route path="/employee-payment-portal" element={<EmployeePaymentPortal />} />
 
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/faq" element={<FAQPage />} />

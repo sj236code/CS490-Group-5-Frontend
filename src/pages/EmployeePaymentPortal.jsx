@@ -109,7 +109,7 @@ const EmployeePayment = () => {
         <Link to="/employee-availability">
           <button>Availability</button>
         </Link>
-        <Link to="/paymentportal">
+        <Link to="/employee-payment-portal">
           <button className="active-tab">Payment</button>
         </Link>
       </div>
