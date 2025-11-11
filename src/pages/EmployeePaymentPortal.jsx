@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { DollarSign, Clock, Calendar, TrendingUp } from "lucide-react";
 import "../App.css";
 
@@ -29,7 +29,7 @@ const EmployeePayment = () => {
       
       // Fetch current period data
       const currentResponse = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/payroll/${employeeId}/current-period`
+        `${import.meta.env.VITE_API_URL}/api/employee_payroll/${employeeId}/current-period`
       );
       
       if (currentResponse.status === 404) {
@@ -48,7 +48,7 @@ const EmployeePayment = () => {
 
       // Fetch payroll history
       const historyResponse = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/payroll/${employeeId}/history`
+        `${import.meta.env.VITE_API_URL}/api/employee_payroll/${employeeId}/history`
       );
       
       if (!historyResponse.ok) {
@@ -98,21 +98,6 @@ const EmployeePayment = () => {
       <header className="jade-header">
         <h1>Payment Portal</h1>
       </header>
-
-      <div className="tab-bar">
-        <Link to="/employee-overview">
-          <button>Overview</button>
-        </Link>
-        <Link to="/employee-schedule">
-          <button>Schedule</button>
-        </Link>
-        <Link to="/employee-availability">
-          <button>Availability</button>
-        </Link>
-        <Link to="/employee-payment-portal">
-          <button className="active-tab">Payment</button>
-        </Link>
-      </div>
 
       {currentPeriod && (
         <>
