@@ -6,8 +6,10 @@ function SalonOwnerNavBar({onClose, onLogout, userId, user}){
 
     const navigate = useNavigate();
 
+    const salonId = user?.profile_id ?? userId ?? null;
+
     const navTo = (path) => {
-        navigate(path);
+        navigate(path, {state: {userId, user}});
         onClose();
     }
 
@@ -15,14 +17,15 @@ function SalonOwnerNavBar({onClose, onLogout, userId, user}){
         navigate('/salonDashboard', {
             state: {
                 salon: {
-                    id: 1
-                }
+                    id: salonId
+                },
+                userId, user,
             }
         });
         onClose();
     }
 
-    const displayName = user?.first_name ? `${user.first_name} ${user.last_name ?? ''}`.trim() : 'Employee';
+    const displayName = user?.first_name ? `${user.first_name} ${user.last_name ?? ''}`.trim() : 'SalonOwner';
 
     const employeeNumber = user?.profile_id ?? userId ?? '-';
 
