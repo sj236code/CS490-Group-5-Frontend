@@ -1,9 +1,14 @@
 import { UserRound, Gift, Calendar } from "lucide-react";
 import { useEffect, useState } from "react";
+import {useLocation} from "react-router-dom";
 import ProgramCard from "../components/layout/ProgramCard";
 
 function CustomerLoyalty() {
-  const customerId = 2;
+  const location = useLocation();
+  const userFromState = location.state?.user;
+  const user = userFromState;
+  const customerId = userFromState?.profile_id ?? userIdFromState ?? null;
+  // const customerId = 2;
 
   // const lifetimePoints = 920;
   // const activePrograms = 3;

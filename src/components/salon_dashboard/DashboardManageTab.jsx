@@ -10,6 +10,11 @@ import EditProductModal from './EditProductModal';
 
 function DashboardManageTab({salon}){
 
+    const salonId = salon?.id ?? null;
+
+    console.log("DashboardManageTab salon:", salon);
+    console.log("Resolved salonId:", salonId);
+
     // Service Section
     const [services, setServices] = useState([]);
     const [currentServiceIndex, setCurrentServiceIndex] = useState(0);
@@ -129,15 +134,6 @@ function DashboardManageTab({salon}){
         setIsEditProductModalOpen(true);
     };
 
-    // Handle Edge Case: A salon does not offer services or products
-    if(services.length === 0 && products.length === 0){
-        return(
-            <div>
-                <p>No services or products available.</p>
-            </div>
-        );
-    }
-
     return (
         <div className="salon-shop-tab">
             {/* Services */}
@@ -155,13 +151,20 @@ function DashboardManageTab({salon}){
 
                 {/* Services Grid */}
                 <div className="shop-grid">
-                    {currentServices.map((service) => (
-                        <DashboardServiceCard
-                            key={service.id}
-                            service={service}
-                            onClick={() => handleEditService(service)}
-                        />
-                    ))}
+                {currentServices.length === 0 ? (
+                    <p style={{ opacity: 0.7 }}>
+                    No services yet. Click <strong>Add Service</strong> to create your
+                    first one.
+                    </p>
+                ) : (
+                    currentServices.map((service) => (
+                    <DashboardServiceCard
+                        key={service.id}
+                        service={service}
+                        onClick={() => handleEditService(service)}
+                    />
+                    ))
+                )}
                 </div>
 
                 {/* Right Arrow */}
@@ -181,15 +184,21 @@ function DashboardManageTab({salon}){
                 {/* Left Arrow */}
                 <button onClick={prevProduct}> <ChevronLeft size={32} /> </button>
 
-                {/* Reuse Services Grid */}
+                {/* Products Grid */}
                 <div className="shop-grid">
-                    {currentProducts.map((product) => (
-                        <DashboardProductCard
-                            key={product.id}
-                            product={product}
-                            onClick={() => handleEditProduct(product)}
-                        />
-                    ))}
+                {currentProducts.length === 0 ? (
+                    <p style={{ opacity: 0.7 }}>
+                    No products yet. Click <strong>Add Product</strong> to add one.
+                    </p>
+                ) : (
+                    currentProducts.map((product) => (
+                    <DashboardProductCard
+                        key={product.id}
+                        product={product}
+                        onClick={() => handleEditProduct(product)}
+                    />
+                    ))
+                )}
                 </div>
 
                 {/* Right Arrow */}
@@ -200,7 +209,7 @@ function DashboardManageTab({salon}){
             <AddServiceModal   
                 isOpen={isAddServiceModalOpen}
                 onClose={handleCloseModal}
-                salonId={salon?.id}
+                salonId={salonId}
                 onServiceAdded={fetchServices}
             />
 
