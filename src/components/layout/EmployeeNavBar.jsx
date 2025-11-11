@@ -7,7 +7,7 @@ function EmployeeNavBar({onClose, onLogout, userId, user}){
     const navigate = useNavigate();
 
     const navTo = (path) => {
-        navigate(path);
+        navigate(path, {state: {userId, user}});
         onClose();
     }
     

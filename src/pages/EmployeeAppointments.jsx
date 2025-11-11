@@ -1,10 +1,18 @@
 import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { MapPin, Calendar, User } from "lucide-react";
 import EditEmpApptModal from "../components/layout/EditEmpApptModal";
 import "../App.css";
 
 const EmployeeAppointments = () => {
-  const employeeId = 1; // TODO: replace with real logged-in employee id
+  const location = useLocation();
+  const userFromState = location.state?.user;
+  const userIdFromState = location.state?.userId;
+
+  const employeeId = userFromState?.profile_id ?? userIdFromState ?? null;
+
+  console.log("Employee id:", employeeId);
+  console.log("Location state:", location.state);
 
   const [upcomingAppointments, setUpcomingAppointments] = useState([]);
   const [previousAppointments, setPreviousAppointments] = useState([]);
@@ -48,6 +56,8 @@ const EmployeeAppointments = () => {
 
   // Load upcoming appointments
   useEffect(() => {
+    if (!employeeId) return;
+
     const fetchUpcomingAppointments = async () => {
       try {
         const url = `${import.meta.env.VITE_API_URL}/api/employeesapp/${employeeId}/appointments/upcoming`;
@@ -81,6 +91,8 @@ const EmployeeAppointments = () => {
 
   // Load previous appointments
   useEffect(() => {
+    if (!employeeId) return;
+
     const fetchPreviousAppointments = async () => {
       try {
         const url = `${import.meta.env.VITE_API_URL}/api/employeesapp/${employeeId}/appointments/previous`;
@@ -140,6 +152,8 @@ const EmployeeAppointments = () => {
   };
 
   const handleCancelClick = async (apptId) => {
+    if (!employeeId) return;
+
     try {
       const url = `${import.meta.env.VITE_API_URL}/api/employeesapp/${employeeId}/appointments/${apptId}/cancel`;
       const res = await fetch(url, {
@@ -172,6 +186,8 @@ const EmployeeAppointments = () => {
   };
 
   const handleSendMessageClick = async (appt) => {
+    if (!employeeId) return;
+
     const body = window.prompt(
       `Message to ${appt.customerName}:`,
       ""
