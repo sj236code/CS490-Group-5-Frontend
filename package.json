@@ -11,9 +11,11 @@
   },
   "dependencies": {
     "@vercel/analytics": "^1.5.0",
+    "axios": "^1.13.2",
     "firebase": "^12.4.0",
     "imagesloaded": "^5.0.0",
     "lightgallery": "^2.9.0",
+    "lightningcss": "^1.30.2",
     "lucide-react": "^0.546.0",
     "masonry-layout": "^4.2.2",
     "react": "^19.1.1",

@@ -3201,6 +3201,11 @@ label {
   background-color: #66785F;
 }
 
+.error-text {
+  color: #e74c3c;
+  font-size: 0.85rem;
+  margin-top: 4px;
+}
 /* Edit Appointment Modal */
 
 .edit-modal-overlay {
