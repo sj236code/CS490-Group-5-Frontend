@@ -34,6 +34,47 @@ body {
   height: auto;
 }
 
+.header {
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  background-color: #D9E9CF;
+  height: 100px;
+  width: 100%;
+}
+
+/* New layout helpers */
+.header-left,
+.header-right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.header-left {
+  justify-content: flex-start;
+}
+
+.header-right {
+  justify-content: flex-end;
+  gap: 12px; /* spacing between Login and Cart */
+}
+
+/* Center logo wrapper */
+.header-center {
+  flex: 0;
+  display: flex;
+  justify-content: center;
+}
+
+/* (Optional) keep logo hover behavior */
+.logo-img {
+  width: 198px;
+  height: auto;
+  display: block;
+}
+
+
 .menu-icon {
   display: flex;
   align-items: center;

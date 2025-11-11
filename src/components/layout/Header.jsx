@@ -165,29 +165,28 @@ function Header({userType, userId, onPickRole, onCycleRole, onLogout }){
 
     return(
         <>
-            <header className='header'>
-                {/* If MenuButton clicked, open NavBar */}
-                <MenuButton onClick={toggleNavBar} /> 
+            <header className="header">
+            {/* Left: Menu */}
+            <div className="header-left">
+                <MenuButton onClick={toggleNavBar} />
+            </div>
 
-                {/* simple role switch pills */}
-                {/* <div className="role-switch">
-                    <button className={`role-btn ${userType === 'CUSTOMER' ? 'active' : ''}`} onClick={() => onPickRole('CUSTOMER')}>Customer</button>
-                    <button className={`role-btn ${userType === 'OWNER' ? 'active' : ''}`} onClick={() => onPickRole('OWNER')}>Owner</button>
-                    <button className={`role-btn ${userType === 'ADMIN' ? 'active' : ''}`} onClick={() => onPickRole('ADMIN')}>Admin</button>
-                    <button className={`role-btn ${userType === 'EMPLOYEE' ? 'active' : ''}`} onClick={() => onPickRole('EMPLOYEE')}>Employee</button>
-                </div> */}
-                {/* Logo (todo: if clicked, return back to LandingPage) */}
-                <div className='logo' onClick={navigateToLanding} style={{cursor: 'pointer'}}>
-                    <img src={jade_logo} className="logo-img" />    
-                </div>
-                {/* Sign In/ Sign Out Button */}
-                <div>
-                    <LoginButton onClick={navigateToLogin} style={{cursor: 'pointer'}}/>
-                </div>
-                {/* If CartButton clicked, open CartPanel */}
+            {/* Center: Logo */}
+            <div
+                className="header-center"
+                onClick={navigateToLanding}
+                style={{ cursor: "pointer" }}
+            >
+                <img src={jade_logo} className="logo-img" />
+            </div>
+
+            {/* Right: Login + Cart */}
+            <div className="header-right">
+                <LoginButton onClick={navigateToLogin} style={{ cursor: "pointer" }} />
                 <CartButton onClick={toggleCartPanel} />
-                
+            </div>
             </header>
+
 
             {/* NavBar implementation: Open & Close */}
             {navBar && whichNavBar()}
