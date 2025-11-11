@@ -46,19 +46,38 @@ function Header({userType, userId, onPickRole, onCycleRole, onLogout }){
         setCartPanel(prev => !prev);
     }
 
+    useEffect(() => {
+        const fetchUserProfile = async () => {
+            try {
+                const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/user-type/${userId}`);
+                const data = await res.json();
+                if (!res.ok) {
+                    console.error("Failed to fetch user profile:", data);
+                    return;
+                }
+                console.log("User profile:", data);
+                setUserProfile(data);
+            } 
+            catch (err) {
+                console.error("Error fetching user profile:", err);
+            }
+        }
+        fetchUserProfile();
+    }, [userId, userType]);
+
     // NavBar based on User Tag
     const whichNavBar = () => {
         if(userType === 'CUSTOMER'){
-            return <CustomerNavBar onClose={toggleNavBar} onLogout={onLogout} userId={userId} />
+            return <CustomerNavBar onClose={toggleNavBar} onLogout={onLogout} userId={userId} user={userProfile}/>
         }
         else if(userType === 'EMPLOYEE'){
-            return <EmployeeNavBar onClose={toggleNavBar} onLogout={onLogout} userId={userId} />
+            return <EmployeeNavBar onClose={toggleNavBar} onLogout={onLogout} userId={userId}  user={userProfile}/>
         }
         else if(userType === 'OWNER'){
-            return <SalonOwnerNavBar onClose={toggleNavBar} onLogout={onLogout} userId={userId}/>
+            return <SalonOwnerNavBar onClose={toggleNavBar} onLogout={onLogout} userId={userId} user={userProfile}/>
         }
         else if(userType === 'ADMIN'){
-            return <AdminNavBar onClose={toggleNavBar} onLogout={onLogout} />
+            return <AdminNavBar onClose={toggleNavBar} onLogout={onLogout} user={userProfile}/>
         }
         else{
             return <NavBar onClose={toggleNavBar} />

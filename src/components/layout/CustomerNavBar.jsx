@@ -2,12 +2,12 @@ import { ChevronLeft, CircleUserRound, ShieldCheck, Logout } from 'lucide-react'
 import { useNavigate } from 'react-router-dom';
 
 /* NavBar component for an customer user */
-function CustomerNavBar({onClose, onLogout, userId}){
+function CustomerNavBar({onClose, onLogout, userId, user}){
 
     const navigate = useNavigate();
 
     const navTo = (path) => {
-        navigate(path, {state: {userId}});
+        navigate(path, {state: {userId, user}});
         onClose();
     } 
 
@@ -20,6 +20,10 @@ function CustomerNavBar({onClose, onLogout, userId}){
         onClose();
     };
 
+    const displayName = user?.first_name ? `${user.first_name} ${user.last_name ?? ''}`.trim(): 'Customer';
+
+    const customerNumber = user?.profile_id ?? userId ?? '-';
+
     return (
         <div className="nav-bar">
             <button className="nav-close-button" onClick={onClose}>
@@ -30,8 +34,8 @@ function CustomerNavBar({onClose, onLogout, userId}){
             <div className="nb-profile-section">
                 <CircleUserRound className="nb-profile-icon" />
                 <div className="nb-profile-info">
-                <p className="nb-user-name">John Smith</p>
-                <p className="nb-user-tag">Customer #{userId ?? '-'}</p>
+                <p className="nb-user-name">{displayName}</p>
+                <p className="nb-user-tag">Customer #{customerNumber}</p>
                 <div className="nb-verified">
                     <ShieldCheck className="nb-verified-icon" />
                     <span>Verified</span>
