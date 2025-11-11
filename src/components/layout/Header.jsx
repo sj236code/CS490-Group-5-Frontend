@@ -18,6 +18,9 @@ import AdminNavBar from './AdminNavBar.jsx';
 
 function Header({userType, userId, onPickRole, onCycleRole, onLogout }){
 
+    // UserProfile with name, id, role, etc- result of userTypes endpoint
+    const [userProfile, setUserProfile] = useState(null);
+
     // Is NavBar open
     const[navBar, setNavBar] = useState(false);
 
