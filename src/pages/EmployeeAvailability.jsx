@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import {useLocation} from "react-router-dom";
 import { Clock, Info, Edit3, Check } from "lucide-react";
 import "../App.css";
 
@@ -14,8 +15,17 @@ const WEEKDAY_LABELS = [
 
 function EmployeeAvailability() {
   // TODO: replace with real logged-in employee id
-  const employeeId = 1;
-  const salonId = 1;
+  //const employeeId = 1;
+  // const salonId = 1;
+
+  const location = useLocation();
+  const userFromState = location.state?.user;
+
+  const employeeId = userFromState?.profile_id ?? userIdFromState ?? null;
+  const salonId = userFromState?.salon_id ?? null;
+
+  //console.log("Employee id:", employeeId);
+  console.log("EmployeeProfile: ", userFromState);
 
   const [employmentStatus, setEmploymentStatus] = useState(null);
   const [weeklyAvailability, setWeeklyAvailability] = useState([]);
@@ -28,8 +38,6 @@ function EmployeeAvailability() {
     loadEmployeeSchedule();
     loadSalonHours();
   }, [employeeId, salonId]);
-
-  // ---------- Helpers ----------
 
   const formatTimeFromIso = (timeString) => {
     if (!timeString) return "";
@@ -57,7 +65,7 @@ function EmployeeAvailability() {
       .join(" ");
   };
 
-  // ---------- Load employee schedule ----------
+  // Load employee schedule
 
   const loadEmployeeSchedule = async () => {
     try {
@@ -229,6 +237,8 @@ function EmployeeAvailability() {
         }
       );
 
+      console.log("Employee Type Set: ", newType);
+
       if (!res.ok) {
         const errData = await res.json().catch(() => ({}));
         console.error("Failed to update employee type:", errData);
@@ -245,7 +255,8 @@ function EmployeeAvailability() {
     }
   };
 
-  // ---------- Save schedule ----------
+
+  // Save schedule
 
   const handleConfirmEdit = async () => {
     try {
@@ -276,21 +287,19 @@ function EmployeeAvailability() {
         return;
       }
 
-      if (json && (json.employee_type || json.total_hours !== undefined)) {
-        setEmploymentStatus({
-          type: prettyType(json.employee_type),
-          weeklyHours: json.total_hours,
-        });
-      } else {
-        await updateEmployeeTypeBasedOnHours(editAvailability);
-      }
-
+      // 1) Update local schedule
       setWeeklyAvailability(editAvailability);
+
+      // 2) recompute hours and push new employee_type to backend
+      await updateEmployeeTypeBasedOnHours(editAvailability);
+
+      // 3) Close modal
       setShowEditModal(false);
     } catch (err) {
       console.error("Error saving schedule:", err);
     }
   };
+
 
   const totalWeeklyHours =
     employmentStatus?.weeklyHours ?? getTotalHoursForWeek(weeklyAvailability);
