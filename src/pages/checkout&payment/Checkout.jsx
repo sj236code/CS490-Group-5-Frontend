@@ -254,6 +254,9 @@ function Checkout() {
             {paymentMethod === "card" && (
                 <div className="card-form">
                     <div className="form-group">
+                        <label>Select Saved Card</label>
+                        {/* add the card dropdown menu here */}
+
                         <label>Cardholder Name</label>
                         <input
                             name="name"

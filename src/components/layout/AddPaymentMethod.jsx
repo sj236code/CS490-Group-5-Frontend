@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 
 function AddPaymentMethod({ customerId, onSuccess, onCancel }) {
   const [formData, setFormData] = useState({
+    cardName: "",
     brand: "",
     expiration: "", // YYYY-MM-DD
     isDefault: false,
@@ -48,6 +49,7 @@ function AddPaymentMethod({ customerId, onSuccess, onCancel }) {
     const last4 = digits.slice(-4);
 
     const payload = {
+      card_name: formData.cardName,
       brand: formData.brand,
       last4: last4,
       expiration: formData.expiration, // must be "YYYY-MM-DD"
@@ -58,7 +60,8 @@ function AddPaymentMethod({ customerId, onSuccess, onCancel }) {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/payments/${customerId}/methods`,
         {
           method: "POST",
-          headers: {"Content-Type": "application/json",}, body: JSON.stringify(payload),
+          headers: {"Content-Type": "application/json",}, 
+          body: JSON.stringify(payload),
         }
       );
 
@@ -94,6 +97,7 @@ function AddPaymentMethod({ customerId, onSuccess, onCancel }) {
 
       // Reset other fields
       setFormData({
+        cardName: "",
         brand: "",
         expiration: "",
         isDefault: false,
@@ -105,6 +109,23 @@ function AddPaymentMethod({ customerId, onSuccess, onCancel }) {
 
   return (
     <form className="wallet-add-form" onSubmit={handleSubmit}>
+      
+      <div className="wallet-form-row">
+        <label className="wallet-label">
+          Name on Card
+          <input
+            type="text"
+            name="cardName"
+            value={formData.cardName}
+            onChange={handleChange}
+            className="wallet-input"
+            placeholder="Ex. John Smith"
+            aria-label="Name On Card"
+            required
+          />
+        </label>
+      </div>
+
       <div className="wallet-form-row">
         <label className="wallet-label">
           Card number
