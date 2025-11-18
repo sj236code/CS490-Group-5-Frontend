@@ -9,9 +9,12 @@ const EmployeePaymentPortal = () => {
   const userIdFromState = location.state?.userId;
 
   const employeeId = userFromState?.profile_id ?? userIdFromState ?? null;
+  const salonId = userFromState?.salon_id ?? null;
 
   console.log("Employee id:", employeeId);
+  console.log("Salon id:", salonId);
   console.log("Location state:", location.state);
+  console.log("EmployeeProfile:", userFromState);
 
   const [currentPeriod, setCurrentPeriod] = useState(null);
   const [payrollHistory, setPayrollHistory] = useState([]);
