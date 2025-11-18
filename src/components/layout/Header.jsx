@@ -14,6 +14,7 @@ import SalonOwnerCartPanel from './SalonOwnerCartPanel';
 import AdminCartPanel from './AdminCartPanel';
 import LoginButton from './LoginButton.jsx';
 import AdminNavBar from './AdminNavBar.jsx';
+import UserProfile from './UserProfile.jsx';
 
 
 function Header({userType, userId, onPickRole, onCycleRole, onLogout }){
@@ -182,8 +183,14 @@ function Header({userType, userId, onPickRole, onCycleRole, onLogout }){
 
             {/* Right: Login + Cart */}
             <div className="header-right">
-                <LoginButton onClick={navigateToLogin} style={{ cursor: "pointer" }} />
-                <CartButton onClick={toggleCartPanel} />
+                {userId && userProfile ? (
+                    <UserProfile user={userProfile} onLogout={onLogout}/>
+                ) : (
+                    <LoginButton onClick={navigateToLogin} style={{cursor: "pointer"}}/>
+                )}
+
+                {/*<LoginButton onClick={navigateToLogin} style={{ cursor: "pointer" }} />*/}
+                <CartButton onClick={toggleCartPanel} style={{ cursor: "pointer" }}/>
             </div>
             </header>
 
