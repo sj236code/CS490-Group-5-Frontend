@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { DollarSign, Clock, Calendar, TrendingUp } from "lucide-react";
+import { DollarSign, Clock, Calendar, TrendingUp, Info, PieChart } from "lucide-react";
 import "../App.css";
 
-const EmployeePayment = () => {
+const EmployeePaymentPortal = () => {
   const location = useLocation();
   const userFromState = location.state?.user;
   const userIdFromState = location.state?.userId;
@@ -15,6 +15,7 @@ const EmployeePayment = () => {
 
   const [currentPeriod, setCurrentPeriod] = useState(null);
   const [payrollHistory, setPayrollHistory] = useState([]);
+  const [monthlyTotal, setMonthlyTotal] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -58,6 +59,17 @@ const EmployeePayment = () => {
       const historyData = await historyResponse.json();
       console.log("Payroll history from backend:", historyData);
       setPayrollHistory(historyData.history);
+
+      // Fetch monthly total
+      const monthlyResponse = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/employee_payroll/${employeeId}/monthly-total`
+      );
+      
+      if (monthlyResponse.ok) {
+        const monthlyData = await monthlyResponse.json();
+        console.log("Monthly total from backend:", monthlyData);
+        setMonthlyTotal(monthlyData);
+      }
       
       setLoading(false);
     } catch (err) {
@@ -99,6 +111,43 @@ const EmployeePayment = () => {
         <h1>Payment Portal</h1>
       </header>
 
+      {/* Commission Structure Reminder */}
+      <div className="commission-reminder">
+        <Info size={20} />
+        <p>
+          <strong>MyJade Commission Structure:</strong> You earn 70% of service revenue. 
+          The salon retains 30% for operations and overhead.
+        </p>
+      </div>
+
+      {/* Monthly Total Banner */}
+      {monthlyTotal && (
+        <section className="monthly-total-banner">
+          <div className="monthly-header">
+            <PieChart size={24} />
+            <h2>{monthlyTotal.month} Total</h2>
+          </div>
+          <div className="monthly-stats">
+            <div className="monthly-stat">
+              <p className="monthly-label">Service Revenue</p>
+              <p className="monthly-value">${monthlyTotal.total_service_revenue.toFixed(2)}</p>
+            </div>
+            <div className="monthly-stat highlight">
+              <p className="monthly-label">Your Earnings (70%)</p>
+              <p className="monthly-value">${monthlyTotal.employee_earnings.toFixed(2)}</p>
+            </div>
+            <div className="monthly-stat">
+              <p className="monthly-label">Salon Share (30%)</p>
+              <p className="monthly-value">${monthlyTotal.salon_share.toFixed(2)}</p>
+            </div>
+            <div className="monthly-stat">
+              <p className="monthly-label">Appointments</p>
+              <p className="monthly-value">{monthlyTotal.appointments_completed}</p>
+            </div>
+          </div>
+        </section>
+      )}
+
       {currentPeriod && (
         <>
           {/* Current Pay Period Summary */}
@@ -115,8 +164,9 @@ const EmployeePayment = () => {
                   <DollarSign size={24} />
                 </div>
                 <div className="stat-info">
-                  <p className="stat-label">Hourly Wage</p>
-                  <p className="stat-value">${currentPeriod.hourly_wage.toFixed(2)}/hr</p>
+                  <p className="stat-label">Service Revenue</p>
+                  <p className="stat-value">${currentPeriod.total_service_revenue.toFixed(2)}</p>
+                  <p className="stat-subtext">Total from {currentPeriod.appointments_completed} appointments</p>
                 </div>
               </div>
 
@@ -138,10 +188,11 @@ const EmployeePayment = () => {
                   <TrendingUp size={24} />
                 </div>
                 <div className="stat-info">
-                  <p className="stat-label">Projected Paycheck</p>
+                  <p className="stat-label">Your Earnings (70%)</p>
                   <p className="stat-value projected">
                     ${currentPeriod.projected_paycheck.toFixed(2)}
                   </p>
+                  <p className="stat-subtext">Salon: ${currentPeriod.salon_share.toFixed(2)} (30%)</p>
                 </div>
               </div>
             </div>
@@ -157,7 +208,7 @@ const EmployeePayment = () => {
           {/* Payment History */}
           <section className="payment-history">
             <h2>Payment History</h2>
-            <p className="section-subtitle">Last 6 pay periods</p>
+            <p className="section-subtitle">Last 6 pay periods (70% commission)</p>
 
             <div className="history-list">
               {payrollHistory.map((period, index) => (
@@ -177,9 +228,13 @@ const EmployeePayment = () => {
                       <Calendar size={16} />
                       <span>{period.appointments_completed} appointments</span>
                     </div>
+                    <div className="history-stat">
+                      <DollarSign size={16} />
+                      <span>${period.total_service_revenue.toFixed(2)} revenue</span>
+                    </div>
                   </div>
                   <div className="history-earnings">
-                    <p className="earnings-label">Earnings</p>
+                    <p className="earnings-label">Your Earnings</p>
                     <p className="earnings-value">${period.earnings.toFixed(2)}</p>
                   </div>
                 </div>
@@ -192,4 +247,4 @@ const EmployeePayment = () => {
   );
 };
 
-export default EmployeePayment;
+export default EmployeePaymentPortal;

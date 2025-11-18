@@ -3447,14 +3447,97 @@ label {
   color: #a12b25;
 }
 
-/* Employee payment portal */
+/* Employee payment portal!!!! */
 
+/* Payment Container */
 .payment-container {
   padding: 20px;
   max-width: 1200px;
   margin: 0 auto;
 }
 
+/* Commission Reminder Banner */
+.commission-reminder {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.commission-reminder p {
+  margin: 0;
+  font-size: 14px;
+  color: #856404;
+}
+
+.commission-reminder strong {
+  color: #333;
+}
+
+/* Monthly Total Banner */
+.monthly-total-banner {
+  background: white;
+  padding: 24px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  border: 2px solid #0066cc;
+}
+
+.monthly-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.monthly-header h2 {
+  margin: 0;
+  font-size: 22px;
+  color: #0066cc;
+}
+
+.monthly-stats {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.monthly-stat {
+  flex: 1;
+  min-width: 150px;
+  background: #f9f9f9;
+  padding: 16px;
+  border-radius: 6px;
+}
+
+.monthly-stat.highlight {
+  background: #e6f3ff;
+  border: 1px solid #0066cc;
+}
+
+.monthly-label {
+  margin: 0 0 8px 0;
+  font-size: 12px;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.monthly-value {
+  margin: 0;
+  font-size: 24px;
+  color: #1a1a1a;
+}
+
+.monthly-stat.highlight .monthly-value {
+  color: #0066cc;
+}
+
+/* Payment Summary Section */
 .payment-summary {
   background: white;
   padding: 24px;
@@ -3556,6 +3639,7 @@ label {
   color: #333;
 }
 
+/* Payment History Section */
 .payment-history {
   background: white;
   padding: 24px;
@@ -3616,6 +3700,7 @@ label {
   gap: 16px;
   flex: 1;
   min-width: 200px;
+  flex-wrap: wrap;
 }
 
 .history-stat {
