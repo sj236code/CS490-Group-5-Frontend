@@ -2739,6 +2739,21 @@ label {
   margin-top: 12px;
 }
 
+.error-banner {
+  margin-top: 12px;
+  margin-bottom: 8px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  background-color: #ffe5e5; 
+  color: #9b1c1c;
+  border: 1px solid #f5b3b3;
+}
+
+
 /* Info box already styled via wallet-* in your site */
 .availability-info {
   margin-top: 16px;

@@ -34,6 +34,8 @@ function EmployeeAvailability() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [editAvailability, setEditAvailability] = useState([]);
 
+  const [errorMessage, setErrorMessage] = useState("");
+
   useEffect(() => {
     loadEmployeeSchedule();
     loadSalonHours();
@@ -51,6 +53,12 @@ function EmployeeAvailability() {
     const [eh, em] = end.split(":").map(Number);
     const diff = eh * 60 + em - (sh * 60 + sm);
     return diff > 0 ? diff / 60 : 0;
+  };
+
+  const toMinutes = (timeString) => {
+    if (!timeString) return null;
+    const [h, m] = timeString.split(":").map(Number);
+    return h * 60 + m;
   };
 
   const getTotalHoursForWeek = (week) =>
@@ -132,7 +140,7 @@ function EmployeeAvailability() {
     }
   };
 
-  // ---------- Load salon hours ----------
+  // Load salon hours
 
   const loadSalonHours = async () => {
     try {
@@ -153,9 +161,7 @@ function EmployeeAvailability() {
         return;
       }
 
-      const openDays = data.filter(
-        (h) => h.is_open && h.open_time && h.close_time
-      );
+      const openDays = data.filter((h) => h.is_open && h.open_time && h.close_time);
 
       if (!openDays.length) {
         setSalonHours({ open: "", close: "" });
@@ -175,13 +181,14 @@ function EmployeeAvailability() {
         open: formatTimeFromIso(earliestOpen),
         close: formatTimeFromIso(latestClose),
       });
-    } catch (err) {
+    } 
+    catch (err) {
       console.error("Unable to load salon hours:", err);
       setSalonHours({ open: "", close: "" });
     }
   };
 
-  // ---------- Edit modal handlers ----------
+  // Edit modal 
 
   const handleOpenEditModal = () => {
     setEditAvailability(weeklyAvailability.map((d) => ({ ...d })));
@@ -194,9 +201,7 @@ function EmployeeAvailability() {
     setEditAvailability((prev) =>
       prev.map((d) =>
         d.day === day
-          ? {
-              ...d,
-              [field]: value,
+          ? {...d, [field]: value,
               hours: computeHours(
                 field === "start" ? value : d.start,
                 field === "end" ? value : d.end
@@ -221,15 +226,14 @@ function EmployeeAvailability() {
     );
   };
 
-  // ---------- Update FULL_TIME / PART_TIME based on hours ----------
+  // Update FULL_TIME /PART_TIME based on hours
 
   const updateEmployeeTypeBasedOnHours = async (week) => {
     const totalHours = getTotalHoursForWeek(week);
     const newType = totalHours >= 40 ? "FULL_TIME" : "PART_TIME";
 
     try {
-      const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/employees/${employeeId}/type`,
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/employees/${employeeId}/type`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -260,6 +264,36 @@ function EmployeeAvailability() {
 
   const handleConfirmEdit = async () => {
     try {
+      if (!salonHours.open || !salonHours.close) {
+        setErrorMessage(
+          "Salon hours are not set yet. Please ask the salon owner to configure hours before saving your schedule."
+        );
+        return;
+      }
+
+      const salonOpenMin = toMinutes(salonHours.open);
+      const salonCloseMin = toMinutes(salonHours.close);
+
+      // Find any day that violates salon hours
+      const invalidDay = editAvailability.find((d) => {
+        if (!d.isAvailable || !d.start || !d.end) return false;
+
+        const startMin = toMinutes(d.start);
+        const endMin = toMinutes(d.end);
+
+        // start before salon opens OR end after salon closes
+        return startMin < salonOpenMin || endMin > salonCloseMin;
+      });
+
+      if (invalidDay) {
+        setErrorMessage(
+          `Please choose hours within the salon's operating hours (${salonHours.open} – ${salonHours.close}).`
+        );
+        return; 
+      }
+
+      setErrorMessage("");
+
       const schedulePayload = editAvailability
         .map((d) => ({
           weekday: d.backendWeekday,
@@ -284,6 +318,7 @@ function EmployeeAvailability() {
 
       if (!res.ok) {
         console.error("Failed to save schedule:", json);
+        setErrorMessage("Something went wrong while saving your schedule.");
         return;
       }
 
@@ -295,11 +330,12 @@ function EmployeeAvailability() {
 
       // 3) Close modal
       setShowEditModal(false);
-    } catch (err) {
+    } 
+    catch (err) {
       console.error("Error saving schedule:", err);
+      setErrorMessage("Unexpected error while saving your schedule.");
     }
   };
-
 
   const totalWeeklyHours =
     employmentStatus?.weeklyHours ?? getTotalHoursForWeek(weeklyAvailability);
@@ -310,9 +346,7 @@ function EmployeeAvailability() {
       <div className="page-title-row">
         <div>
           <h2 className="page-title-main">My Schedule</h2>
-          <p className="page-title-sub">
-            View and manage your weekly availability for this salon.
-          </p>
+          <p className="page-title-sub">View and manage your weekly availability for this salon.</p>
         </div>
       </div>
 
@@ -321,17 +355,13 @@ function EmployeeAvailability() {
         <div className="status-header">
           <div>
             <h4 className="section-title">Employment Status</h4>
-            <p className="section-subtitle">
-              Your current employment type and weekly hours
-            </p>
+            <p className="section-subtitle">Your current employment type and weekly hours</p>
             <p className="status-hours-line">
               <Clock size={16} className="icon-inline" /> Total Weekly Hours:{" "}
               <strong>{totalWeeklyHours}</strong> hours
             </p>
           </div>
-          <span className="status-badge">
-            {employmentStatus?.type || "N/A"}
-          </span>
+          <span className="status-badge">{employmentStatus?.type || "N/A"}</span>
         </div>
       </section>
 
@@ -340,9 +370,7 @@ function EmployeeAvailability() {
         <div className="section-header">
           <div>
             <h4 className="section-title">Weekly Availability</h4>
-            <p className="section-subtitle">
-              Your scheduled working hours for each day
-            </p>
+            <p className="section-subtitle">Your scheduled working hours for each day</p>
           </div>
           <button className="edit-hours-btn" onClick={handleOpenEditModal}>
             <Edit3 size={16} className="icon-inline" /> Edit Hours
@@ -445,19 +473,18 @@ function EmployeeAvailability() {
               ))}
             </div>
 
+            {errorMessage && (
+              <div className="error-banner">
+                <Info size={16} className="icon-inline" />
+                <span>{errorMessage}</span>
+              </div>
+            )}
+
             <div className="edit-modal-actions">
-              <button
-                className="btn-secondary"
-                type="button"
-                onClick={handleCloseEditModal}
-              >
+              <button className="btn-secondary" type="button" onClick={handleCloseEditModal}>
                 Cancel
               </button>
-              <button
-                className="btn-primary"
-                type="button"
-                onClick={handleConfirmEdit}
-              >
+              <button className="btn-primary" type="button" onClick={handleConfirmEdit}>
                 <Check size={16} className="icon-inline" /> Confirm
               </button>
             </div>
