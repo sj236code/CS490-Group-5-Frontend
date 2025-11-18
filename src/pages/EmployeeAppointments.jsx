@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { MapPin, Calendar, User } from "lucide-react";
-import {useLocation} from "react-router-dom";
-import EditAppointmentModal from "../components/layout/EditAppointmentModal";
 import "../App.css";
 
-const MyAppointments = () => {
+const EmployeeAppointments = () => {
   const location = useLocation();
   const userFromState = location.state?.user;
-  const customerId = userFromState?.profile_id ?? userIdFromState ?? null;
+  const userIdFromState = location.state?.userId;
 
-  console.log("Customer id:", customerId);
+  const employeeId = userFromState?.profile_id ?? userIdFromState ?? null;
 
-  // const customerId = 2; // TODO: replace with real logged-in customer id
+  console.log("Employee id:", employeeId);
+  console.log("Location state:", location.state);
 
   const [upcomingAppointments, setUpcomingAppointments] = useState([]);
   const [previousAppointments, setPreviousAppointments] = useState([]);
@@ -19,23 +19,6 @@ const MyAppointments = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [selectedAppt, setSelectedAppt] = useState(null);
-
-  const handleEditClick = (appt) => {
-    setSelectedAppt(appt);
-    setShowEditModal(true);
-  };
-
-  const handleSave = () => {
-    setShowEditModal(false);
-    setShowSuccess(true);
-    setTimeout(() => setShowSuccess(false), 2000);
-  };
-
-  const handleCancelClick = (apptId) => {
-    setUpcomingAppointments((prev) =>
-      prev.filter((appt) => appt.id !== apptId)
-    );
-  };
 
   const formatApptDateTime = (isoString) => {
     if (!isoString) return "Date & time TBD";
@@ -52,94 +35,149 @@ const MyAppointments = () => {
     return `${datePart} at ${timePart}`;
   };
 
-  // Load upcoming appointments from backend
+  // Map backend appointment → shape used in UI + modal
+  const mapAppointment = (apt) => ({
+    id: apt.appointment_id,
+    serviceName: apt.service_name || "Service",
+    location: apt.salon_name || "Salon",
+    dateTime: formatApptDateTime(apt.start_at),
+
+    // From the employee's perspective:
+    staffName: "You",
+    customerName: apt.customer_name || "Customer",
+
+    // extra fields for editing
+    startAt: apt.start_at,
+    endAt: apt.end_at,
+    status: apt.status,
+    notes: apt.notes,
+  });
+
+  // Load upcoming appointments
   useEffect(() => {
+    if (!employeeId) return;
+
     const fetchUpcomingAppointments = async () => {
       try {
-        const url = `${import.meta.env.VITE_API_URL}/api/appointments/${customerId}/upcoming`;
+        const url = `${import.meta.env.VITE_API_URL}/api/employeesapp/${employeeId}/appointments/upcoming`;
         const res = await fetch(url);
 
         if (res.status === 404) {
-          console.error("Customer not found");
+          console.error("Employee not found");
           setUpcomingAppointments([]);
           return;
         }
 
         if (!res.ok) {
-          console.error("Failed to fetch upcoming appointments");
+          console.error("Failed to fetch upcoming employee appointments");
           setUpcomingAppointments([]);
           return;
         }
 
-        const data = await res.json(); // this should be the list returned by your endpoint
+        const data = await res.json();
+        console.log("Employee upcoming appointments from backend:", data);
 
-        console.log("Upcoming appointments from backend:", data);
-
-        const mapped = data.map((apt) => ({
-          id: apt.id,
-          serviceName: apt.service_name || "Service",
-          location: apt.salon_name || "Salon",
-          dateTime: formatApptDateTime(apt.start_at),
-          staffName:
-            (apt.employee_first_name || "") +
-            (apt.employee_last_name ? ` ${apt.employee_last_name}` : ""),
-          // On "My Appointments" page, customer is the logged-in user
-          customerName: "You",
-        }));
-
+        const mapped = data.map(mapAppointment);
         setUpcomingAppointments(mapped);
       } catch (err) {
-        console.error("Error fetching upcoming appointments:", err);
+        console.error("Error fetching upcoming employee appointments:", err);
         setUpcomingAppointments([]);
       }
     };
 
     fetchUpcomingAppointments();
-  }, [customerId]);
+  }, [employeeId]);
 
-  // Load previous appointments from backend
+  // Load previous appointments
   useEffect(() => {
+    if (!employeeId) return;
+
     const fetchPreviousAppointments = async () => {
       try {
-        const url = `${import.meta.env.VITE_API_URL}/api/appointments/${customerId}/previous`;
+        const url = `${import.meta.env.VITE_API_URL}/api/employeesapp/${employeeId}/appointments/previous`;
         const res = await fetch(url);
 
         if (res.status === 404) {
-          console.error("Customer not found");
+          console.error("Employee not found");
           setPreviousAppointments([]);
           return;
         }
 
         if (!res.ok) {
-          console.error("Failed to fetch previous appointments");
+          console.error("Failed to fetch previous employee appointments");
           setPreviousAppointments([]);
           return;
         }
 
         const data = await res.json();
+        console.log("Employee previous appointments from backend:", data);
 
-        console.log("Previous appointments from backend:", data);
-
-        const mapped = data.map((apt) => ({
-          id: apt.id,
-          serviceName: apt.service_name || "Service",
-          location: apt.salon_name || "Salon",
-          dateTime: formatApptDateTime(apt.start_at),
-          staffName:
-            (apt.employee_first_name || "") +
-            (apt.employee_last_name ? ` ${apt.employee_last_name}` : ""),
-          customerName: "You",
-        }));
-
+        const mapped = data.map(mapAppointment);
         setPreviousAppointments(mapped);
       } catch (err) {
-        console.error("Error fetching previous appointments:", err);
+        console.error("Error fetching previous employee appointments:", err);
         setPreviousAppointments([]);
       }
     };
 
     fetchPreviousAppointments();
-  }, [customerId]);
+  }, [employeeId]);
+
+  // --- Handlers ---
+
+  const handleEditClick = (appt) => {
+    setSelectedAppt(appt);
+    setShowEditModal(true);
+  };
+
+  const handleSave = () => {
+    setShowEditModal(false);
+    setShowSuccess(true);
+    setTimeout(() => setShowSuccess(false), 2000);
+  };
+
+  const handleCancelClick = async (apptId) => {
+    if (!employeeId) return;
+
+    try {
+      const url = `${import.meta.env.VITE_API_URL}/api/employeesapp/${employeeId}/appointments/${apptId}/cancel`;
+      const res = await fetch(url, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          reason: "Cancelled by employee via dashboard",
+        }),
+      });
+
+      if (!res.ok) {
+        console.error("Failed to cancel appointment for employee");
+        return;
+      }
+
+      // Remove from upcoming list in UI
+      setUpcomingAppointments((prev) =>
+        prev.filter((appt) => appt.id !== apptId)
+      );
+    } catch (err) {
+      console.error("Error cancelling employee appointment:", err);
+    }
+  };
+
+  const handleDeleteFromModal = async (apptId) => {
+    await handleCancelClick(apptId);
+    setShowEditModal(false);
+  };
+
+  const handleSendMessageClick = async (appt) => {
+    if (!employeeId) return;
+
+    const body = window.prompt(
+      `Message to ${appt.customerName}:`,
+      ""
+    );
+  };
 
   return (
     <div className="appointments-container">
@@ -292,4 +330,4 @@ const MyAppointments = () => {
   );
 };
 
-export default MyAppointments;
+export default EmployeeAppointments;
