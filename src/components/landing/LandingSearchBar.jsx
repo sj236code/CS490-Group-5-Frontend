@@ -19,38 +19,26 @@ function LandingSearchBar() {
         fetchCities();
     }, []);
 
-    // Async function to fetch service categories from backend API
     const fetchCities = async () => {
         try {
             const response = await fetch(`${import.meta.env.VITE_API_URL}/api/salons/cities`);
-
             const data = await response.json();
-
             console.log('Cities Successfully Received.', data.cities.length);
-
             setCities(data.cities);
-
-            //console.log('End of Async Function.');
         }
         catch (err) {
             console.error('Error fetching cities: ', err);
         }
     };
 
-    // Hardcoded cities options-- to be changed with api call- Ricardo 
-    // const cities = [
-    //     'Newark, NJ',
-    //     'New York, NY',
-    //     'Philadelphia, PA',
-    //     'Hoboken, NJ',
-    //     'Paterson, NJ',
-    //     'Elizabeth, NJ'
-    // ]
-
     // Everytime user types in search bar
     const handleSearchQueryChange = async (event) => {
         const searchWord = event.target.value;
         setWordEntered(searchWord);
+
+        if (showCityDropdown) {
+            setShowCityDropdown(false);
+        }
 
         if (searchWord.trim()) {
             try {
@@ -88,7 +76,6 @@ function LandingSearchBar() {
             setSearchResults([]);
             setShowResults(false);
         }
-
     };
 
     // When the user clicks on city dropdown
@@ -120,21 +107,11 @@ function LandingSearchBar() {
         setWordEntered(result.value)
     };
 
-    // Depreciated feature- optional: find another way 
-    // When user presses enter to search
-    // const handleKeyPress=(e) => {
-    //     if(e.key == 'Enter'){
-    //         handleSearch();
-    //     }
-    // };
-
     return (
         <>
             <div className="search-bar-wrapper">
-
                 {/* Entire Search Bar */}
                 <div className="landing-search-bar">
-
                     {/* Left Half of the SearchBar: Search Salon & Service */}
                     <div className="search-section">
                         <Search className="search-icon" />
@@ -143,7 +120,10 @@ function LandingSearchBar() {
                             placeholder="Service, salon, ..."
                             value={wordEntered}
                             onChange={handleSearchQueryChange}
-                            onFocus={() => wordEntered && setShowResults(true)}
+                            onFocus={() => {
+                                if (wordEntered) setShowResults(true);
+                                setShowCityDropdown(false); 
+                            }}
                         />
                     </div>
 
@@ -155,7 +135,10 @@ function LandingSearchBar() {
                             <MapPin className="location-icon" />
                             <div
                                 className="location-dropdown"
-                                onClick={() => setShowCityDropdown(!showCityDropdown)}>
+                                onClick={() => {
+                                    setShowCityDropdown(prev => !prev);
+                                    setSearchResults(false);
+                                }}>
                                 <span className='location-text'>{selectedCity || 'All Cities'}</span>
                             </div>
                         </div>
@@ -185,7 +168,6 @@ function LandingSearchBar() {
                                 </ul>
                             </div>
                         )}
-
                     </div>
 
                     {/* Search Button */}
@@ -212,7 +194,6 @@ function LandingSearchBar() {
             </div>
         </>
     );
-
 }
 
 export default LandingSearchBar

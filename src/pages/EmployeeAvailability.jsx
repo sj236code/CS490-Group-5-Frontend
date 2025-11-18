@@ -1,195 +1,10 @@
-import { useEffect, useState } from "react";
-import { Clock, Info, Edit3, Check } from "lucide-react";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+
 import "../App.css";
 
-const WEEKDAY_LABELS = [
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-  "Sunday",
-];
-
-function EmployeeAvailability() {
-  // TODO: replace with real logged-in employee id
-  const employeeId = 1;
-  const salonId= 1;
-
-  const [employmentStatus, setEmploymentStatus] = useState(null);
-  const [weeklyAvailability, setWeeklyAvailability] = useState([]);
-  const [salonHours, setSalonHours] = useState({
-    open: "",
-    close: "",
-  });
-
+const EmployeeAvailability = () => {
   const [showEditModal, setShowEditModal] = useState(false);
-  const [editAvailability, setEditAvailability] = useState([]);
-
-  useEffect(() => {
-    loadEmploymentStatus();
-    loadWeeklyAvailability();
-    loadSalonHours();
-  }, [employeeId, salonId]);
-
-  const formatTimeFromIso = (timeString) => {
-    if (!timeString) return "";
-    let t = timeString;
-    if (t.includes("T")) {
-      const parts = t.split("T");
-      t = parts[1]; // grab time part
-    }
-    const [h, m] = t.split(":");
-    return `${h}:${m}`;
-  };
-
-  // Fetch employment info (later replace with endpoint)
-  const loadEmploymentStatus = async () => {
-    try {
-      const mockStatus = {
-        type: "Full-Time",
-        weeklyHours: 40,
-      };
-      setEmploymentStatus(mockStatus);
-      console.log("Employment status loaded:", mockStatus);
-    } 
-    catch (err) {
-      console.error("Unable to load employment status:", err);
-      setEmploymentStatus(null);
-    }
-  };
-
-  // Fetch weekly availability (later replace with endpoint)
-  const loadWeeklyAvailability = async () => {
-    try {
-      const url = `${import.meta.env.VITE_API_URL}/api/appointments/${employeeId}/availability`;
-
-      const res = await fetch(url);
-
-      if (!res.ok) {
-        console.error("Failed to fetch weekly availability");
-        setWeeklyAvailability([]);
-        return;
-      }
-
-      const data = await res.json();
-      console.log("Employee availability from backend:", data);
-
-      const baseWeek = WEEKDAY_LABELS.map((day) => ({ day, start: null, end: null, hours: 0,isAvailable: false,}));
-
-      // Merge backend data into baseWeek
-      const filledWeek = baseWeek.map((dayObj, index) => {
-        // Find any availability entry that matches this weekday
-        const matchesForDay = data.filter((slot) => {
-
-          const backendDayName = typeof slot.weekday === "number" ? WEEKDAY_LABELS[slot.weekday] : slot.weekday;
-
-          return backendDayName === dayObj.day;
-        });
-
-        if (matchesForDay.length === 0) {
-          return dayObj;
-        }
-
-        // For now, take the first slot if multiple exist
-        const slot = matchesForDay[0];
-
-        const start = formatTimeFromIso(slot.start_time);
-        const end = formatTimeFromIso(slot.end_time);
-        const hours = computeHours(start, end);
-
-        return {
-          ...dayObj,
-          start,
-          end,
-          hours,
-          isAvailable: !!start && !!end,
-        };
-      });
-
-      setWeeklyAvailability(filledWeek);
-    }
-    catch (err) {
-      console.error("Unable to load weekly availability:", err);
-      setWeeklyAvailability([]);
-    }
-  };
-
-  // Fetch salon hours 
-  const loadSalonHours = async () => {
-    try {
-      const url = `${import.meta.env.VITE_API_URL}/api/appointments/${salonId}/hours`;
-      const res = await fetch(url);
-
-      if (!res.ok) {
-        console.error("Failed to fetch salon hours");
-        setSalonHours({ open: "", close: "" });
-        return;
-      }
-
-      const data = await res.json();
-      console.log("Salon hours from backend:", data);
-
-      if (!data || data.length === 0) {
-        setSalonHours({ open: "", close: "" });
-        return;
-      }
-
-      // Filter by open days
-      const openDays = data.filter((h) => h.is_open && h.open_time && h.close_time);
-
-      if (openDays.length === 0) {
-        setSalonHours({ open: "", close: "" });
-        return;
-      }
-
-      // Find earliest open_time and latest close_time (string compare works for "HH:MM:SS")
-      const earliestOpen = openDays.reduce((min, h) => (h.open_time < min ? h.open_time : min), openDays[0].open_time);
-      const latestClose = openDays.reduce((max, h) => (h.close_time > max ? h.close_time : max), openDays[0].close_time);
-
-      const formatted = {open: formatTimeFromIso(earliestOpen), close: formatTimeFromIso(latestClose),};
-
-      setSalonHours(formatted);
-    } 
-    catch (err) {
-      console.error("Unable to load salon hours:", err);
-      setSalonHours({ open: "", close: "" });
-    }
-  };
-
-  const handleOpenEditModal = () => {
-    setEditAvailability(weeklyAvailability);
-    setShowEditModal(true);
-  };
-
-  const handleCloseEditModal = () => setShowEditModal(false);
-
-  const handleEditTimeChange = (day, field, value) => {
-    setEditAvailability((prev) => prev.map((d) => d.day === day ? { ...d, [field]: value, hours: computeHours(field === "start" ? value : d.start, field === "end" ? value : d.end) } : d));
-  };
-
-  const handleEditAvailableToggle = (day, checked) => {
-    setEditAvailability((prev) => prev.map((d) => d.day === day ? {...d, isAvailable: checked, ...(checked ? {} : { start: null, end: null, hours: 0 }),}: d));
-  };
-
-  const handleConfirmEdit = () => {
-    console.log("Saving availability:", editAvailability);
-    setWeeklyAvailability(editAvailability);
-    setShowEditModal(false);
-  };
-
-  const computeHours = (start, end) => {
-    if (!start || !end) return 0;
-    const [sh, sm] = start.split(":").map(Number);
-    const [eh, em] = end.split(":").map(Number);
-    const diff = (eh * 60 + em) - (sh * 60 + sm);
-    return diff > 0 ? diff / 60 : 0;
-  };
-
-  const totalWeeklyHours =
-    employmentStatus?.weeklyHours ??
-    weeklyAvailability.reduce((sum, d) => sum + (d.hours || 0), 0);
 
   return (
     <div className="availability-container">
@@ -197,116 +12,82 @@ function EmployeeAvailability() {
         <h1>Employee Availability</h1>
       </header>
 
-      {/* Employment Status */}
+      <div className="tab-bar">
+  <Link to="/employee-overview">
+    <button>Overview</button>
+  </Link>
+  <Link to="/employee-schedule">
+    <button>Schedule</button>
+  </Link>
+  <Link to="/employee-availability">
+    <button className="active-tab">Availability</button>
+  </Link>
+</div>
+
+
       <section className="availability-status">
-        <div className="status-header">
-          <div>
-            <h4>Employment Status</h4>
-            <p>Your current employment type and weekly hours</p>
-            <p>
-              <Clock size={16} style={{ marginRight: "4px" }} /> Total Weekly Hours:{" "}
-              {totalWeeklyHours} hours
-            </p>
-          </div>
-          <span className="status-badge">{employmentStatus?.type || "N/A"}</span>
+        <div>
+          <h4>Employment Status</h4>
+          <p>Your current employment type and weekly hours</p>
+          <p>🕓 Total Weekly Hours: 40 hours</p>
         </div>
+        <span className="status-badge">Full-Time</span>
       </section>
 
-
-      {/* Weekly Availability */}
       <section className="weekly-availability">
         <div className="section-header">
           <h4>Weekly Availability</h4>
           <p>Your scheduled working hours for each day</p>
-          <button className="edit-hours-btn" onClick={handleOpenEditModal}>
-            <Edit3 size={16} style={{ marginRight: "6px" }} /> Edit Hours
-          </button>
+          <button onClick={() => setShowEditModal(true)}>Edit Hours</button>
         </div>
 
-        {weeklyAvailability.map((dayInfo) => (
-          <div
-            key={dayInfo.day}
-            className={`day-row ${dayInfo.isAvailable ? "" : "unavailable"}`}
-          >
-            <span>{dayInfo.day}</span>
-            {dayInfo.isAvailable ? (
-              <span className="time-slot">
-                <Clock size={14} style={{ marginRight: "4px" }} />
-                {dayInfo.start} - {dayInfo.end} ({dayInfo.hours} hours)
-              </span>
-            ) : (
-              <span className="not-available">Not Available</span>
-            )}
+        {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].map((day) => (
+          <div key={day} className="day-row">
+            <span>{day}</span>
+            <span className="time-slot">🕓 09:00 - 17:00 (8 hours)</span>
+          </div>
+        ))}
+
+        {["Saturday", "Sunday"].map((day) => (
+          <div key={day} className="day-row unavailable">
+            <span>{day}</span>
+            <span className="not-available">Not Available</span>
           </div>
         ))}
       </section>
 
-      {/* Salon Hours */}
       <div className="salon-hours">
-        <p>Salon Hours:{" "}{salonHours.open && salonHours.close ? `${salonHours.open} - ${salonHours.close}` : "Not set"}</p>
+        <p>💈 Salon Hours: 08:00 - 20:00</p>
         <p>Your working hours must be within the salon's operating hours.</p>
       </div>
 
-      {/* Edit Modal */}
       {showEditModal && (
         <div className="modal-overlay">
           <div className="edit-modal">
             <h3>Edit Weekly Hours</h3>
-
-            {editAvailability.map((dayData) => (
-              <div key={dayData.day} className="edit-row">
-                <span className="edit-day-label">{dayData.day}</span>
-
-                <div className="edit-times">
-                  <div className="edit-time-range">
-                    <input
-                      type="time"
-                      value={dayData.start || "09:00"}
-                      onChange={(e) => handleEditTimeChange(dayData.day, "start", e.target.value)
-                      }
-                      disabled={!dayData.isAvailable}
-                    />
-                    <span className="edit-dash">-</span>
-                    <input
-                      type="time"
-                      value={dayData.end || "17:00"}
-                      onChange={(e) => handleEditTimeChange(dayData.day, "end", e.target.value)}
-                      disabled={!dayData.isAvailable}
-                    />
+            {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].map(
+              (day) => (
+                <div key={day} className="edit-row">
+                  <span>{day}</span>
+                  <div className="edit-times">
+                    <input type="time" defaultValue="09:00" /> -
+                    <input type="time" defaultValue="17:00" />
+                    <label>
+                      <input type="checkbox" defaultChecked /> Available
+                    </label>
                   </div>
-
-                  <label className="edit-available-label">
-                    <input type="checkbox" checked={dayData.isAvailable} onChange={(e) => handleEditAvailableToggle(dayData.day, e.target.checked)}/>
-                    Available
-                  </label>
                 </div>
-              </div>
-            ))}
-
+              )
+            )}
             <div className="edit-modal-actions">
-              <button onClick={handleCloseEditModal}>Cancel</button>
-              <button onClick={handleConfirmEdit}>
-                <Check size={16} style={{ marginRight: "6px" }} /> Confirm
-              </button>
+              <button onClick={() => setShowEditModal(false)}>Cancel</button>
+              <button>Confirm</button>
             </div>
           </div>
         </div>
       )}
-
-      {/* Info Box */}
-      <div className="availability-info">
-        <div className="wallet-security-box">
-          <div className="wallet-security-header">
-            <Info size={16} style={{ marginRight: "4px" }} />
-            <div className="wallet-security-title">Availability Guidelines</div>
-          </div>
-          <p className="wallet-text">
-            Your availability helps the salon plan schedules effectively. Make sure to update changes promptly.
-          </p>
-        </div>
-      </div>
     </div>
   );
-}
+};
 
 export default EmployeeAvailability;
