@@ -2353,6 +2353,198 @@ label {
 }
 
 /* Calendar time buttons */
+/* View toggle + filters */
+.calendar-view-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.calendar-main-tab--active {
+  background-color: #788a6c;
+  color: #fff;
+}
+
+.calendar-view-btn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #dcdcdc;
+  background: #f5f5f5;
+  font-size: 0.9rem;
+}
+
+.calendar-view-btn--active {
+  background-color: #788a6c;
+  color: #fff;
+  border-color: #788a6c;
+}
+
+.calendar-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.calendar-action-btn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: none;
+  background-color: #4b5945;
+  color: #fff;
+}
+
+.calendar-action-btn--secondary {
+  background-color: #e0e0e0;
+  color: #444;
+}
+
+/* Main calendar + sidebar */
+.calendar-main {
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  gap: 16px;
+}
+
+/* Calendar grid */
+.calendar-grid {
+  background-color: #fff;
+}
+
+.calendar-grid-header {
+  display: grid;
+  grid-template-columns: 60px repeat(5, 1fr);
+}
+
+.calendar-grid-body {
+  display: grid;
+  grid-template-columns: 60px 1fr;
+}
+
+.calendar-time-column {
+    display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: #777;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+/* Day columns */
+.calendar-day-columns {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0;
+  position: relative;
+}
+
+.calendar-day-column {
+  position: relative;
+  border-left: 1px solid #eee;
+}
+
+.calendar-day-column:last-child {
+  border-right: 1px solid #eee;
+}
+
+.calendar-hour-row {
+  height: 40px;
+  border-top: 1px solid #f0f0f0;
+}
+
+/* Appointments */
+.calendar-appointment {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  border-radius: 4px;
+  padding: 4px 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #222;
+  box-sizing: border-box;
+}
+
+.calendar-appointment-name {
+  margin-bottom: 2px;
+}
+
+.calendar-appointment-service {
+  font-size: 0.7rem;
+  font-weight: 400;
+}
+
+.appt-red {
+  background-color: #f6c1c1;
+}
+
+.appt-blue {
+  background-color: #c7cff9;
+}
+
+.calendar-availability {
+  background-color: #fff;
+  border-radius: 10px;
+  border: 1px solid #d6d6d6;
+  padding: 12px;
+  justify-content: space-between;
+}
+
+.availability-header {
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.availability-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.availability-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+}
+
+.calendar-stats-row {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+}
+
+.calendar-stat-card {
+  background-color: #fff;
+  border: 1px solid #ececec;
+  padding: 12px 16px;
+}
+
+.calendar-stat-label {
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 6px;
+}
+
+.calendar-stat-value {
+  font-size: 1.4rem;
+}
+
+.calendar-page {
+  background-color: #f8f7f5;
+  min-height: 100vh;
+  padding: 24px 40px;
+  font-family: "Inter", sans-serif;
+  color: #333;
+}
+
+.calendar-title {
+  text-align: center;
+  font-size: 1.8rem;
+  margin-bottom: 16px;
+  color: #4b5945;
+}
+
 .calendar-container {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -2799,7 +2991,7 @@ label {
   color: #8b9a84;
 }
 
-/* ----- Form Rows ----- */
+/* ----- Form Rows */
 
 .loyalty-field-row {
   display: flex;
