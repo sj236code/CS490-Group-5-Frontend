@@ -448,27 +448,15 @@ function EmployeeAvailability() {
                     <div className="edit-time-range">
                       <input
                         type="time"
-                        value={dayData.start || "09:00"}
-                        onChange={(e) =>
-                          handleEditTimeChange(
-                            dayData.day,
-                            "start",
-                            e.target.value
-                          )
-                        }
+                        value={dayData.start || salonHours.open || "09:00"}
+                        onChange={(e) => handleEditTimeChange(dayData.day, "start", e.target.value)}
                         disabled={!dayData.isAvailable}
                       />
                       <span className="edit-dash">-</span>
                       <input
                         type="time"
-                        value={dayData.end || "17:00"}
-                        onChange={(e) =>
-                          handleEditTimeChange(
-                            dayData.day,
-                            "end",
-                            e.target.value
-                          )
-                        }
+                        value={dayData.end || salonHours.close || "17:00"}
+                        onChange={(e) =>handleEditTimeChange(dayData.day, "end", e.target.value)}
                         disabled={!dayData.isAvailable}
                       />
                     </div>
