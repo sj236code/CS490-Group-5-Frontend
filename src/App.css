@@ -3708,3 +3708,72 @@ label {
   color: #777;
   margin: 40px 0;
 }
+
+/* UserProfile Dropdown on LandingPage */
+
+/* UserProfile Dropdown on LandingPage */
+.userprof-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+/* Top pill (name + icon) – matches sign-in button / header style */
+.userprof-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.95rem;
+  padding: 8px 18px;
+  border-radius: 9999px;
+  border: 2px solid #4B5945;
+  background-color: transparent;
+  color: #4B5945;
+  transition: background-color 0.2s ease;
+  line-height: 1;
+}
+
+.userprof-pill:hover {
+  background-color: rgba(75, 89, 69, 0.1); /* same vibe as .sign-in-button:hover */
+}
+
+/* Make sure the icon fits nicely */
+.userprof-pill svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Dropdown container – matches Jade greens & cards */
+.userprof-dropdown {
+  position: absolute;
+  right: 0;
+  margin-top: 8px;
+  min-width: 160px;
+  background-color: #D9E9CF;
+  border-radius: 10px;
+  border: 1px solid #4B5945;
+  box-shadow: 0 4px 12px rgba(75, 89, 69, 0.25);
+  padding: 6px 0;
+  z-index: 1000;
+}
+
+/* Dropdown button – styled like your other CTAs */
+.userprof-dropdown button {
+  width: 100%;
+  text-align: left;
+  padding: 8px 14px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #2F3A2B;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.2s ease;
+}
+
+.userprof-dropdown button:hover {
+  background-color: #B6CEB4;
+}
