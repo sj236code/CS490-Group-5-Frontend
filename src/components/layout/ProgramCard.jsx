@@ -1,14 +1,9 @@
 import { Calendar, Gift, TrendingUp, Gem } from "lucide-react";
 
-function ProgramCard({ name, tier, points, visits, progress, message, activity, pointsPerDollar }) {
-  const nextRewardAt = progress?.points_to_next_reward ?? 0;
-  const pointsAway =
-    progress?.points_away ??
-    (nextRewardAt > 0 ? Math.max(nextRewardAt - points, 0) : 0);
-
-  const progressPercent = nextRewardAt > 0 ? Math.min((points / nextRewardAt) * 100, 100) : 0;
-
-  const lastVisitText = activity && activity.length > 0 ? activity[0].date : "No visits yet";
+function ProgramCard({ name, tier, points, visits, progress, message, activity }) {
+  const nextRewardAt = 420;
+  const pointsAway = Math.max(nextRewardAt - points, 0);
+  const progressPercent = Math.min((points / nextRewardAt) * 100, 100);
 
   return (
     <div className="loy-program">
@@ -20,11 +15,7 @@ function ProgramCard({ name, tier, points, visits, progress, message, activity, 
           </div>
           <div>
             <div className="loy-program-name">{name}</div>
-            {pointsPerDollar && (
-              <div className="loy-program-rule">
-                $1 = {pointsPerDollar !== 1 ? "s" : ""}
-              </div>
-            )}
+            <div className="loy-program-rule">$1 = 1 point</div>
           </div>
         </div>
         <span className="loy-badge">{tier}</span>
@@ -42,7 +33,6 @@ function ProgramCard({ name, tier, points, visits, progress, message, activity, 
         </div>
       </div>
 
-
       {/* Next Reward + Progress Bar */}
       <div className="loy-next">
         <div className="loy-next-row">
@@ -50,17 +40,14 @@ function ProgramCard({ name, tier, points, visits, progress, message, activity, 
             <Calendar size={16} style={{ marginRight: 6 }} />
             Next Reward
           </span>
-          {nextRewardAt > 0 && (
-            <span className="loy-next-right">{pointsAway} points away</span>
-          )}
+          <span className="loy-next-right">{pointsAway} points away</span>
         </div>
-        {nextRewardAt > 0 && (
-          <>
-            <div className="loy-progress">
-              <div className="loy-progress-fill" style={{ width: `${progressPercent}%` }}/>
-            </div>
-          </>
-        )}
+        <div className="loy-progress">
+          <div
+            className="loy-progress-fill"
+            style={{ width: `${progressPercent}%` }}
+          />
+        </div>
         <div className="loy-info">{message}</div>
       </div>
 

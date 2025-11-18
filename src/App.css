@@ -34,6 +34,47 @@ body {
   height: auto;
 }
 
+.header {
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  background-color: #D9E9CF;
+  height: 100px;
+  width: 100%;
+}
+
+/* New layout helpers */
+.header-left,
+.header-right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.header-left {
+  justify-content: flex-start;
+}
+
+.header-right {
+  justify-content: flex-end;
+  gap: 12px; /* spacing between Login and Cart */
+}
+
+/* Center logo wrapper */
+.header-center {
+  flex: 0;
+  display: flex;
+  justify-content: center;
+}
+
+/* (Optional) keep logo hover behavior */
+.logo-img {
+  width: 198px;
+  height: auto;
+  display: block;
+}
+
+
 .menu-icon {
   display: flex;
   align-items: center;
@@ -79,19 +120,6 @@ body {
   width: 100%;
 }
 
-.nav-bar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 310px;
-  height: 100vh;
-  background-color: #66785F;
-  padding: 1rem;
-  z-index: 1000;
-  display: flex;
-  flex-direction: column;
-}
-
 .cart-panel {
   position: fixed;
   top: 0;
@@ -104,23 +132,14 @@ body {
   z-index: 1000;
 }
 
-.nav-close-button {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background-color: #D9E9CF;
-  color: #4B5945;
-  cursor: pointer;
-  border-color: #4B5945;
-  border-radius: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-}
-
-.nav-close-button:hover {
-  background-color: #B6CEB4;
+.cart-panel-overlay {
+    position: fixed; 
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.4); 
+    z-index: 999; 
 }
 
 .cart-panel-close-button {
@@ -489,6 +508,50 @@ body {
 
 /* Registered User Nav Bar = nb */
 
+.nav-bar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+
+    background-color: rgba(0, 0, 0, 0.4); 
+    z-index: 999; 
+    display: flex;
+}
+
+.nav-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 310px;
+  height: 100vh;
+  background-color: #66785F;
+  padding: 1rem;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+}
+
+.nav-close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #D9E9CF;
+  color: #4B5945;
+  cursor: pointer;
+  border-color: #4B5945;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.nav-close-button:hover {
+  background-color: #B6CEB4;
+}
+
 .nb-profile-section {
   display: flex;
   align-items: flex-start;
@@ -550,6 +613,8 @@ body {
   color: white;
   font-size: 1.1rem;
 }
+
+
 
 /* Search Page: Search Bar */
 
@@ -2387,27 +2452,11 @@ label {
   padding: 1.2rem;
   margin-bottom: 1.2rem;
 }
-
 .status-badge {
   float: right;
   background: #e7eddf;
   padding: 0.3rem 1rem;
   border-radius: 6px;
-}
-
-.status-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-}
-
-.status-badge {
-  background-color: #d9e9cf;
-  color: #4b5945;
-  font-weight: 500;
-  padding: 6px 14px;
-  border-radius: 8px;
-  align-self: flex-start;
 }
 
 .section-header {
@@ -2435,7 +2484,7 @@ label {
   background: #fff;
   padding: 2rem;
   border-radius: 12px;
-  width: 550px;
+  width: 480px;
 }
 .edit-row {
   display: flex;
@@ -2455,102 +2504,6 @@ label {
   padding: 0.5rem 1rem;
   border-radius: 8px;
   cursor: pointer;
-}
-
-.edit-hours-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background-color: #D9E9CF;
-  color: #4B5945;
-  border: 1.5px solid #4B5945;
-  border-radius: 8px;
-  padding: 6px 12px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.edit-hours-btn:hover {
-  background-color: #CBE2BE;
-  transform: translateY(-1px);
-}
-
-.edit-hours-btn:active {
-  background-color: #B8D6A9;
-  transform: translateY(0);
-}
-
-/* Edit Weekly Hours modal layout */
-
-.edit-modal {
-  padding: 24px 30px;
-}
-
-/* 2 columns: Day | controls */
-.edit-row {
-  display: grid;
-  grid-template-columns: 110px 1fr;
-  align-items: center;
-  column-gap: 18px;
-  margin-bottom: 10px;
-}
-
-/* Day label column */
-.edit-day-label {
-  font-weight: 500;
-  color: #4B5945;
-}
-
-/* Right side: time inputs + checkbox in a tight grid */
-.edit-times {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-}
-
-/* The dash between the times */
-.edit-dash {
-  color: #555;
-}
-
-/* Time inputs */
-.edit-times input[type="time"] {
-  width: 100%;
-  padding: 4px 6px;
-  border-radius: 6px;
-  border: 1px solid #c1d3bc;
-  font-size: 0.9rem;
-}
-
-.edit-time-range {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
-}
-
-.edit-times input[type="time"]:disabled {
-  background-color: #f3f3f3;
-  color: #a0a0a0;
-}
-
-/* "Available" checkbox + label */
-.edit-available-label {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 0.85rem;
-  color: #4B5945;
-  white-space: nowrap;
-}
-
-/* Optional: faint row separator to help the eye */
-.edit-row + .edit-row {
-  border-top: 1px solid #f0f0f0;
-  padding-top: 6px;
 }
 
 /* ===========================
@@ -3201,6 +3154,11 @@ label {
   background-color: #66785F;
 }
 
+.error-text {
+  color: #e74c3c;
+  font-size: 0.85rem;
+  margin-top: 4px;
+}
 /* Edit Appointment Modal */
 
 .edit-modal-overlay {
@@ -3447,289 +3405,399 @@ label {
   color: #a12b25;
 }
 
-.calendar-page {
-  background-color: #f8f7f5;
+/* Salon AboutTab */
+
+.about-container {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}
+
+.about-textbox {
+  background-color: #f3f3f3;
+  border-radius: 6px;
+  padding: 20px 25px;
+  max-width: 800px;
+  width: 100%;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.about-textbox h2 {
+  margin-bottom: 12px;
+  color: #4b5945;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.about-textbox p {
+  color: #333;
+  line-height: 1.6;
+  font-size: 1rem;
+  white-space: pre-line; 
+}
+
+.payments-page {
+  background-color: #f9f8f6;
   min-height: 100vh;
-  padding: 24px 40px;
+  padding: 30px 50px;
   font-family: "Inter", sans-serif;
   color: #333;
 }
 
-.calendar-title {
-  text-align: center;
-  font-size: 1.8rem;
-  margin-bottom: 16px;
-  color: #4b5945;
-}
-
-/* Main top tabs */
-.calendar-main-tabs {
+/* ---------- Tabs ---------- */
+.payments-tabs {
   display: flex;
-  justify-content: center;
-  gap: 8px;
-  margin-bottom: 20px;
+  gap: 10px;
+  margin-bottom: 25px;
 }
 
-.calendar-main-tab {
-  padding: 8px 20px;
-  border-radius: 6px;
-  border: 1px solid #d1ddc6;
-  background-color: #dfead1;
-  color: #4b5945;
+.payments-tab {
+  border: none;
+  background: #e5edd8;
+  padding: 8px 16px;
+  border-radius: 8px;
   font-weight: 500;
+  color: #4b5945;
   cursor: pointer;
+  transition: 0.2s;
 }
 
-.calendar-main-tab--active {
-  background-color: #788a6c;
-  color: #fff;
+.payments-tab--active {
+  background: #4b5945;
+  color: white;
 }
 
-/* View toggle + filters */
-.calendar-view-row {
+.payments-tab:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ---------- Summary cards ---------- */
+.payments-summary-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.payments-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 18px 22px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.payments-card-label {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.payments-card-value {
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin: 6px 0;
+  color: #33422c;
+}
+
+.payments-card-sub {
+  font-size: 0.8rem;
+  color: #4b5945;
+}
+
+/* ---------- Filters Section ---------- */
+.payments-filters-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 18px 22px;
+  margin-bottom: 25px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.payments-filters-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.payments-filters-title {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.payments-filters-sub {
+  font-size: 0.85rem;
+  color: #777;
+}
+
+.payments-export-btn {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 16px;
-}
-
-.calendar-view-buttons {
-  display: flex;
   gap: 6px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #4b5945;
+  background: #f3f7ef;
+  color: #4b5945;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: 0.2s;
 }
 
-.calendar-view-btn {
-  padding: 6px 12px;
-  border-radius: 6px;
-  border: 1px solid #dcdcdc;
+.payments-export-btn:hover {
+  background: #e4ecdc;
+}
+
+/* ---------- Filter inputs ---------- */
+.payments-filters-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 20px;
+  align-items: flex-end;
+}
+
+.payments-filter {
+  display: flex;
+  flex-direction: column;
+}
+
+.payments-input-wrapper {
+  display: flex;
+  align-items: center;
   background: #f5f5f5;
+  border-radius: 6px;
+  padding: 6px 10px;
+}
+
+.payments-input {
+  border: none;
+  outline: none;
+  background: transparent;
+  flex: 1;
+  font-size: 0.9rem;
+}
+
+.payments-input-icon {
+  margin-right: 6px;
+  color: #777;
+}
+
+.payments-select,
+.payments-date-btn {
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fdfdfd;
+  padding: 6px 10px;
   font-size: 0.9rem;
   cursor: pointer;
 }
 
-.calendar-view-btn--active {
-  background-color: #788a6c;
-  color: #fff;
-  border-color: #788a6c;
+.payments-filter-label {
+  font-size: 0.8rem;
+  color: #666;
+  margin-bottom: 4px;
 }
 
-.calendar-employee-filter select {
-  padding: 4px 8px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
+.payments-date-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #555;
 }
 
-.calendar-actions {
+.payments-filters-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16px;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.payments-sort-buttons {
   display: flex;
   gap: 8px;
 }
 
-.calendar-action-btn {
-  padding: 6px 12px;
+.payments-sort-btn {
+  border: 1px solid #ccc;
+  background: #f8f8f8;
+  padding: 4px 10px;
   border-radius: 6px;
-  border: none;
-  background-color: #4b5945;
-  color: #fff;
-  font-size: 0.9rem;
   cursor: pointer;
-}
-
-.calendar-action-btn--secondary {
-  background-color: #e0e0e0;
+  font-size: 0.8rem;
   color: #444;
 }
 
-/* Main calendar + sidebar */
-.calendar-main {
-  display: grid;
-  grid-template-columns: 3fr 1fr;
-  gap: 16px;
+.payments-sort-btn--active {
+  background: #4b5945;
+  color: white;
+  border-color: #4b5945;
 }
 
-/* Calendar grid */
-.calendar-grid {
-  background-color: #fff;
-  border-radius: 10px;
-  border: 1px solid #d6d6d6;
-  padding: 12px;
-}
-
-.calendar-grid-header {
-  display: grid;
-  grid-template-columns: 60px repeat(5, 1fr);
-  font-weight: 600;
-  font-size: 0.9rem;
-  margin-bottom: 8px;
-}
-
-.calendar-time-header {
-  /* empty top-left cell */
-}
-
-.calendar-day-header {
-  text-align: center;
-}
-
-/* Body */
-.calendar-grid-body {
-  display: grid;
-  grid-template-columns: 60px 1fr;
-}
-
-/* Time column */
-.calendar-time-column {
+/* ---------- Transactions list ---------- */
+.payments-list {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  gap: 14px;
+}
+
+.payment-row {
+  background: #fff;
+  border-radius: 10px;
+  padding: 14px 18px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.payment-row-main {
+  display: grid;
+  grid-template-columns: 140px 180px 1fr 140px 140px;
+  gap: 10px;
+  align-items: start;
+}
+
+.payment-date {
+  font-weight: 600;
+  color: #333;
+}
+
+.payment-time {
   font-size: 0.8rem;
   color: #777;
-  padding-top: 8px;
-  padding-bottom: 8px;
 }
 
-.calendar-time-slot {
-  height: 40px;
+.payment-name {
+  font-weight: 600;
 }
 
-/* Day columns */
-.calendar-day-columns {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 0;
-  position: relative;
+.payment-email {
+  font-size: 0.8rem;
+  color: #777;
 }
 
-.calendar-day-column {
-  position: relative;
-  border-left: 1px solid #eee;
+.payment-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
 }
 
-.calendar-day-column:last-child {
-  border-right: 1px solid #eee;
-}
-
-.calendar-hour-row {
-  height: 40px;
-  border-top: 1px solid #f0f0f0;
-}
-
-/* Appointments */
-.calendar-appointment {
-  position: absolute;
-  left: 4px;
-  right: 4px;
-  border-radius: 4px;
-  padding: 4px 6px;
+.payment-tag {
+  background: #e5edd8;
+  color: #4b5945;
   font-size: 0.75rem;
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+
+.payment-stylist {
+  font-size: 0.8rem;
+  color: #777;
+  margin-top: 4px;
+}
+
+.payment-amount {
   font-weight: 600;
-  color: #222;
-  box-sizing: border-box;
+  color: #333;
 }
 
-.calendar-appointment-name {
-  margin-bottom: 2px;
+.payment-method {
+  font-size: 0.8rem;
+  color: #777;
 }
 
-.calendar-appointment-service {
-  font-size: 0.7rem;
-  font-weight: 400;
+.payment-txn-id {
+  font-size: 0.8rem;
+  color: #999;
+  margin-top: 4px;
 }
 
-/* Appointment colors */
-.appt-red {
-  background-color: #f6c1c1;
+.payment-refund-row {
+  background: #f7f7f7;
+  margin-top: 8px;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 0.85rem;
+  color: #555;
 }
 
-.appt-gray {
-  background-color: #d8d8d8;
-}
-
-.appt-blue {
-  background-color: #c7cff9;
-}
-
-/* Employee availability */
-.calendar-availability {
-  background-color: #fff;
-  border-radius: 10px;
-  border: 1px solid #d6d6d6;
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.availability-header {
+.payment-refund-label {
   font-weight: 600;
-  margin-bottom: 10px;
+  margin-right: 4px;
 }
 
-.availability-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+/* ---------- Empty state ---------- */
+.payments-empty-state {
+  text-align: center;
+  color: #777;
+  margin: 40px 0;
 }
 
-.availability-item {
+/* UserProfile Dropdown on LandingPage */
+
+/* UserProfile Dropdown on LandingPage */
+.userprof-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+/* Top pill (name + icon) – matches sign-in button / header style */
+.userprof-pill {
   display: flex;
   align-items: center;
   gap: 8px;
-}
-
-.availability-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 999px;
-}
-
-/* Dot colors */
-.emp-dot-blue {
-  background-color: #5a78ff;
-}
-
-.emp-dot-green {
-  background-color: #4d7a4d;
-}
-
-.emp-dot-red {
-  background-color: #c85050;
-}
-
-.availability-name {
-  font-size: 0.9rem;
-}
-
-.availability-add-btn {
-  margin-top: 12px;
-  padding: 6px 10px;
-  border-radius: 6px;
-  border: none;
-  background-color: #e0e0e0;
-  font-size: 0.85rem;
-  cursor: pointer;
-}
-
-/* Bottom stats */
-.calendar-stats-row {
-  margin-top: 24px;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0;
-}
-
-.calendar-stat-card {
-  background-color: #fff;
-  border: 1px solid #ececec;
-  padding: 12px 16px;
-}
-
-.calendar-stat-label {
-  font-size: 0.85rem;
-  color: #666;
-  margin-bottom: 6px;
-}
-
-.calendar-stat-value {
-  font-size: 1.4rem;
   font-weight: 600;
+  cursor: pointer;
+  font-size: 0.95rem;
+  padding: 8px 18px;
+  border-radius: 9999px;
+  border: 2px solid #4B5945;
+  background-color: transparent;
+  color: #4B5945;
+  transition: background-color 0.2s ease;
+  line-height: 1;
+}
+
+.userprof-pill:hover {
+  background-color: rgba(75, 89, 69, 0.1); /* same vibe as .sign-in-button:hover */
+}
+
+/* Make sure the icon fits nicely */
+.userprof-pill svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Dropdown container – matches Jade greens & cards */
+.userprof-dropdown {
+  position: absolute;
+  right: 0;
+  margin-top: 8px;
+  min-width: 160px;
+  background-color: #D9E9CF;
+  border-radius: 10px;
+  border: 1px solid #4B5945;
+  box-shadow: 0 4px 12px rgba(75, 89, 69, 0.25);
+  padding: 6px 0;
+  z-index: 1000;
+}
+
+/* Dropdown button – styled like your other CTAs */
+.userprof-dropdown button {
+  width: 100%;
+  text-align: left;
+  padding: 8px 14px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #2F3A2B;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.2s ease;
+}
+
+.userprof-dropdown button:hover {
+  background-color: #B6CEB4;
 }

@@ -4,6 +4,8 @@ import { Star } from 'lucide-react';
 import SalonShopTab from '../components/salon_details/SalonShopTab';
 import GalleryTab from '../components/salon_details/GalleryTab';
 import ReviewsTab from '../components/salon_details/ReviewsTab';
+import AboutTab from '../components/salon_details/AboutTab';
+
 function SalonDetailsPage() {
     const location = useLocation();
     const navigate = useNavigate();
@@ -91,18 +93,19 @@ function SalonDetailsPage() {
             <div className="salon-details-tab-content">
                 {workingTab =="About" && (
                     <div>
-                        <h2>About Page for: {salonDetails.title}</h2>
+                        {/* <h2>About Page for: {salonDetails.title}</h2> */}
+                        <AboutTab salon={salonDetails} />
                     </div>
                 )}
                 {workingTab =="Gallery" && (
                     <div>
-                        <h2>Gallery Page for: {salonDetails.title}</h2>
+                        {/* <h2>Gallery Page for: {salonDetails.title}</h2> */}
                         <GalleryTab salon={salonDetails} />
                     </div>
                 )}
                 {workingTab =="Reviews" && (
                     <div>
-                        <h2>Reviews Page for: {salonDetails.title}</h2>
+                        {/* <h2>Reviews Page for: {salonDetails.title}</h2> */}
                         <ReviewsTab salon={salonDetails} />
                     </div>
                 )}
