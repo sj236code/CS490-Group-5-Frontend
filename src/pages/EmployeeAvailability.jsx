@@ -214,15 +214,33 @@ function EmployeeAvailability() {
 
   const handleEditAvailableToggle = (day, checked) => {
     setEditAvailability((prev) =>
-      prev.map((d) =>
-        d.day === day
-          ? {
-              ...d,
-              isAvailable: checked,
-              ...(checked ? {} : { start: null, end: null, hours: 0 }),
-            }
-          : d
-      )
+      prev.map((d) =>{
+        if(d.day !== day) return d;
+
+        if(!checked){
+          //avail -> not avail
+          return{
+            ...d,
+            isAvailable:false,
+            start: null,
+            end: null,
+            hours: 0,
+          };
+        }
+
+        //notavail -> avail
+        // if user enters times, use that, else, use defauly salonhours
+        const defaultStart = d.start || salonHours.open || "09:00";
+        const defaultEnd = d.end || salonHours.close || "17:00";
+
+        return {
+          ...d,
+          isAvailable: true,
+          start: defaultStart,
+          end: defaultEnd,
+          hours: computeHours(defaultStart, defaultEnd),
+        };
+      })
     );
   };
 
