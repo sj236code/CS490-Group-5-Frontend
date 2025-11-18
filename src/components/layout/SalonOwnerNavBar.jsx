@@ -2,12 +2,12 @@ import { ChevronLeft, CircleUserRound, ShieldCheck, LayoutDashboard } from 'luci
 import { useNavigate} from 'react-router-dom';
 
 /* NavBar component for an salon owner user */
-function SalonOwnerNavBar({onClose}){
+function SalonOwnerNavBar({onClose, onLogout, userId, user, salonId}){
 
     const navigate = useNavigate();
 
     const navTo = (path) => {
-        navigate(path);
+        navigate(path, {state: {userId, user, salonId: effectiveSalonId}});
         onClose();
     }
 
@@ -15,12 +15,38 @@ function SalonOwnerNavBar({onClose}){
         navigate('/salonDashboard', {
             state: {
                 salon: {
-                    id: 1
-                }
+                    id: salonId
+                },
+                userId, user,
             }
         });
         onClose();
     }
+
+    const navToSettings = () => {
+        navigate('/salonSettings', {
+        state: {
+            salonId: effectiveSalonId,
+            user,
+        },
+        });
+        onClose();
+    };
+
+    const displayName = user?.first_name ? `${user.first_name} ${user.last_name ?? ''}`.trim() : 'SalonOwner';
+
+    const employeeNumber = user?.profile_id ?? userId ?? '-';
+
+    const effectiveSalonId = salonId ?? user?.profile_id ?? userId ?? null;
+
+    const handleLogout = () => {
+        console.log('Logout button clicked');
+        if(onLogout) {
+            onLogout();
+            console.log('Logout succeeded');
+        }
+        onClose();
+    };
 
     return(
         <div className="nav-bar">
@@ -32,8 +58,8 @@ function SalonOwnerNavBar({onClose}){
             <div className="nb-profile-section">
                 <CircleUserRound className="nb-profile-icon" />
                 <div className="nb-profile-info">
-                    <p className="nb-user-name">John Smith</p>
-                    <p className="nb-user-tag">[Salon Name] Owner</p>
+                    <p className="nb-user-name">{displayName}</p>
+                    <p className="nb-user-tag">Salon Owner #{employeeNumber}</p>
                     <div className="nb-verified">
                         <ShieldCheck className="nb-verified-icon" />
                         <span>Verified</span>
@@ -46,14 +72,14 @@ function SalonOwnerNavBar({onClose}){
             {/* MyJade Account */}
             <div className="nb-section">
                 <div className="nb-section-title">MyJade Account</div>
-                <button className="nb-text-link" onClick={() => navTo('/signin')}>Log Out</button>
+                <button className="nb-text-link" onClick={handleLogout}>Log Out</button>
             </div>
 
             {/* Salon Owner */}
             <div className="nb-section">
                 <div className="nb-section-title">Salon Owner</div>
                 <button className="nb-text-link" onClick={navToDashboard}>Dashboard</button>
-                <button className="nb-text-link" onClick={() => navTo('/salonSettings')}>Settings</button>
+                <button className="nb-text-link" onClick={navToSettings}>Settings</button>
                 <button className="nb-text-link" onClick={() => navTo('/salonPayments')}>Payments</button>
                 <button className="nb-text-link" onClick={() => navTo('/owner/appointments')}>Appointments</button>
             </div>

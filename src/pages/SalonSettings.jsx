@@ -1,20 +1,22 @@
 import { useEffect, useState } from "react";
 import { Pencil } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
-function SalonSettings() {
+function SalonSettings({ salon }) {
   const navigate = useNavigate();
-  const salonId = 1;
+  const location = useLocation();
+
+  const { salonId } = location.state || {};
+
+  // const salonId = 1;
 
   // Salon data
   const [salonDetails, setSalonDetails] = useState({
-    name: "",
-    type: "",
-    address: "",
-    city: "",
-    phone: "",
-    email: "",  // not from this endpoint yet, placeholder
-    about: "",
+    name: "Jade Boutique",
+    type: "Hair Salon & Spa",
+    address: "123 Main Street, New York, NY 10001",
+    phone: "(555) 123-4567",
+    email: "contact@jadeboutique.com",
   });
 
   // Which field is being edited
@@ -23,10 +25,10 @@ function SalonSettings() {
 
   // Load salon data from endpoint
   useEffect(() => {
-    if (salonId) {
+    if (salon?.id) {
       loadSalonDetails();
     }
-  }, [salonId]);
+  }, [salon?.id]);
 
   const loadSalonDetails = async () => {
     try {
@@ -34,23 +36,16 @@ function SalonSettings() {
         `${import.meta.env.VITE_API_URL}/api/salons/details/${salonId}`
       );
       const data = await res.json();
+      console.log("SalonDetails: ", data);
 
-      if (!res.ok) {
-        console.error("Unable to load salon details:", data);
-        return;
-      }
-
-      // Map backend fields to the shape we use in this component
-      setSalonDetails({
-        name: data.name || "",
-        // types is an array from the endpoint -> join as a simple string
-        type: Array.isArray(data.types) ? data.types.join(", ") : "",
-        address: data.address || "",
-        city: data.city || "",
-        phone: data.phone || "",
-        email: "", // your GET endpoint doesn't return email yet
-        about: data.about || "",
-      });
+      const mock = {
+        name: "Jade Boutique",
+        type: "Hair Salon & Spa",
+        address: "123 Main Street, New York, NY 10001",
+        phone: "(555) 123-4567",
+        email: "contact@jadeboutique.com",
+      };
+      setSalonDetails(mock);
     } catch (err) {
       console.error("Unable to load salon details:", err);
     }
@@ -59,7 +54,7 @@ function SalonSettings() {
   // Start editing
   const handleEdit = (field) => {
     setEditingField(field);
-    setEditingValue(salonDetails[field] || "");
+    setEditingValue(salonDetails[field]);
   };
 
   // Confirm edit
@@ -79,16 +74,16 @@ function SalonSettings() {
     setEditingValue("");
   };
 
-  // Save to backend (when you have PUT endpoint)
+  // Save to backend
   const handleSaveChanges = async () => {
     try {
-      console.log("Saved changes (placeholder):", salonDetails);
-      // Later:
+      // TODO: replace with actual API call
       // await fetch(`${import.meta.env.VITE_API_URL}/api/salons/${salon.id}/details`, {
       //   method: "PUT",
       //   headers: { "Content-Type": "application/json" },
       //   body: JSON.stringify(salonDetails),
       // });
+      console.log("Saved changes:", salonDetails);
     } catch (err) {
       console.error("Error saving salon details:", err);
     }
@@ -132,7 +127,7 @@ function SalonSettings() {
           )}
         </div>
 
-        {/* Salon Type (from types[] in endpoint) */}
+        {/* Salon Type */}
         <div className="settings-field-block">
           <div className="settings-label-row">
             <span className="settings-label">Salon Type</span>
@@ -198,39 +193,6 @@ function SalonSettings() {
           )}
         </div>
 
-        {/* City */}
-        <div className="settings-field-block">
-          <div className="settings-label-row">
-            <span className="settings-label">City</span>
-            <button
-              className="settings-edit-btn"
-              onClick={() => handleEdit("city")}
-            >
-              <Pencil size={14} />
-            </button>
-          </div>
-          {editingField === "city" ? (
-            <div className="settings-edit-area">
-              <input
-                className="settings-input"
-                type="text"
-                value={editingValue}
-                onChange={(e) => setEditingValue(e.target.value)}
-              />
-              <div className="settings-inline-buttons">
-                <button className="settings-confirm-btn" onClick={handleConfirm}>
-                  Confirm
-                </button>
-                <button className="settings-cancel-btn" onClick={handleCancel}>
-                  Cancel
-                </button>
-              </div>
-            </div>
-          ) : (
-            <p className="settings-value-text">{salonDetails.city}</p>
-          )}
-        </div>
-
         {/* Phone */}
         <div className="settings-field-block">
           <div className="settings-label-row">
@@ -264,7 +226,7 @@ function SalonSettings() {
           )}
         </div>
 
-        {/* Email (placeholder for now) */}
+        {/* Email */}
         <div className="settings-field-block">
           <div className="settings-label-row">
             <span className="settings-label">Email</span>
@@ -293,44 +255,7 @@ function SalonSettings() {
               </div>
             </div>
           ) : (
-            <p className="settings-value-text">
-              {salonDetails.email || "Not set"}
-            </p>
-          )}
-        </div>
-
-        {/* About */}
-        <div className="settings-field-block">
-          <div className="settings-label-row">
-            <span className="settings-label">About</span>
-            <button
-              className="settings-edit-btn"
-              onClick={() => handleEdit("about")}
-            >
-              <Pencil size={14} />
-            </button>
-          </div>
-          {editingField === "about" ? (
-            <div className="settings-edit-area">
-              <textarea
-                className="settings-input settings-textarea"
-                value={editingValue}
-                onChange={(e) => setEditingValue(e.target.value)}
-                rows={4}
-              />
-              <div className="settings-inline-buttons">
-                <button className="settings-confirm-btn" onClick={handleConfirm}>
-                  Confirm
-                </button>
-                <button className="settings-cancel-btn" onClick={handleCancel}>
-                  Cancel
-                </button>
-              </div>
-            </div>
-          ) : (
-            <p className="settings-value-text">
-              {salonDetails.about || "No about section set yet."}
-            </p>
+            <p className="settings-value-text">{salonDetails.email}</p>
           )}
         </div>
 

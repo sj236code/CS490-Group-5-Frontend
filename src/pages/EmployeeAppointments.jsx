@@ -1,10 +1,17 @@
 import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { MapPin, Calendar, User } from "lucide-react";
-import EditEmpApptModal from "../components/layout/EditEmpApptModal";
 import "../App.css";
 
 const EmployeeAppointments = () => {
-  const employeeId = 1; // TODO: replace with real logged-in employee id
+  const location = useLocation();
+  const userFromState = location.state?.user;
+  const userIdFromState = location.state?.userId;
+
+  const employeeId = userFromState?.profile_id ?? userIdFromState ?? null;
+
+  console.log("Employee id:", employeeId);
+  console.log("Location state:", location.state);
 
   const [upcomingAppointments, setUpcomingAppointments] = useState([]);
   const [previousAppointments, setPreviousAppointments] = useState([]);
@@ -48,6 +55,8 @@ const EmployeeAppointments = () => {
 
   // Load upcoming appointments
   useEffect(() => {
+    if (!employeeId) return;
+
     const fetchUpcomingAppointments = async () => {
       try {
         const url = `${import.meta.env.VITE_API_URL}/api/employeesapp/${employeeId}/appointments/upcoming`;
@@ -81,6 +90,8 @@ const EmployeeAppointments = () => {
 
   // Load previous appointments
   useEffect(() => {
+    if (!employeeId) return;
+
     const fetchPreviousAppointments = async () => {
       try {
         const url = `${import.meta.env.VITE_API_URL}/api/employeesapp/${employeeId}/appointments/previous`;
@@ -119,27 +130,15 @@ const EmployeeAppointments = () => {
     setShowEditModal(true);
   };
 
-  const handleEditSaved = (updatedFromBackend) => {
-    const updatedMapped = mapAppointment(updatedFromBackend);
-
-    setUpcomingAppointments((prev) =>
-      prev.map((appt) =>
-        appt.id === updatedMapped.id ? updatedMapped : appt
-      )
-    );
-
-    setPreviousAppointments((prev) =>
-      prev.map((appt) =>
-        appt.id === updatedMapped.id ? updatedMapped : appt
-      )
-    );
-
+  const handleSave = () => {
     setShowEditModal(false);
     setShowSuccess(true);
     setTimeout(() => setShowSuccess(false), 2000);
   };
 
   const handleCancelClick = async (apptId) => {
+    if (!employeeId) return;
+
     try {
       const url = `${import.meta.env.VITE_API_URL}/api/employeesapp/${employeeId}/appointments/${apptId}/cancel`;
       const res = await fetch(url, {
@@ -172,32 +171,12 @@ const EmployeeAppointments = () => {
   };
 
   const handleSendMessageClick = async (appt) => {
+    if (!employeeId) return;
+
     const body = window.prompt(
       `Message to ${appt.customerName}:`,
       ""
     );
-    if (!body) return;
-
-    try {
-      const url = `${import.meta.env.VITE_API_URL}/api/employeesapp/${employeeId}/appointments/${appt.id}/message`;
-      const res = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ body }),
-      });
-
-      if (!res.ok) {
-        console.error("Failed to send message to customer");
-        return;
-      }
-
-      const data = await res.json();
-      console.log("Message sent to customer:", data);
-    } catch (err) {
-      console.error("Error sending message to customer:", err);
-    }
   };
 
   return (
@@ -232,12 +211,7 @@ const EmployeeAppointments = () => {
             </div>
 
             <div className="appt-buttons">
-              <button
-                className="btn-send"
-                onClick={() => handleSendMessageClick(appt)}
-              >
-                Send Message
-              </button>
+              <button className="btn-send">Send Message</button>
               <button
                 className="btn-edit"
                 onClick={() => handleEditClick(appt)}
@@ -280,12 +254,7 @@ const EmployeeAppointments = () => {
             </div>
 
             <div className="appt-buttons">
-              <button
-                className="btn-send"
-                onClick={() => handleSendMessageClick(appt)}
-              >
-                Send Message
-              </button>
+              <button className="btn-send">Send Message</button>
               <button
                 className="btn-edit"
                 onClick={() => handleEditClick(appt)}
@@ -297,15 +266,54 @@ const EmployeeAppointments = () => {
         ))}
       </section>
 
-      {/* Edit Appointment Modal */}
+      {/* Edit Modal */}
       {showEditModal && selectedAppt && (
-        <EditEmpApptModal
-          employeeId={employeeId}
-          appointment={selectedAppt}
-          onClose={() => setShowEditModal(false)}
-          onSaved={handleEditSaved}
-          onDelete={handleDeleteFromModal}
-        />
+        <div className="modal-overlay">
+          <div className="modal-box">
+            <h3 className="modal-title">Edit Appointment</h3>
+
+            <label>Service</label>
+            <select
+              className="service-select"
+              defaultValue={selectedAppt.serviceName}
+            >
+              <option>Classic Fade</option>
+              <option>Beard Trim</option>
+              <option>Hair Color</option>
+            </select>
+
+            <label>Select Experts</label>
+            <div className="expert-container">
+              {[1, 2, 3, 4].map((n) => (
+                <div key={n} className="expert-card">
+                  <img
+                    src={`https://i.pravatar.cc/100?img=${n}`}
+                    alt="Expert"
+                  />
+                  <p>Name Last Name</p>
+                </div>
+              ))}
+            </div>
+
+            <label>Date & Time</label>
+            <div className="calendar-container">
+              {["7:30am", "8:00am", "8:30am", "9:00am", "9:30am", "10:00am"].map(
+                (time) => (
+                  <button key={time} className="time-btn">
+                    {time}
+                  </button>
+                )
+              )}
+            </div>
+
+            <div className="modal-buttons">
+              <button className="btn-delete">Delete Appt</button>
+              <button className="btn-save" onClick={handleSave}>
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Success Popup */}
