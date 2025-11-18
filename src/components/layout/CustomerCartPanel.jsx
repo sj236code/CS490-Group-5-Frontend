@@ -146,102 +146,105 @@ function CustomerCartPanel({ onClose, cartItems }) {
     };
 
     return (
-        <div className="cart-panel">
-            <button className="cart-panel-close-button" onClick={onClose}>
-                <ChevronRight strokeWidth={3} />
-            </button>
+        <div className="cart-panel-overlay" onClick={onClose}>
+            <div className="cart-panel" onClick={(e) => e.stopPropagation()}>
+                <button className="cart-panel-close-button" onClick={onClose}>
+                    <ChevronRight strokeWidth={3} />
+                </button>
 
-            <div className="cart-header">
-                <span className="cart-header-icon"><ShoppingCart /></span>
-                <span className="cart-title">Cart</span>
-            </div>
+                <div className="cart-header">
+                    <span className="cart-header-icon"><ShoppingCart /></span>
+                    <span className="cart-title">Cart</span>
+                </div>
 
-            {/* Services */}
-            <div className="cart-section">
-                <div className="cart-section-title">Services</div>
-                {services.length === 0 && <p className="cart-empty-text">No services in cart.</p>}
+                {/* Services */}
+                <div className="cart-section">
+                    <div className="cart-section-title">Services</div>
+                    {services.length === 0 && <p className="cart-empty-text">No services in cart.</p>}
 
-                {services.map((item) => {
-                    const price = num(item.service_price);
-                    return (
-                        <div className="cart-item" key={`svc-${item.item_id}`}>
-                            <div className="cart-item-left">
-                                <div className="cart-item-icon"><Scissors /></div>
-                                <div className="cart-item-text">
-                                    <div className="cart-item-title">{item.service_name || 'Service'}</div>
-                                    <div className="cart-item-subtitle">{item.service_salon_name}</div>
-                                    {item.appt_date && (
-                                        <div className="cart-item-note">
-                                            {item.appt_date}{item.appt_time ? ` • ${item.appt_time}` : ''}
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-
-                            <div className="cart-item-right">
-                                <div className="cart-item-price">{money(price)}</div>
-                                <button className="cart-icon-button" onClick={() => handleDeleteItem(item)}>
-                                    <Trash2 size={14} />
-                                </button>
-                            </div>
-                        </div>
-                    );
-                })}
-            </div>
-
-            {/* Products */}
-            <div className="cart-section">
-                <div className="cart-section-title">Products</div>
-
-                {products.length === 0 && <p className="cart-empty-text">No products in cart.</p>}
-
-                {products.map((item) => {
-                    const unit = num(item.product_price);
-                    const qty = num(item.quantity) || 1;
-                    const line = unit * qty;
-
-                    return (
-                        <div className="cart-item" key={`prd-${item.item_id}`}>
-                            <div className="cart-item-left">
-                                <div className="cart-item-icon"><Milk /></div>
-                                <div className="cart-item-text">
-                                    <div className="cart-item-title">{item.product_name || 'Product'}</div>
-                                    <div className="qty-controls">
-                                        <button className="qty-btn" onClick={() => changeQty(item, 'down')}>−</button>
-                                        <span className="qty-count">{qty}</span>
-                                        <button className="qty-btn" onClick={() => changeQty(item, 'up')}>+</button>
+                    {services.map((item) => {
+                        const price = num(item.service_price);
+                        return (
+                            <div className="cart-item" key={`svc-${item.item_id}`}>
+                                <div className="cart-item-left">
+                                    <div className="cart-item-icon"><Scissors /></div>
+                                    <div className="cart-item-text">
+                                        <div className="cart-item-title">{item.service_name || 'Service'}</div>
+                                        <div className="cart-item-subtitle">{item.service_salon_name}</div>
+                                        {item.appt_date && (
+                                            <div className="cart-item-note">
+                                                {item.appt_date}{item.appt_time ? ` • ${item.appt_time}` : ''}
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
-                            </div>
 
-                            <div className="cart-item-right">
-                                <div className="cart-item-price">{money(line)}</div>
-                                <button className="cart-icon-button" onClick={() => handleDeleteItem(item)}>
-                                    <Trash2 size={14} />
-                                </button>
+                                <div className="cart-item-right">
+                                    <div className="cart-item-price">{money(price)}</div>
+                                    <button className="cart-icon-button" onClick={() => handleDeleteItem(item)}>
+                                        <Trash2 size={14} />
+                                    </button>
+                                </div>
                             </div>
-                        </div>
-                    );
-                })}
-            </div>
-
-            {/* Footer totals + checkout */}
-            <div className="cart-footer">
-                <div className="cart-row">
-                    <span>Sales Tax</span>
-                    <span>{money(salesTax)}</span>
-                </div>
-                <div className="cart-row cart-row-total">
-                    <span>Total</span>
-                    <span>{money(total)}</span>
+                        );
+                    })}
                 </div>
 
-                {/* Use the new handleCheckout here */}
-                <button className="cart-checkout-button" onClick={handleCheckout}>
-                    Checkout
-                </button>
+                {/* Products */}
+                <div className="cart-section">
+                    <div className="cart-section-title">Products</div>
+
+                    {products.length === 0 && <p className="cart-empty-text">No products in cart.</p>}
+
+                    {products.map((item) => {
+                        const unit = num(item.product_price);
+                        const qty = num(item.quantity) || 1;
+                        const line = unit * qty;
+
+                        return (
+                            <div className="cart-item" key={`prd-${item.item_id}`}>
+                                <div className="cart-item-left">
+                                    <div className="cart-item-icon"><Milk /></div>
+                                    <div className="cart-item-text">
+                                        <div className="cart-item-title">{item.product_name || 'Product'}</div>
+                                        <div className="qty-controls">
+                                            <button className="qty-btn" onClick={() => changeQty(item, 'down')}>−</button>
+                                            <span className="qty-count">{qty}</span>
+                                            <button className="qty-btn" onClick={() => changeQty(item, 'up')}>+</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="cart-item-right">
+                                    <div className="cart-item-price">{money(line)}</div>
+                                    <button className="cart-icon-button" onClick={() => handleDeleteItem(item)}>
+                                        <Trash2 size={14} />
+                                    </button>
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+
+                {/* Footer totals + checkout */}
+                <div className="cart-footer">
+                    <div className="cart-row">
+                        <span>Sales Tax</span>
+                        <span>{money(salesTax)}</span>
+                    </div>
+                    <div className="cart-row cart-row-total">
+                        <span>Total</span>
+                        <span>{money(total)}</span>
+                    </div>
+
+                    {/* Use the new handleCheckout here */}
+                    <button className="cart-checkout-button" onClick={handleCheckout}>
+                        Checkout
+                    </button>
+                </div>
             </div>
         </div>
+        
     );
 }
 
