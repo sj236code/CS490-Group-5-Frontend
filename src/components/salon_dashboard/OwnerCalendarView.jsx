@@ -3,7 +3,6 @@ import { useMemo } from "react";
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import { format, parse, startOfWeek, getDay } from "date-fns";
 import enUS from "date-fns/locale/en-US";
-
 import "react-big-calendar/lib/css/react-big-calendar.css";
 
 const locales = {
@@ -29,11 +28,11 @@ const EVENT_COLORS = [
 function OwnerCalendarView({events, salonHours, view, onViewChange, date, onDateChange,}) {
     // figure out global min/max hours across all open days
     const [minTime, maxTime] = useMemo(() => {
-        const baseDate = date || new Date();
+        const base = date || new Date();
 
-        if (!salonHours || salonHours.length === 0) {
-            const min = new Date(baseDate);
-            const max = new Date(baseDate);
+        if (!salonHours?.length) {
+            const min = new Date(base);
+            const max = new Date(base);
             min.setHours(8, 0, 0, 0);
             max.setHours(18, 0, 0, 0);
             return [min, max];
@@ -44,16 +43,16 @@ function OwnerCalendarView({events, salonHours, view, onViewChange, date, onDate
 
         salonHours.forEach((h) => {
             if (h.is_open && h.open_time && h.close_time) {
-                const [openHour] = h.open_time.split(":");
-                const [closeHour] = h.close_time.split(":");
-                starts.push(parseInt(openHour, 10));
-                ends.push(parseInt(closeHour, 10));
+                const [start] = h.open_time.split(":").map(Number);
+                const [end] = h.close_time.split(":").map(Number);
+                starts.push(start);
+                ends.push(end);
             }
         });
 
         if (!starts.length) {
-            const min = new Date(baseDate);
-            const max = new Date(baseDate);
+            const min = new Date(base);
+            const max = new Date(base);
             min.setHours(8, 0, 0, 0);
             max.setHours(18, 0, 0, 0);
             return [min, max];
@@ -62,8 +61,8 @@ function OwnerCalendarView({events, salonHours, view, onViewChange, date, onDate
         const earliest = Math.max(0, Math.min(...starts) - 1);
         const latest = Math.min(23, Math.max(...ends) + 1);
 
-        const min = new Date(baseDate);
-        const max = new Date(baseDate);
+        const min = new Date(base);
+        const max = new Date(base);
         min.setHours(earliest, 0, 0, 0);
         max.setHours(latest, 0, 0, 0);
 
@@ -87,6 +86,34 @@ function OwnerCalendarView({events, salonHours, view, onViewChange, date, onDate
         };
     };
 
+    const slotPropGetter = (slotDate) => {
+        if(view === "month") return {};
+
+        const weekday = slotDate.getDay();
+        const h = salonHours?.find((s) => s.weekday === weekday);
+
+        //If salon is closed all day
+        if(!h || !h.is_open || !h.open_time || !h.close_time){
+            return { style: {backgroundColor: "#f7f7f7"}};
+        }
+
+        const [openHour, openMin] = h.open_time.split(":").map(Number);
+        const [closeHour, closeMin] = h.close_time.split(":").map(Number);
+
+        const openMinutes = openHour * 60 + (openMin || 0);
+        const closeMinutes = closeHour * 60 + (closeMin || 0);
+
+        const nowMinutes = slotDate.getHours() * 60 + slotDate.getMinutes();
+
+        const isOpen = nowMinutes >= openMinutes && nowMinutes < closeMinutes;
+
+        if(!isOpen){
+            return {style: {backgroundColor: "f7f7f7"}};
+        }
+
+        return {};
+    }
+
     return (
         <Calendar
             localizer={localizer}
@@ -103,6 +130,7 @@ function OwnerCalendarView({events, salonHours, view, onViewChange, date, onDate
             popup
             style={{ height: 560 }}
             eventPropGetter={eventPropGetter}
+            slotPropGetter={slotPropGetter}
         />
     );
 }

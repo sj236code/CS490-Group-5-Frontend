@@ -76,12 +76,12 @@ function DashboardCalendarTab({ salon }) {
           mapped.map((emp) =>
           fetch(`${base}/api/employeesapp/${emp.id}/appointments/upcoming`)
             .then(res => res.ok ? res.json() : [])
-            .then(list => list.map(a => formatAppt(a, emp)))
+            .then(list => list.map(a => mapToAppointment(a, emp)))
           )
         );
 
         const all = apptArrays.flat();
-        setAppointments(all);
+        setEvents(all);
 
         // Quick stats
         const total = all.length;
