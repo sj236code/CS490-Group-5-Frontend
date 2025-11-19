@@ -101,8 +101,8 @@ function App() {
       />
       <hr />
       <Routes>
-        {/* */}
-        <Route path="/" element={<LandingPage />} />
+        {/* Landing */}
+        <Route path="/" element={<LandingPage userType={userType}/>} />
 
         {/* Auth */}
         <Route path="/signin" element={<SignIn />} />
@@ -117,8 +117,8 @@ function App() {
         <Route path="/employee-registration-success" element={<EmployeeRegistrationSuccess />} />
         <Route path="/reset-password" element={<ResetPassword />} />
     
-        <Route path="/search" element={<SearchPage />} />
-        <Route path="/salon" element={<SalonDetailsPage />} />
+        <Route path="/search" element={<SearchPage userType={userType}/>} />
+        <Route path="/salon" element={<SalonDetailsPage userType={userType}/>} />
 
         {/* Salon Owner Nav Bar Routes */}
         <Route path="/salonDashboard" element={<SalonDashboard />} />
