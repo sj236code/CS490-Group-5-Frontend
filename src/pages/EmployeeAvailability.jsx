@@ -293,6 +293,14 @@ function EmployeeAvailability() {
         return;
       }
 
+      const closedDayError = editAvailability.find((d) => {
+        if(!d.isAvailable) return false;
+
+        const salonDay = salonHours.find((h) => h.backendWeekday === d.backendWeekday);
+
+        return !salonDay || !salonDay.isOpen || !salonDay.open || !salonDay.close;
+      });
+
       const invalidDay = editAvailability.find((d) => {
         if (!d.isAvailable || !d.start || !d.end) return false;
 
@@ -309,6 +317,11 @@ function EmployeeAvailability() {
 
         return startMin < salonOpenMin || endMin > salonCloseMin;
       });
+
+      if(closedDayError){
+        setErrorMessage(`Please select hours only on days when the salon is open. (${closedDayError.day} is closed.)`);
+        return;
+      }
 
       if (invalidDay) {
         const salonDay = salonHours.find((h) => h.backendWeekday === invalidDay.backendWeekday);
@@ -345,13 +358,13 @@ function EmployeeAvailability() {
         return;
       }
 
-      // 1) Update local schedule
+      // Update local schedule
       setWeeklyAvailability(editAvailability);
 
-      // 2) recompute hours and push new employee_type to backend
+      // recompute hours and push new employee_type to backend
       await updateEmployeeTypeBasedOnHours(editAvailability);
 
-      // 3) Close modal
+      // Close modal
       setShowEditModal(false);
     } 
     catch (err) {
