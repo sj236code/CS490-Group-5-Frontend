@@ -4,7 +4,9 @@ import { preconnect } from "react-dom";
 import { nextFriday } from "date-fns";
 import { SpadeIcon } from "lucide-react";
 
-function DashboardCalendarTab({ salon }) {
+function DashboardCalendarTab({ salon, user }) {
+
+  const salonId = salon?.id ?? user?.salon_id ?? null;
 
   // UI State
   const [view, setView] = useState("week");
@@ -26,14 +28,16 @@ function DashboardCalendarTab({ salon }) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  console.log("Salon Id: ", salonId);
+
   // Static weekdays
   const WEEKDAYS = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 
   //color indexing for employees
-  const colorForIndex = (index) => index % 5;
+  // const colorForIndex = (index) => index % 5;
 
   // TEMPORARY FOR TESTING — REPLACE WITH STATE SALONID
-  const salonId = 1;
+  // const salonId = 1;
 
   // Fetch employees, appointments, hours
   useEffect(() => {
@@ -64,6 +68,8 @@ function DashboardCalendarTab({ salon }) {
 
         setEmployees(mapped);
 
+        console.log("Mapped emp, appt, hr details: ", mapped);
+
         // Fetch salon hours
         const hoursRes = await fetch(`${base}/api/appointments/${salonId}/hours`);
         if (hoursRes.ok) {
@@ -84,6 +90,8 @@ function DashboardCalendarTab({ salon }) {
 
         const all = apptArrays.flat();
         setEvents(all);
+
+        console.log("Employee Appts: ", all);
 
         // Quick stats
         const total = all.length;
@@ -109,7 +117,7 @@ function DashboardCalendarTab({ salon }) {
 
     loadCalendar();
 
-  }, [salon?.id]);
+  }, [salonId]);
 
   const mapToAppointment = (a, emp) => {
     const start = new Date(a.start_at);
