@@ -9,7 +9,7 @@ function SalonDashboard() {
     const location = useLocation();
     const navigate = useNavigate();
     const [searchParams] = useSearchParams(); 
-    const { salon } = location.state || {};
+    const { salon, user } = location.state || {};
 
     const [workingTab, setWorkingTab] = useState("Manage");
     const [salonDetails, setSalonDetails] = useState(null);
@@ -89,7 +89,7 @@ function SalonDashboard() {
 
             <div className="salon-details-tab-content">
                 {workingTab === "Metrics" && <h2>Metrics Page for: {salonDetails.name}</h2>}
-                {workingTab === "Calendar" && <DashboardCalendarTab salon={salonDetails} />}
+                {workingTab === "Calendar" && <DashboardCalendarTab salon={salonDetails} user={user}/>}
                 {workingTab === "Loyalty" && <DashboardLoyaltyTab salon={salonDetails} />}
                 {workingTab === "Manage" && <DashboardManageTab salon={salonDetails} />}
             </div>
