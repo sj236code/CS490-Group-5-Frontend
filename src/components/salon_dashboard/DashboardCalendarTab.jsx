@@ -117,13 +117,14 @@ function DashboardCalendarTab({ salon }) {
 
     return{
       id: a.appointment_id,
-      title: `${a.customer_name} — ${a.service_name}`,
+      title: `${a.service_name}`,
       start,
       end,
       resource: {
         employeeId: emp.id,
         employeeName: emp.name,
         colorIndex: emp.colorIndex,
+        customerName: a.customer_name,
         status: a.status,
       },
     };

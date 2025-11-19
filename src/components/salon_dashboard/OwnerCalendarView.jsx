@@ -25,6 +25,12 @@ export const EVENT_COLORS = [
     "#b3e5fc",
 ];
 
+const CALENDAR_FORMATS = {
+    eventTimeRangeFormat: () => "",
+    eventTimeRangeStartFormat: () => "",
+    eventTimeRangeEndFormat: () => "",
+};
+
 function OwnerCalendarView({events, salonHours, view, onViewChange, date, onDateChange,}) {
     // figure out global min/max hours across all open days
     const [minTime, maxTime] = useMemo(() => {
@@ -70,8 +76,8 @@ function OwnerCalendarView({events, salonHours, view, onViewChange, date, onDate
     }, [salonHours, date]);
 
     // color appointments per employee
-    const eventPropGetter = (events) => {
-        const colorIndex = events?.resource?.colorIndex ?? 0;
+    const eventPropGetter = (event) => {
+        const colorIndex = event?.resource?.colorIndex ?? 0;
         const bg = EVENT_COLORS[colorIndex % EVENT_COLORS.length];
 
         return {
@@ -114,6 +120,20 @@ function OwnerCalendarView({events, salonHours, view, onViewChange, date, onDate
         return {};
     }
 
+    // Override calendar to show name & appt type in calendar
+    function CalendarEvent({ event }) {
+        return (
+            <div>
+                <div style={{ fontWeight: 600 }}>
+                    {event.resource?.customerName}
+                </div>
+                <div style={{ fontSize: "0.7rem" }}>
+                    {event.title}
+                </div>
+            </div>
+        );
+    }
+
     return (
         <Calendar
             localizer={localizer}
@@ -131,6 +151,8 @@ function OwnerCalendarView({events, salonHours, view, onViewChange, date, onDate
             style={{ height: 560 }}
             eventPropGetter={eventPropGetter}
             slotPropGetter={slotPropGetter}
+            components={{event: CalendarEvent}}
+            formats={CALENDAR_FORMATS}
         />
     );
 }
