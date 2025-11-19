@@ -29,7 +29,9 @@ function EmployeeAvailability() {
 
   const [employmentStatus, setEmploymentStatus] = useState(null);
   const [weeklyAvailability, setWeeklyAvailability] = useState([]);
-  const [salonHours, setSalonHours] = useState({ open: "", close: "" });
+
+  //Array of hours per day
+  const [salonHours, setSalonHours] = useState([]);
 
   const [showEditModal, setShowEditModal] = useState(false);
   const [editAvailability, setEditAvailability] = useState([]);
@@ -149,44 +151,44 @@ function EmployeeAvailability() {
 
       if (!res.ok) {
         console.error("Failed to fetch salon hours");
-        setSalonHours({ open: "", close: "" });
+        setSalonHours([]);
         return;
       }
 
       const data = await res.json();
       console.log("Salon hours from backend:", data);
 
-      if (!data || data.length === 0) {
-        setSalonHours({ open: "", close: "" });
-        return;
-      }
+      const baseWeek = WEEKDAY_LABELS.map((day, idx) => ({
+        day,
+        backendWeekday: (idx + 1) % 7, // Monday->1 ... Sunday->0
+        isOpen: false,
+        open: null,
+        close: null,
+      }));
 
-      const openDays = data.filter((h) => h.is_open && h.open_time && h.close_time);
+      const filledWeek = baseWeek.map((dayObj) => {
+        const match = data.find((h) => h.weekday === dayObj.backendWeekday);
+        if (!match) return dayObj;
 
-      if (!openDays.length) {
-        setSalonHours({ open: "", close: "" });
-        return;
-      }
+        const open = match.is_open && match.open_time ? formatTimeFromIso(match.open_time) : null;
+        const close = match.is_open && match.close_time ? formatTimeFromIso(match.close_time) : null;
 
-      const earliestOpen = openDays.reduce(
-        (min, h) => (h.open_time < min ? h.open_time : min),
-        openDays[0].open_time
-      );
-      const latestClose = openDays.reduce(
-        (max, h) => (h.close_time > max ? h.close_time : max),
-        openDays[0].close_time
-      );
-
-      setSalonHours({
-        open: formatTimeFromIso(earliestOpen),
-        close: formatTimeFromIso(latestClose),
+        return {
+          ...dayObj,
+          isOpen: match.is_open && !!open && !!close,
+          open,
+          close,
+        };
       });
+
+      setSalonHours(filledWeek);
     } 
     catch (err) {
       console.error("Unable to load salon hours:", err);
-      setSalonHours({ open: "", close: "" });
+      setSalonHours([]);
     }
   };
+
 
   // Edit modal 
 
@@ -228,10 +230,12 @@ function EmployeeAvailability() {
           };
         }
 
+        const salonDay = salonHours.find((h) => h.backendWeekday === d.backendWeekday);
+
         //notavail -> avail
         // if user enters times, use that, else, use defauly salonhours
-        const defaultStart = d.start || salonHours.open || "09:00";
-        const defaultEnd = d.end || salonHours.close || "17:00";
+        const defaultStart = d.start || salonDay?.open || "09:00";
+        const defaultEnd = d.end || salonDay?.close || "17:00";
 
         return {
           ...d,
@@ -282,31 +286,33 @@ function EmployeeAvailability() {
 
   const handleConfirmEdit = async () => {
     try {
-      if (!salonHours.open || !salonHours.close) {
+      if (!salonHours.length || salonHours.every((d) => !d.isOpen)) {
         setErrorMessage(
           "Salon hours are not set yet. Please ask the salon owner to configure hours before saving your schedule."
         );
         return;
       }
 
-      const salonOpenMin = toMinutes(salonHours.open);
-      const salonCloseMin = toMinutes(salonHours.close);
-
-      // Find any day that violates salon hours
       const invalidDay = editAvailability.find((d) => {
         if (!d.isAvailable || !d.start || !d.end) return false;
 
+        const salonDay = salonHours.find((h) => h.backendWeekday === d.backendWeekday);
+
+        if (!salonDay || !salonDay.isOpen || !salonDay.open || !salonDay.close){
+          return true;
+        }
+
         const startMin = toMinutes(d.start);
         const endMin = toMinutes(d.end);
+        const salonOpenMin = toMinutes(salonDay.open);
+        const salonCloseMin = toMinutes(salonDay.close);
 
-        // start before salon opens OR end after salon closes
         return startMin < salonOpenMin || endMin > salonCloseMin;
       });
 
       if (invalidDay) {
-        setErrorMessage(
-          `Please choose hours within the salon's operating hours (${salonHours.open} – ${salonHours.close}).`
-        );
+        const salonDay = salonHours.find((h) => h.backendWeekday === invalidDay.backendWeekday);
+        setErrorMessage(`Please choose hours within the salon's operating hours (${salonDay?.open} – ${salonDay?.close}).`);
         return; 
       }
 
@@ -322,8 +328,7 @@ function EmployeeAvailability() {
 
       console.log("Saving availability payload:", schedulePayload);
 
-      const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/employees/${employeeId}/schedule`,
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/employees/${employeeId}/schedule`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -419,18 +424,28 @@ function EmployeeAvailability() {
       {/* Salon Hours */}
       <section className="salon-hours card-section">
         <p className="section-title">Salon Hours</p>
-        <p className="salon-hours-line">
-          {salonHours.open && salonHours.close ? (
-            <>
-              {salonHours.open} – {salonHours.close}
-            </>
-          ) : (
-            "Not set"
-          )}
-        </p>
         <p className="section-subtitle">
           Your working hours must be within the salon&apos;s operating hours.
         </p>
+        {salonHours.length ? (
+          <div className="day-list">
+            {salonHours.map((day) => (
+              <div key={day.day} className={`day-row ${day.isOpen ? "" : "unavailable"}`}>
+                <span className="day-label"> {day.day}</span>
+                {day.isOpen ? (
+                  <span className="time-slot">
+                    <Clock size={14} className="icon-inline" />
+                    {day.open} - {day.close}
+                  </span>
+                ):(
+                  <span className="not-available">Closed</span>
+                )}
+              </ div>
+            ))}
+          </div>
+        ) : (
+          <p className="salon-hours-line">Not set</p>
+        )}
       </section>
 
       {/* Edit Modal */}
@@ -440,7 +455,12 @@ function EmployeeAvailability() {
             <h3 className="modal-title">Edit Weekly Hours</h3>
 
             <div className="edit-list">
-              {editAvailability.map((dayData) => (
+            {editAvailability.map((dayData) => {
+              const salonDay = salonHours.find((h) => h.backendWeekday === dayData.backendWeekday);
+              const defaultStart = salonDay?.open || "09:00";
+              const defaultEnd = salonDay?.close || "17:00";
+
+              return (
                 <div key={dayData.day} className="edit-row">
                   <span className="edit-day-label">{dayData.day}</span>
 
@@ -448,14 +468,14 @@ function EmployeeAvailability() {
                     <div className="edit-time-range">
                       <input
                         type="time"
-                        value={dayData.start || salonHours.open || "09:00"}
+                        value={dayData.start || defaultStart}
                         onChange={(e) => handleEditTimeChange(dayData.day, "start", e.target.value)}
                         disabled={!dayData.isAvailable}
                       />
                       <span className="edit-dash">-</span>
                       <input
                         type="time"
-                        value={dayData.end || salonHours.close || "17:00"}
+                        value={dayData.end || defaultEnd}
                         onChange={(e) =>handleEditTimeChange(dayData.day, "end", e.target.value)}
                         disabled={!dayData.isAvailable}
                       />
@@ -465,18 +485,14 @@ function EmployeeAvailability() {
                       <input
                         type="checkbox"
                         checked={dayData.isAvailable}
-                        onChange={(e) =>
-                          handleEditAvailableToggle(
-                            dayData.day,
-                            e.target.checked
-                          )
-                        }
+                        onChange={(e) => handleEditAvailableToggle(dayData.day, e.target.checked)}
                       />
                       Available
                     </label>
                   </div>
                 </div>
-              ))}
+              );
+            })}
             </div>
 
             {errorMessage && (
