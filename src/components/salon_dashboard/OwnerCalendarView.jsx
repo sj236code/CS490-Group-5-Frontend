@@ -135,25 +135,31 @@ function OwnerCalendarView({events, salonHours, view, onViewChange, date, onDate
     }
 
     return (
-        <Calendar
-            localizer={localizer}
-            events={events}
-            startAccessor="start"
-            endAccessor="end"
-            view={view}
-            onView={onViewChange}
-            date={date}
-            onNavigate={(newDate) => onDateChange && onDateChange(newDate)}
-            min={minTime}
-            max={maxTime}
-            toolbar={false}
-            popup
-            style={{ height: 560 }}
-            eventPropGetter={eventPropGetter}
-            slotPropGetter={slotPropGetter}
-            components={{event: CalendarEvent}}
-            formats={CALENDAR_FORMATS}
-        />
+        <div>
+            <div className="calendar-header">
+                {format(date, "MMMM yyyy")}
+            </div>
+
+            <Calendar
+                localizer={localizer}
+                events={events}
+                startAccessor="start"
+                endAccessor="end"
+                view={view}
+                onView={onViewChange}
+                date={date}
+                onNavigate={(newDate) => onDateChange && onDateChange(newDate)}
+                min={minTime}
+                max={maxTime}
+                toolbar={false}
+                popup
+                style={{ height: 560 }}
+                eventPropGetter={eventPropGetter}
+                slotPropGetter={slotPropGetter}
+                components={{event: CalendarEvent}}
+                formats={CALENDAR_FORMATS}
+            />
+        </div>
     );
 }
 

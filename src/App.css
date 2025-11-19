@@ -4055,8 +4055,6 @@ label {
   font-size: 1.3rem;
 }
 
-/* === Optional: small screens === */
-
 @media (max-width: 900px) {
   .calendar-main {
     grid-template-columns: 1fr;
@@ -4065,4 +4063,13 @@ label {
   .calendar-stats-row {
     grid-template-columns: 1fr 1fr;
   }
+}
+
+/*Calendar header*/
+.calendar-header{
+  text-align: "center";
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: "#444";
 }
