@@ -17,7 +17,7 @@ const localizer = dateFnsLocalizer({
     locales,
 });
 
-const EVENT_COLORS = [
+export const EVENT_COLORS = [
     "#c7cff9",
     "#f6c1c1",
     "#dcdcdc",
@@ -108,7 +108,7 @@ function OwnerCalendarView({events, salonHours, view, onViewChange, date, onDate
         const isOpen = nowMinutes >= openMinutes && nowMinutes < closeMinutes;
 
         if(!isOpen){
-            return {style: {backgroundColor: "f7f7f7"}};
+            return {style: {backgroundColor: "#f7f7f7"}};
         }
 
         return {};

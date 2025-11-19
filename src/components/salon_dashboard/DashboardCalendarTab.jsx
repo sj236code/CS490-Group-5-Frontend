@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import OwnerCalendarView from "./OwnerCalendarView";
+import OwnerCalendarView, {EVENT_COLORS} from "./OwnerCalendarView";
 import { preconnect } from "react-dom";
 import { nextFriday } from "date-fns";
+import { SpadeIcon } from "lucide-react";
 
 function DashboardCalendarTab({ salon }) {
 
@@ -55,6 +56,7 @@ function DashboardCalendarTab({ salon }) {
           return {
             id: emp.id,
             name: `${emp.first_name || ""} ${emp.last_name || ""}`.trim(),
+            colorIndex: index % 5,
             colorClass: ["emp-dot-blue","emp-dot-green","emp-dot-red"][index % 3],
             apptClass: ["appt-blue","appt-red","appt-gray"][index % 3],
           };
@@ -300,10 +302,8 @@ function DashboardCalendarTab({ salon }) {
               {employees.map((emp) => (
                 <div key={emp.id} className="availability-item">
                   <span
-                    className={`availability-dot emp-dot-${emp.colorIndex}`}
-                    style={{
-                      backgroundColor: "#96A78D",
-                    }}
+                    className="availability-dot"
+                    style={{backgroundColor: EVENT_COLORS[emp.colorIndex % EVENT_COLORS.length]}}
                   />
                   <span className="availability-name">{emp.name}</span>
                 </div>
