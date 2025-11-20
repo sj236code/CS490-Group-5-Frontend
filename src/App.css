@@ -3801,3 +3801,60 @@ label {
 .userprof-dropdown button:hover {
   background-color: #B6CEB4;
 }
+
+/* Salon Shop Tab Customer Check Error Modal */
+.error-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.error-modal {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
+  max-width: 420px;
+  width: 90%;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
+  position: relative;
+}
+
+.error-modal-close {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.error-modal-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #33422c
+}
+
+.error-modal-message {
+  font-size: 0.95rem;
+  margin-bottom: 1.25rem;
+  color: #333;
+}
+
+.error-modal-ok {
+  padding: 0.5rem 1.2rem;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  background: #5A6A54;
+  color: #ffffff;
+}
