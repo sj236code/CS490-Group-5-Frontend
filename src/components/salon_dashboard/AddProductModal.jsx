@@ -10,6 +10,8 @@ function AddProductModal({ isOpen, onClose, salonId, onProductAdded }) {
     });
 
     const [images, setImages] = useState([]);
+    const [imageFile, setImageFile] = useState(null);
+
 
     // Text input changes
     const handleChange = (e) => {
@@ -22,9 +24,10 @@ function AddProductModal({ isOpen, onClose, salonId, onProductAdded }) {
 
     // Image Upload
     const handleImageUpload = (e) => {
-        const file = Array.from(e.target.files);
-        setImages((prev) => [...prev, ...files]);
-    }
+        const files = e.target.files;
+        if (!files || !files.length) return;
+        setImageFile(files[0]);
+    };
 
     const submitProduct = async(e) => {
         e.preventDefault();
@@ -35,8 +38,12 @@ function AddProductModal({ isOpen, onClose, salonId, onProductAdded }) {
             formDataToSend.append('name', formData.productName);
             formDataToSend.append('salon_id', salonId);
             formDataToSend.append('price', formData.price);
-            formDataToSend.append('duration', formData.quantity);
+            formDataToSend.append('stock_qty', formData.quantity);
             formDataToSend.append('is_active', 'true');
+
+            if(imageFile){
+                formDataToSend.append("image_url", imageFile);
+            }
 
             const response = await fetch(`${import.meta.env.VITE_API_URL}/api/salon_register/add_product`, { method: 'POST', body: formDataToSend,});
 
@@ -53,6 +60,8 @@ function AddProductModal({ isOpen, onClose, salonId, onProductAdded }) {
                 price: "",
                 quantity: "",
             });
+
+            setImages([]);
 
             if (onProductAdded) {
                 onProductAdded();
@@ -129,18 +138,22 @@ function AddProductModal({ isOpen, onClose, salonId, onProductAdded }) {
                         />
                         
                         <label className="add-service-upload-btn">
-                            <Upload size={16} />
-                            Upload Images
-                            <input
-                                type="file"
-                                multiple
-                                accept="image/*"
-                                onChange={handleImageUpload}
-                                style={{ display: 'none' }}
-                            />
+                        <Upload size={16} />
+                        {imageFile ? "Change Image" : "Upload Image"}
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleImageUpload}
+                            style={{ display: "none" }}
+                        />
                         </label>
                     </div>
 
+                    {imageFile && (
+                        <p className="add-service-upload-hint">
+                        Selected: <strong>{imageFile.name}</strong>
+                        </p>
+                    )}
 
                     {/* Footer Buttons */}
                     <div className="add-service-actions">

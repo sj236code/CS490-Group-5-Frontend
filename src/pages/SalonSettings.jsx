@@ -1,9 +1,14 @@
 import { useEffect, useState } from "react";
 import { Pencil } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 function SalonSettings({ salon }) {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const { salonId } = location.state || {};
+
+  // const salonId = 1;
 
   // Salon data
   const [salonDetails, setSalonDetails] = useState({
@@ -27,10 +32,11 @@ function SalonSettings({ salon }) {
 
   const loadSalonDetails = async () => {
     try {
-      // TODO: replace with real endpoint
-      // const res = await fetch(`${import.meta.env.VITE_API_URL}/api/salons/${salon.id}/details`);
-      // const data = await res.json();
-      // setSalonDetails(data);
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/salons/details/${salonId}`
+      );
+      const data = await res.json();
+      console.log("SalonDetails: ", data);
 
       const mock = {
         name: "Jade Boutique",

@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@vercel/analytics": "^1.5.0",
+    "axios": "^1.13.2",
     "firebase": "^12.4.0",
     "imagesloaded": "^5.0.0",
     "lightgallery": "^2.9.0",
