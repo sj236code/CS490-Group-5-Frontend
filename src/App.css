@@ -867,15 +867,232 @@ body {
    ============================ */
 
 /* Only style this modal, don't affect others */
-.modal-content.book-appt-modal {
+/* Make booking modal wider to fit the mini calendar */
+.book-appt-modal {
+  width: 960px;       
+  max-width: 95vw;
+  max-height: 88vh;
+  overflow-y: auto;
+  background: white;
+  padding: 24px 28px;
+  border-radius: 18px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.18);
+}
+
+.book-appt-modal--calendar {
+  width: 1500px;
+  height: 750px;
+  max-width: 96vw;
+  max-height: 90vh;
+}
+
+/* two-column layout – if you don't already have this */
+.book-appt-grid {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+/* right/left columns */
+.book-appt-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.book-appt-column-left {
+  flex: 0 0 280px; 
+}
+
+
+
+/* ===== mini weekly-hours calendar ===== */
+
+.book-appt-mini-cal {
+  margin-top: 18px;
+  padding: 10px 12px;
+  border-radius: 12px;
   background-color: #f7f7f5;
-  border-radius: 24px;
-  padding: 24px 24px 20px;
-  width: 90%;
-  max-width: 640px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  border: 1px solid #d6dfd1;
+}
+
+.book-appt-mini-cal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.book-appt-mini-cal-title {
+  font-size: 0.9rem;  
+  font-weight: 600;
+  color: #4b5945;
+}
+
+.book-appt-mini-cal-status {
+  font-size: 0.8rem;
+  color: #6b7c67;
+}
+
+.book-appt-mini-cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+.book-appt-mini-cal-cell {
+  background-color: #eef3e8;
+  border-radius: 10px;
+  padding: 6px 4px;
+  text-align: center;
+  border: 1px solid #cfd9c8;
+}
+
+.book-appt-mini-cal-cell--off {
+  background-color: #f3f3f3;
+  border-color: #dedede;
+  color: #8a8a8a;
+}
+
+.book-appt-mini-cal-day {
+  font-size: 0.72rem;
+  font-weight: 600;
+  margin-bottom: 2px;
+  color: #4b5945;
+}
+
+.book-appt-mini-cal-range {
+  font-size: 0.7rem;
+  display: flex;
+  justify-content: center;
+  gap: 2px;
+  color: #2f3a2b;
+}
+
+.book-appt-mini-cal-closed {
+  font-size: 0.7rem;
+  color: #8a8a8a;
+}
+
+/* tiny verified icon alignment */
+.book-appt-employee-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.78rem;
+  margin-top: 2px;
+  color: #4b5945;
+}
+
+.book-appt-employee-status-icon {
+  flex-shrink: 0;
+}
+
+/* make booking modal bigger for calendar */
+/* grid sizing */
+.book-appt-grid {
+  display: grid;
+  grid-template-columns: 320px 1fr; /* left: experts, right: date/time/calendar */
+  gap: 24px;
+  margin-top: 18px;
+}
+
+/* off-day pills */
+.book-appt-date-pill--off {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.book-appt-date-pill--off:hover {
+  background: #efefef;
+}
+
+/* verified text under stylist name */
+.verified-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8rem;
   color: #4B5945;
-  position: relative;
+}
+.verified-icon {
+  color: #4B5945;
+}
+
+/* mini calendar wrapper */
+.book-appt-calendar-wrapper {
+  margin-top: 16px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background-color: #f7f7f5;
+  border: 1px solid #d3ddcd;
+}
+
+.book-appt-calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 6px;
+}
+
+.book-appt-calendar-title {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #4B5945;
+}
+
+.book-appt-calendar-sub {
+  font-size: 0.8rem;
+  color: #6B7C67;
+}
+
+/* tighten react-big-calendar inside modal & give buttons borders */
+.book-appt-calendar-wrapper .rbc-time-view {
+  border: none;
+}
+
+.book-appt-calendar-wrapper .rbc-header {
+  padding: 2px 0;
+  font-size: 0.75rem;
+}
+
+.book-appt-calendar-wrapper .rbc-event {
+  background-color: #D9E9CF;
+  border: 1px solid #4B5945;
+  color: #2F3A2B;
+  font-size: 0.7rem;
+}
+
+.book-appt-calendar-wrapper .rbc-toolbar button {
+  border: 1px solid #4B5945;
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 0.75rem;
+  background-color: #ffffff;
+}
+
+.book-appt-calendar-wrapper .rbc-toolbar button:focus,
+.book-appt-calendar-wrapper .rbc-toolbar button:hover {
+  background-color: #D9E9CF;
+}
+
+.book-appt-calendar-card {
+  margin-top: 8px;
+  background-color: #f7f8f5;
+  border-radius: 12px;
+  border: 1px solid #d1ddc6;
+  padding: 12px;
+  height: 430px; 
+  overflow: hidden;
+}
+
+.book-appt-calendar-card .rbc-calendar {
+  height: 100%;
+}
+
+.modal-content.book-appt-modal {
+  width: auto;
+  height: auto;
+  max-width: none;
+  max-height: none;
 }
 
 /* Header */
@@ -970,21 +1187,31 @@ body {
   flex-direction: column;
 }
 
+.book-appt-column--experts {
+  display: flex;
+  flex-direction: column;
+}
+
+.book-appt-employee-card {
+  width: 100%;
+}
+
 .book-appt-subtitle {
   font-size: 1rem;
   font-weight: 600;
   margin-bottom: 8px;
 }
 
+.book-appt-column-right {
+  flex: 1;
+}
+
 /* Stylists list */
 
 .book-appt-employee-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  max-height: 260px;
+  margin-top: 8px;
+  max-height: 420px;
   overflow-y: auto;
-  padding-right: 4px;
 }
 
 .book-appt-employee-card {
@@ -1221,16 +1448,11 @@ body {
 /* Booking Modal */
 
 .modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  overflow: auto;
+  padding: 20px;
 }
 
 .modal-content {
@@ -2682,6 +2904,8 @@ label {
   gap: 0.4rem;
   margin-top: 0.5rem;
 }
+
+
 .time-btn {
   background-color: #e6ee9c;
   border: none;

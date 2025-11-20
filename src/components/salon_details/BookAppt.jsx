@@ -1,44 +1,75 @@
 // src/components/BookAppt.jsx
 import { useState, useEffect, useMemo } from "react";
-import { X, CheckCircle } from "lucide-react";
-import { format, addDays, isSameDay } from "date-fns";
+import { X, CheckCircle2 } from "lucide-react";
+import { Calendar, dateFnsLocalizer } from "react-big-calendar";
+import {
+  format,
+  parse,
+  startOfWeek,
+  endOfWeek,
+  getDay,
+} from "date-fns";
+import enUS from "date-fns/locale/en-US";
 import { EVENT_COLORS } from "../salon_dashboard/OwnerCalendarView";
+import "react-big-calendar/lib/css/react-big-calendar.css";
+
+const locales = {
+  "en-US": enUS,
+};
+
+const localizer = dateFnsLocalizer({
+  format,
+  parse,
+  startOfWeek: () => startOfWeek(new Date(), { weekStartsOn: 0 }),
+  getDay,
+  locales,
+});
 
 function BookAppt({ isOpen, onClose, service, salon, customerId }) {
   const API_BASE = import.meta.env.VITE_API_URL;
 
-  // ---- CORE STATE ----
+  // ---- STATE ----
   const [employees, setEmployees] = useState([]);
   const [loadingEmployees, setLoadingEmployees] = useState(false);
 
   const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [timeSlots, setTimeSlots] = useState([]);
-  const [loadingSlots, setLoadingSlots] = useState(false);
-  const [selectedSlot, setSelectedSlot] = useState(null);
+
+  const [selectedDate, setSelectedDate] = useState(null); // JS Date
+  const [selectedSlotLabel, setSelectedSlotLabel] = useState("");
+
+  const [calendarDate, setCalendarDate] = useState(new Date());
+  const [calendarEvents, setCalendarEvents] = useState([]);
 
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  // ---- OPEN/CLOSE RESET ----
+  // Calendar vertical bounds
+  const minTime = useMemo(
+    () => new Date(1970, 0, 1, 8, 0, 0),
+    []
+  );
+  const maxTime = useMemo(
+    () => new Date(1970, 0, 1, 20, 0, 0),
+    []
+  );
+
+  // ---- RESET WHEN OPEN/CLOSE ----
   useEffect(() => {
     if (isOpen) {
       setError("");
       setSuccessMessage("");
-      setSelectedSlot(null);
-      setSelectedDate(new Date());
       setSelectedEmployeeId(null);
-      setTimeSlots([]);
-      // employees will be refetched below when salon.id exists
+      setSelectedDate(null);
+      setSelectedSlotLabel("");
+      setCalendarDate(new Date());
+      setCalendarEvents([]);
     } else {
-      // Clear everything when modal closes
       setEmployees([]);
-      setTimeSlots([]);
     }
   }, [isOpen]);
 
-  // ---- FETCH EMPLOYEES WHEN OPENED ----
+  // ---- LOAD EMPLOYEES (APPROVED ONLY) ----
   useEffect(() => {
     if (!isOpen || !salon?.id) return;
 
@@ -46,27 +77,36 @@ function BookAppt({ isOpen, onClose, service, salon, customerId }) {
       try {
         setLoadingEmployees(true);
         setError("");
-        const res = await fetch(`${API_BASE}/api/appointments/${salon.id}/employees`);
+
+        const res = await fetch(
+          `${API_BASE}/api/appointments/${salon.id}/employees`
+        );
         if (!res.ok) {
           throw new Error("Unable to load stylists.");
         }
-        const raw = await res.json();
 
-        const mapped = raw
-          .filter(emp => (emp.employment_status || "").toUpperCase() === "APPROVED") 
-          .map((emp, index) => ({
-            id: emp.id,
-            first_name: emp.first_name,
-            last_name: emp.last_name,
-            fullName: `${emp.first_name || ""} ${emp.last_name || ""}`.trim(),
-            status: emp.employment_status,
-            colorIndex: index % EVENT_COLORS.length,
+        // Some backends return { employees: [...] }, some just [...]
+        const raw = await res.json();
+        const list = raw.employees || raw || [];
+
+        const approved = list.filter(
+          (emp) => emp.employment_status === "APPROVED"
+        );
+
+        const mapped = approved.map((emp, index) => ({
+          id: emp.id,
+          first_name: emp.first_name,
+          last_name: emp.last_name,
+          fullName: `${emp.first_name || ""} ${emp.last_name || ""}`.trim(),
+          status: "Verified",
+          colorIndex: index % EVENT_COLORS.length,
         }));
 
-        setEmployees(mapped || []);
+        setEmployees(mapped);
       } catch (err) {
-        console.error(err);
+        console.error("Error loading stylists:", err);
         setError("Unable to load stylists for this salon.");
+        setEmployees([]);
       } finally {
         setLoadingEmployees(false);
       }
@@ -75,64 +115,49 @@ function BookAppt({ isOpen, onClose, service, salon, customerId }) {
     loadEmployees();
   }, [isOpen, salon?.id, API_BASE]);
 
-  // ---- FETCH AVAILABLE TIME SLOTS WHEN EMPLOYEE / DATE CHANGES ----
+  // ---- SLOT SELECT FROM CALENDAR ----
+  const handleSlotSelect = (slotInfo) => {
+    const start = slotInfo.start;
+    setSelectedDate(start);
+    setSelectedSlotLabel(format(start, "EEE, MMM d • h:mm a"));
+    setSuccessMessage("");
+    setError("");
+  };
+
+  // ---- (OPTIONAL) LOAD STYLIST APPTS FOR WEEK ----
   useEffect(() => {
-    const fetchSlots = async () => {
-      if (!isOpen) return;
-      if (!selectedEmployeeId || !selectedDate || !service?.duration) {
-        setTimeSlots([]);
-        return;
-      }
+    if (!selectedEmployeeId) {
+      setCalendarEvents([]);
+      return;
+    }
 
-      try {
-        setLoadingSlots(true);
-        setError("");
-        setSuccessMessage("");
-        setSelectedSlot(null);
+    const weekStart = startOfWeek(calendarDate, { weekStartsOn: 0 });
+    const weekEnd = endOfWeek(calendarDate, { weekStartsOn: 0 });
 
-        const dateStr = format(selectedDate, "yyyy-MM-dd");
-        const url = `${API_BASE}/api/appointments/${selectedEmployeeId}/available-times?date=${encodeURIComponent(
-          dateStr
-        )}&duration=${encodeURIComponent(service.duration)}`;
+    // Placeholder for real appointments; currently just clears events.
+    // You can wire to your backend later.
+    console.log(
+      "Would load appointments for employee",
+      selectedEmployeeId,
+      "between",
+      weekStart.toISOString(),
+      "and",
+      weekEnd.toISOString()
+    );
+    setCalendarEvents([]);
+  }, [selectedEmployeeId, calendarDate]);
 
-        const res = await fetch(url);
-        if (!res.ok) {
-          throw new Error("Unable to fetch available times.");
-        }
-
-        const slots = await res.json(); // array of "HH:MM:SS" or "HH:MM"
-        // Normalize to "HH:MM"
-        const normalized = (slots || []).map((t) => t.slice(0, 5));
-        setTimeSlots(normalized);
-      } catch (err) {
-        console.error(err);
-        setError("Error loading available times for this stylist.");
-        setTimeSlots([]);
-      } finally {
-        setLoadingSlots(false);
-      }
-    };
-
-    fetchSlots();
-  }, [isOpen, selectedEmployeeId, selectedDate, service?.duration, API_BASE]);
-
-  // ---- DATE STRIP: NEXT 7 DAYS ----
-  const upcomingDays = useMemo(() => {
-    const today = new Date();
-    return Array.from({ length: 7 }, (_, idx) => addDays(today, idx));
-  }, []);
-
-  // ---- CLOSE HANDLER ----
+  // ---- CLOSE ----
   const handleClose = () => {
     setError("");
     setSuccessMessage("");
-    setSelectedSlot(null);
     setSelectedEmployeeId(null);
-    setTimeSlots([]);
+    setSelectedDate(null);
+    setSelectedSlotLabel("");
     onClose && onClose();
   };
 
-  // ---- ADD TO CART (NO APPOINTMENT YET) ----
+  // ---- ADD TO CART ----
   const handleConfirmBooking = async () => {
     setError("");
     setSuccessMessage("");
@@ -141,8 +166,8 @@ function BookAppt({ isOpen, onClose, service, salon, customerId }) {
       setError("Please select a stylist.");
       return;
     }
-    if (!selectedDate || !selectedSlot) {
-      setError("Please select a date and time.");
+    if (!selectedDate) {
+      setError("Please select a date and time from the calendar.");
       return;
     }
     if (!customerId || !salon?.id || !service?.id) {
@@ -154,15 +179,15 @@ function BookAppt({ isOpen, onClose, service, salon, customerId }) {
       setSubmitting(true);
 
       const dateStr = format(selectedDate, "yyyy-MM-dd");
+      const timeStr = format(selectedDate, "HH:mm");
 
-      // Only add to CART – actual Appointment will be created at checkout
       const cartPayload = {
-        user_id: customerId,         // Cart endpoint expects "user_id"
+        user_id: customerId,
         service_id: service.id,
         quantity: 1,
-        appt_date: dateStr,          // "YYYY-MM-DD"
-        appt_time: selectedSlot,     // "HH:MM"
-        stylist: selectedEmployeeId, // employee_id
+        appt_date: dateStr,
+        appt_time: timeStr,
+        stylist: selectedEmployeeId,
         pictures: [],
         notes: null,
       };
@@ -178,7 +203,9 @@ function BookAppt({ isOpen, onClose, service, salon, customerId }) {
       if (!cartRes.ok) {
         console.error("Cart API error:", cartData);
         throw new Error(
-          cartData.message || cartData.error || "Unable to add appointment to cart."
+          cartData.message ||
+            cartData.error ||
+            "Unable to add appointment to cart."
         );
       }
 
@@ -193,24 +220,16 @@ function BookAppt({ isOpen, onClose, service, salon, customerId }) {
     }
   };
 
-  if (!isOpen) return null;
+  const canSubmit = !!selectedEmployeeId && !!selectedDate && !submitting;
 
-  // ---- RENDER HELPERS ----
-  const formatSlotLabel = (timeStr) => {
-    // timeStr: "HH:MM"
-    const [hStr, mStr] = timeStr.split(":");
-    let hour = parseInt(hStr, 10);
-    const minutes = mStr || "00";
-    const ampm = hour >= 12 ? "pm" : "am";
-    if (hour === 0) hour = 12;
-    else if (hour > 12) hour -= 12;
-    return `${hour}:${minutes} ${ampm}`;
-  };
+  if (!isOpen) return null;
 
   return (
     <div className="modal-overlay" onClick={handleClose}>
       <div
-        className="modal-content book-appt-modal"
+        className={`modal-content book-appt-modal ${
+          selectedEmployeeId ? "book-appt-modal--calendar" : ""
+        }`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* HEADER */}
@@ -221,7 +240,7 @@ function BookAppt({ isOpen, onClose, service, salon, customerId }) {
           <h2 className="book-appt-title">Book Appointment</h2>
         </div>
 
-        {/* SERVICE SUMMARY */}
+        {/* SERVICE BAR */}
         <div className="book-appt-service-row">
           <div className="book-appt-service-name">
             {service?.name || "Selected Service"}
@@ -241,21 +260,26 @@ function BookAppt({ isOpen, onClose, service, salon, customerId }) {
           </div>
         )}
 
-        {/* BODY GRID */}
+        {/* MAIN GRID */}
         <div className="book-appt-grid">
-          {/* LEFT: EMPLOYEE CARDS */}
-          <div className="book-appt-column">
+          {/* LEFT: EXPERTS */}
+          <div className="book-appt-column book-appt-column-left">
             <h3 className="book-appt-subtitle">Select Expert</h3>
 
-            {loadingEmployees && <p className="book-appt-hint">Loading stylists…</p>}
+            {loadingEmployees && (
+              <p className="book-appt-hint">Loading stylists…</p>
+            )}
             {!loadingEmployees && employees.length === 0 && (
-              <p className="book-appt-hint">No stylists available for this salon.</p>
+              <p className="book-appt-hint">
+                No verified stylists available for this salon.
+              </p>
             )}
 
             <div className="book-appt-employee-list">
               {employees.map((emp) => {
                 const isSelected = emp.id === selectedEmployeeId;
                 const bgColor = EVENT_COLORS[emp.colorIndex];
+
                 return (
                   <button
                     key={emp.id}
@@ -264,37 +288,35 @@ function BookAppt({ isOpen, onClose, service, salon, customerId }) {
                       isSelected ? "book-appt-employee-card--selected" : ""
                     }`}
                     onClick={() => {
+                      console.log(
+                        `potential stylist: ${emp.fullName || emp.id}`
+                      );
                       setSelectedEmployeeId(emp.id);
-                      setSelectedSlot(null);
+                      setSelectedDate(null);
+                      setSelectedSlotLabel("");
                       setSuccessMessage("");
                     }}
                   >
                     <div
                       className="book-appt-employee-avatar"
-                      style={{
-                        backgroundColor: bgColor,
-                      }}
+                      style={{ backgroundColor: bgColor }}
                     >
                       {emp.fullName
                         ? emp.fullName.charAt(0).toUpperCase()
                         : "S"}
                     </div>
+
                     <div className="book-appt-employee-info">
                       <div className="book-appt-employee-name">
                         {emp.fullName || "Staff Member"}
                       </div>
-                      {emp.status && (
-                        <div className="book-appt-employee-status">
-                          {emp.status.toUpperCase() === "APPROVED" ? (
-                            <span className="verified-badge">
-                              <CheckCircle size={14} strokeWidth={2} className="verified-icon" />
-                              Verified
-                            </span>
-                          ) : (
-                            emp.status
-                          )}
-                        </div>
-                      )}
+                      <div className="book-appt-employee-status">
+                        <CheckCircle2
+                          size={14}
+                          className="book-appt-employee-status-icon"
+                        />
+                        Verified
+                      </div>
                     </div>
                   </button>
                 );
@@ -302,82 +324,51 @@ function BookAppt({ isOpen, onClose, service, salon, customerId }) {
             </div>
           </div>
 
-          {/* RIGHT: DATE & TIME */}
-          <div className="book-appt-column">
-            <h3 className="book-appt-subtitle">Date &amp; Time</h3>
+          {/* RIGHT: CALENDAR */}
+          <div className="book-appt-column book-appt-column-right">
+            {selectedEmployeeId ? (
+              <>
+                <h3 className="book-appt-subtitle">Stylist Schedule</h3>
+                <div className="book-appt-calendar-card">
+                  <Calendar
+                    localizer={localizer}
+                    events={calendarEvents}
+                    defaultView="week"
+                    views={["week"]}
+                    step={30}
+                    timeslots={2}
+                    selectable
+                    onSelectSlot={handleSlotSelect}
+                    date={calendarDate}
+                    onNavigate={setCalendarDate}
+                    startAccessor="start"
+                    endAccessor="end"
+                    min={minTime}
+                    max={maxTime}
+                  />
+                </div>
 
-            {/* DATE PILLS */}
-            <div className="book-appt-date-strip">
-              {upcomingDays.map((day) => {
-                const isSelected = isSameDay(day, selectedDate);
-                return (
-                  <button
-                    key={day.toISOString()}
-                    type="button"
-                    className={`book-appt-date-pill ${
-                      isSelected ? "book-appt-date-pill--selected" : ""
-                    }`}
-                    onClick={() => {
-                      setSelectedDate(day);
-                      setSelectedSlot(null);
-                      setSuccessMessage("");
-                    }}
-                  >
-                    <span className="book-appt-date-weekday">
-                      {format(day, "EEE")}
-                    </span>
-                    <span className="book-appt-date-daynum">
-                      {format(day, "d")}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* TIME SLOTS */}
-            <div className="book-appt-times-wrapper">
-              {!selectedEmployeeId && (
-                <p className="book-appt-hint">
-                  Select a stylist to see available times.
-                </p>
-              )}
-
-              {selectedEmployeeId && loadingSlots && (
-                <p className="book-appt-hint">Checking availability…</p>
-              )}
-
-              {selectedEmployeeId &&
-                !loadingSlots &&
-                timeSlots.length === 0 && (
-                  <p className="book-appt-hint">
-                    No available times for this day. Try another date.
+                {selectedSlotLabel && (
+                  <p className="book-appt-selected-slot">
+                    Selected time: <strong>{selectedSlotLabel}</strong>
                   </p>
                 )}
-
-              {selectedEmployeeId && !loadingSlots && timeSlots.length > 0 && (
-                <div className="book-appt-times-grid">
-                  {timeSlots.map((t) => {
-                    const isSelected = selectedSlot === t;
-                    return (
-                      <button
-                        key={t}
-                        type="button"
-                        className={`book-appt-time-chip ${
-                          isSelected ? "book-appt-time-chip--selected" : ""
-                        }`}
-                        onClick={() => setSelectedSlot(t)}
-                      >
-                        {formatSlotLabel(t)}
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
+                {!selectedSlotLabel && (
+                  <p className="book-appt-hint">
+                    Click on the calendar to choose a day and time.
+                  </p>
+                )}
+              </>
+            ) : (
+              <p className="book-appt-hint">
+                Select a stylist on the left to see their schedule and choose a
+                time.
+              </p>
+            )}
           </div>
         </div>
 
-        {/* FOOTER ACTIONS */}
+        {/* FOOTER */}
         <div className="book-appt-footer">
           <button
             type="button"
@@ -390,7 +381,7 @@ function BookAppt({ isOpen, onClose, service, salon, customerId }) {
             type="button"
             className="book-appt-confirm-btn"
             onClick={handleConfirmBooking}
-            disabled={submitting || !selectedEmployeeId || !selectedSlot}
+            disabled={!canSubmit}
           >
             {submitting ? "Adding…" : "Add to Cart"}
           </button>
