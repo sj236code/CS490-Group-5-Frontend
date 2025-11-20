@@ -115,7 +115,7 @@ function EditProductModal({ isOpen, onClose, product, salonId, onProductUpdated 
         }
       }
 
-      // Now do the real update via JSON (what your update endpoint expects)
+      // Now do the real update via JSON (what update endpoint expects)
       const payload = {
         name: formData.productName,
         price: parseFloat(formData.price),
@@ -127,8 +127,7 @@ function EditProductModal({ isOpen, onClose, product, salonId, onProductUpdated 
         payload.image_url = newImageUrl;
       }
 
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/cart/update-product/${product.id}`,
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/cart/update-product/${product.id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -160,8 +159,7 @@ function EditProductModal({ isOpen, onClose, product, salonId, onProductUpdated 
     if (!product?.id) return;
 
     try {
-      const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/salon_register/delete_product/${product.id}`,
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/salon_register/delete_product/${product.id}`,
         {
           method: "DELETE",
           headers: { Accept: "application/json" },
