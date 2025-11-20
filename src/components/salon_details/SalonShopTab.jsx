@@ -77,6 +77,8 @@ function SalonShopTab({salon, userType}){
         }
     };
 
+    console.log("SalonShopTab userType:", userType, typeof userType);
+
     const addServiceToCart = (service, salon) => {
         if(userType != "CUSTOMER"){
             setErrorMessage("Sign in as a customer to continue with checkout.");
