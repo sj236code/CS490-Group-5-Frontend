@@ -18,7 +18,7 @@ function EditProductModal({ isOpen, onClose, product, onProductUpdated }) {
             setFormData({
                 productName: product.name || "",
                 price: product.price || "",
-                quantity: product.quantity || "",
+                quantity: product.stock_qty != null ? String(product.stock_qty) : "",
             });
             setIconFile(null);
             setShowDeleteConfirm(false);
