@@ -12,6 +12,8 @@ function EditProductModal({ isOpen, onClose, product, onProductUpdated }) {
     const [iconFile, setIconFile] = useState(null);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
+    const imgSrc = product?.icon_url || product?.image_url;
+
     // Populate form with existing product data when modal opens
     useEffect(() => {
         if (product && isOpen) {
@@ -146,12 +148,12 @@ function EditProductModal({ isOpen, onClose, product, onProductUpdated }) {
                 <hr className="add-service-divider" />
 
                 {/* Current Icon Preview */}
-                {product?.icon_url && !iconFile && (
+                {imgSrc && !iconFile && (
                     <div style={{ marginBottom: '15px', textAlign: 'center' }}>
                         <p style={{ fontSize: '12px', color: '#666', marginBottom: '5px' }}>Current Image:</p>
                         <img 
-                            src={product.icon_url} 
-                            alt={product.name}
+                            src={imgSrc} 
+                            alt={product?.name}
                             style={{ maxWidth: '100px', maxHeight: '100px', borderRadius: '8px' }}
                         />
                     </div>
