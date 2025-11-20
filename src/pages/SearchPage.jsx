@@ -6,7 +6,7 @@ import SalonCard from '../components/landing/SalonCard';
 function SearchPage() {
     const location = useLocation();
     const navigate = useNavigate();
-    const { results, cities:passedCities, query, city, userType } = location.state || {}; // Passed from LandingSearchBar
+    const { results, cities:passedCities, query, city } = location.state || {}; // Passed from LandingSearchBar
 
     const [salons, setSalons] = useState([]); // Full list of salons fetched from backend
     const [searchQuery, setSearchQuery] = useState(query || ''); // Store search query text
@@ -121,7 +121,7 @@ function SearchPage() {
         console.log(`Clicked on salon ID:`, salon);
         // Reuse code from SalonsSection on LandingPage
         navigate('/salon', {
-            state: { salon, userType }
+            state: { salon }
         });
     };
 

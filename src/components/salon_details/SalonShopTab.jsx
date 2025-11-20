@@ -5,7 +5,7 @@ import SalonProductCard from './SalonProductCard';
 import BookAppt from './BookAppt';
 import PurchaseProduct from './PurchaseProduct';
 
-function SalonShopTab({salon, userType}){
+function SalonShopTab({salon}){
 
     // Service Section
     const [services, setServices] = useState([]);
@@ -25,8 +25,6 @@ function SalonShopTab({salon, userType}){
     // Purchase Product Modal
     const [isPurchaseProductModalOpen, setPurchaseProductModalOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
-
-    const [errorMessage, setErrorMessage] = useState("");
 
     // Load Services & Products when component mounts
     useEffect(() => {
@@ -78,11 +76,6 @@ function SalonShopTab({salon, userType}){
     };
 
     const addServiceToCart = (service, salon) => {
-        if(userType != "CUSTOMER"){
-            setErrorMessage("Sign in as a customer to continue with checkout.");
-            return;
-        }
-        setErrorMessage("");
         setSelectedService(service);
         setIsBookingModalOpen(true);
         console.log("Booking modal for following service opening: ", service);
@@ -105,11 +98,6 @@ function SalonShopTab({salon, userType}){
     };
 
     const addProductToCart = (product) => {
-        if(userType != "CUSTOMER"){
-            setErrorMessage("Sign in as a customer to continue with checkout.");
-            return;
-        }
-        setErrorMessage("");
         console.log("PurchaseProduct Modal opening for: ", product);
         setSelectedProduct(product);
         setPurchaseProductModalOpen(true);
@@ -129,12 +117,6 @@ function SalonShopTab({salon, userType}){
 
     return (
         <div className="salon-shop-tab">
-            {errorMessage && (
-                <div className="error-banner" style={{ marginBottom: "1rem", color: "red" }}>
-                    {errorMessage}
-                </div>
-            )}
-            
             {/* Services */}
             <h2 className="shop-service-title">Available Services:</h2>
             <div className="shop-carousel">

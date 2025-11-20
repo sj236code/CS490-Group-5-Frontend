@@ -9,7 +9,7 @@ import AboutTab from '../components/salon_details/AboutTab';
 function SalonDetailsPage() {
     const location = useLocation();
     const navigate = useNavigate();
-    const { salon, userType } = location.state || {};
+    const { salon } = location.state || {};
 
     const [salonDetails, setSalonDetails] = useState(salon);
     const [workingTab, setWorkingTab] = useState("About");
@@ -111,7 +111,7 @@ function SalonDetailsPage() {
                 )}
                 {workingTab =="Shop" && (
                     <div>
-                        <SalonShopTab salon={salonDetails} userType={userType}/>
+                        <SalonShopTab salon={salonDetails} />
                     </div>
                 )}
             </div>
