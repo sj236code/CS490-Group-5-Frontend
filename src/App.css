@@ -744,10 +744,35 @@ body {
 }
 
 .salon-details-info {
-  align-items: center; 
+  align-items: center;
   display: flex;
-  justify-content: cdnter;
-  margin-top: 5px;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.salon-type-badge {
+  font-size: 0.95rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.salon-rating-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rating-number {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #4B5945;
+}
+
+.review-text {
+  font-size: 0.85rem;
+  color: #666;
 }
 
 .salon-details-tabs{
