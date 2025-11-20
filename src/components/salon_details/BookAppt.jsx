@@ -52,13 +52,15 @@ function BookAppt({ isOpen, onClose, service, salon, customerId }) {
         }
         const raw = await res.json();
 
-        const mapped = raw.map((emp, index) => ({
-          id: emp.id,
-          first_name: emp.first_name,
-          last_name: emp.last_name,
-          fullName: `${emp.first_name || ""} ${emp.last_name || ""}`.trim(),
-          status: emp.employment_status,
-          colorIndex: index % EVENT_COLORS.length,
+        const mapped = raw
+          .filter(emp => (emp.employment_status || "").toUpperCase() === "APPROVED") 
+          .map((emp, index) => ({
+            id: emp.id,
+            first_name: emp.first_name,
+            last_name: emp.last_name,
+            fullName: `${emp.first_name || ""} ${emp.last_name || ""}`.trim(),
+            status: emp.employment_status,
+            colorIndex: index % EVENT_COLORS.length,
         }));
 
         setEmployees(mapped || []);
