@@ -1,10 +1,8 @@
 import { useState } from 'react';
-import { useNavigate } from "react-router-dom";
 import LandingSearchBar from './LandingSearchBar';
 
 function HeroSection({userType, user}){
-    const navigate = useNavigate();
-
+  
     console.log("HeroSection- ", user?.profile_id ?? '-');
 
     return(
