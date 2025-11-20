@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { Star } from 'lucide-react';
 import DashboardManageTab from '../components/salon_dashboard/DashboardManageTab';
 import DashboardLoyaltyTab from '../components/salon_dashboard/DashboardLoyaltyTab';
+import DashboardCalendarTab from '../components/salon_dashboard/DashboardCalendarTab';
 
 function SalonDashboard() {
     const location = useLocation();
@@ -88,7 +89,7 @@ function SalonDashboard() {
 
             <div className="salon-details-tab-content">
                 {workingTab === "Metrics" && <h2>Metrics Page for: {salonDetails.name}</h2>}
-                {workingTab === "Calendar" && <h2>Calendar Page for: {salonDetails.name}</h2>}
+                {workingTab === "Calendar" && <DashboardCalendarTab salon={salonDetails} />}
                 {workingTab === "Loyalty" && <DashboardLoyaltyTab salon={salonDetails} />}
                 {workingTab === "Manage" && <DashboardManageTab salon={salonDetails} />}
             </div>

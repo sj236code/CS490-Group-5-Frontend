@@ -4,13 +4,16 @@ import RestrictedCartPanel from './RestrictedCartPanel';
 function AdminCartPanel({ onClose, userId, userName, onLogout }){
 
   return (
-    <RestrictedCartPanel
-      onClose={onClose}
-      userType="Admin"
-      userId={userId}
-      userName={userName}
-      onLogout={onLogout}
-    />
+    <div className="cart-panel-overlay" onClick={onClose}>
+      <RestrictedCartPanel
+        onClose={onClose}
+        userType="Admin"
+        userId={userId}
+        userName={userName}
+        onLogout={onLogout}
+      />
+    </div>
+    
   );
 
 }
