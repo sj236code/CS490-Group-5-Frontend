@@ -120,19 +120,6 @@ body {
   width: 100%;
 }
 
-.nav-bar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 310px;
-  height: 100vh;
-  background-color: #66785F;
-  padding: 1rem;
-  z-index: 1000;
-  display: flex;
-  flex-direction: column;
-}
-
 .cart-panel {
   position: fixed;
   top: 0;
@@ -145,23 +132,14 @@ body {
   z-index: 1000;
 }
 
-.nav-close-button {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background-color: #D9E9CF;
-  color: #4B5945;
-  cursor: pointer;
-  border-color: #4B5945;
-  border-radius: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-}
-
-.nav-close-button:hover {
-  background-color: #B6CEB4;
+.cart-panel-overlay {
+    position: fixed; 
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.4); 
+    z-index: 999; 
 }
 
 .cart-panel-close-button {
@@ -530,6 +508,50 @@ body {
 
 /* Registered User Nav Bar = nb */
 
+.nav-bar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+
+    background-color: rgba(0, 0, 0, 0.4); 
+    z-index: 999; 
+    display: flex;
+}
+
+.nav-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 310px;
+  height: 100vh;
+  background-color: #66785F;
+  padding: 1rem;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+}
+
+.nav-close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #D9E9CF;
+  color: #4B5945;
+  cursor: pointer;
+  border-color: #4B5945;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.nav-close-button:hover {
+  background-color: #B6CEB4;
+}
+
 .nb-profile-section {
   display: flex;
   align-items: flex-start;
@@ -591,6 +613,8 @@ body {
   color: white;
   font-size: 1.1rem;
 }
+
+
 
 /* Search Page: Search Bar */
 
@@ -3707,4 +3731,130 @@ label {
   text-align: center;
   color: #777;
   margin: 40px 0;
+}
+
+/* UserProfile Dropdown on LandingPage */
+
+/* UserProfile Dropdown on LandingPage */
+.userprof-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+/* Top pill (name + icon) – matches sign-in button / header style */
+.userprof-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.95rem;
+  padding: 8px 18px;
+  border-radius: 9999px;
+  border: 2px solid #4B5945;
+  background-color: transparent;
+  color: #4B5945;
+  transition: background-color 0.2s ease;
+  line-height: 1;
+}
+
+.userprof-pill:hover {
+  background-color: rgba(75, 89, 69, 0.1); /* same vibe as .sign-in-button:hover */
+}
+
+/* Make sure the icon fits nicely */
+.userprof-pill svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Dropdown container – matches Jade greens & cards */
+.userprof-dropdown {
+  position: absolute;
+  right: 0;
+  margin-top: 8px;
+  min-width: 160px;
+  background-color: #D9E9CF;
+  border-radius: 10px;
+  border: 1px solid #4B5945;
+  box-shadow: 0 4px 12px rgba(75, 89, 69, 0.25);
+  padding: 6px 0;
+  z-index: 1000;
+}
+
+/* Dropdown button – styled like your other CTAs */
+.userprof-dropdown button {
+  width: 100%;
+  text-align: left;
+  padding: 8px 14px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #2F3A2B;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.2s ease;
+}
+
+.userprof-dropdown button:hover {
+  background-color: #B6CEB4;
+}
+
+/* Salon Shop Tab Customer Check Error Modal */
+.error-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.error-modal {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
+  max-width: 420px;
+  width: 90%;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
+  position: relative;
+}
+
+.error-modal-close {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.error-modal-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #33422c
+}
+
+.error-modal-message {
+  font-size: 0.95rem;
+  margin-bottom: 1.25rem;
+  color: #333;
+}
+
+.error-modal-ok {
+  padding: 0.5rem 1.2rem;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  background: #5A6A54;
+  color: #ffffff;
 }
