@@ -19,6 +19,8 @@ const EmployeePaymentPortal = () => {
   console.log("userFromState.profile_id:", userFromState?.profile_id);
   console.log("userIdFromState:", userIdFromState);
   console.log("Final employeeId:", employeeId);
+  console.log("userFromState.profile_id:", userFromState?.profile_id);
+  console.log("userId:", userIdFromState);
 
   const [currentPeriod, setCurrentPeriod] = useState(null);
   const [payrollHistory, setPayrollHistory] = useState([]);
