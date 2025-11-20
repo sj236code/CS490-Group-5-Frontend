@@ -1,6 +1,6 @@
 // src/components/BookAppt.jsx
 import { useState, useEffect, useMemo } from "react";
-import { X } from "lucide-react";
+import { X, CheckCircle } from "lucide-react";
 import { format, addDays, isSameDay } from "date-fns";
 import { EVENT_COLORS } from "../salon_dashboard/OwnerCalendarView";
 
@@ -285,7 +285,14 @@ function BookAppt({ isOpen, onClose, service, salon, customerId }) {
                       </div>
                       {emp.status && (
                         <div className="book-appt-employee-status">
-                          {emp.status}
+                          {emp.status.toUpperCase() === "APPROVED" ? (
+                            <span className="verified-badge">
+                              <CheckCircle size={14} strokeWidth={2} className="verified-icon" />
+                              Verified
+                            </span>
+                          ) : (
+                            emp.status
+                          )}
                         </div>
                       )}
                     </div>
