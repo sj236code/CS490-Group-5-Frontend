@@ -47,6 +47,9 @@ function SalonShopTab({salon, userType, user}){
     const [isPurchaseProductModalOpen, setPurchaseProductModalOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
 
+    // Error Modal- if other user
+    const [errorMessage, setErrorMessage] = useState("");
+
     // Load Services & Products when component mounts
     useEffect(() => {
         if (salon?.id){
