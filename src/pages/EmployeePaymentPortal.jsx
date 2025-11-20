@@ -69,6 +69,8 @@ const EmployeePaymentPortal = () => {
       console.log("Payroll history from backend:", historyData);
       setPayrollHistory(historyData.history);
 
+      console.log("payrollHistory array:", payrollHistory);
+
       // Fetch monthly total
       const monthlyResponse = await fetch(
         `${import.meta.env.VITE_API_URL}/api/employee_payroll/${employeeId}/monthly-total`
