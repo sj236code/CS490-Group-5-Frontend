@@ -24,7 +24,6 @@ import Checkout from './pages/checkout&payment/Checkout.jsx';
 import CustomerLoyalty from './pages/CustomerLoyalty.jsx';
 import MyWallet from './pages/MyWallet.jsx';
 import EmployeeAvailability from "./pages/EmployeeAvailability";
-import EmployeeSchedule from "./pages/EmployeeSchedule";
 import EmployeeAppointments from "./pages/EmployeeAppointments.jsx";
 import UserGallery from "./pages/UserGallery.jsx";
 import SalonSettings from "./pages/SalonSettings.jsx";
@@ -208,7 +207,6 @@ function App() {
         {/* Employee Nav Bar Routes */}
         <Route path="/employee-appointments" element={<EmployeeAppointments />} />
         <Route path="/employee-availability" element={<EmployeeAvailability />} />
-        <Route path="/employee-schedule" element={<EmployeeSchedule />} />
 
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/faq" element={<FAQPage />} />
