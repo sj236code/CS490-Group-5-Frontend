@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import SalonCard from "./SalonCard";
 import { useNavigate } from 'react-router-dom';
 
-function SalonsSection({userType}){
+function SalonsSection({userType, user}){
 
     const navigate = useNavigate();
 
@@ -10,6 +10,7 @@ function SalonsSection({userType}){
         navigate(path, {
             state: {
                 userType,
+                user
             }
         });
     };
@@ -97,7 +98,7 @@ function SalonsSection({userType}){
         console.log(`Clicked on salon ID: `, salon);
         //navigate line goes here
         navigate('/salon', {
-            state: { salon, userType }
+            state: { salon, userType, user }
         });
     };
 

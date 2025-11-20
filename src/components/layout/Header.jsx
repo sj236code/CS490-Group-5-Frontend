@@ -144,7 +144,7 @@ function Header({userType, userId, onPickRole, onCycleRole, onLogout }){
 
     const whichCartPanel = () => {
         if(userType === 'CUSTOMER'){
-            return <CustomerCartPanel onClose={toggleCartPanel} />
+            return <CustomerCartPanel onClose={toggleCartPanel} user={userProfile}/>
         }
         else if(userType === 'EMPLOYEE'){
             return <EmployeeCartPanel onClose={toggleCartPanel} userId={userId}/>

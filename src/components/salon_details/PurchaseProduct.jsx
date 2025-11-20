@@ -2,10 +2,13 @@ import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { resolvePath } from 'react-router-dom';
 
-function PurchaseProduct({ isOpen, onClose, product, salon }) {
+function PurchaseProduct({ isOpen, onClose, product, salon, customerId }) {
+
+  // console.log("Purchasing Product for: ", customerId);
+
   const [qty, setQty] = useState(1);
   const [cartData, setCartData] = useState({
-    user_id: 1,            // TODO: replace with real user
+    user_id: customerId,
     product_id: '',
     product_name: '',
     quantity: 1,

@@ -9,12 +9,18 @@ import AboutTab from '../components/salon_details/AboutTab';
 function SalonDetailsPage() {
     const location = useLocation();
     const navigate = useNavigate();
-    const { salon, userType } = location.state || {};
+    const { salon, userType, user } = location.state || {};
 
     const [salonDetails, setSalonDetails] = useState(salon);
     const [workingTab, setWorkingTab] = useState("About");
 
     const [services, setServices] = useState([]);
+
+    const customerId = user?.profile_id ?? '-';
+    const userRole = user?.role ?? '-';
+
+    console.log("SALONDETAILS: CUSTOMER ID: ", customerId);
+    console.log("SALONDETAILS USERTYPE: ", userRole);
 
     // Do I have to handle possible error if no valid salon is passed?
     useEffect(() => {
@@ -111,7 +117,7 @@ function SalonDetailsPage() {
                 )}
                 {workingTab =="Shop" && (
                     <div>
-                        <SalonShopTab salon={salonDetails} userType={userType}/>
+                        <SalonShopTab salon={salonDetails} userType={userType} user={user}/>
                     </div>
                 )}
             </div>

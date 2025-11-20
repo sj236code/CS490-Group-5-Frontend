@@ -2,23 +2,17 @@ import { useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import LandingSearchBar from './LandingSearchBar';
 
-function HeroSection({userType}){
+function HeroSection({userType, user}){
     const navigate = useNavigate();
 
-    const navTo = (path) => {
-        navigate(path, {
-            state: {
-                userType,
-            }
-        });
-    };
+    console.log("HeroSection- ", user?.profile_id ?? '-');
 
     return(
         <section className="hero-section">
             <h1 className='hero-title'>
                 Find & Book Local<br />Beauty Professionals
             </h1>
-            <LandingSearchBar navTo={navTo} userType={userType}/>
+            <LandingSearchBar userType={userType} user={user}/>
         </section>
     );
 

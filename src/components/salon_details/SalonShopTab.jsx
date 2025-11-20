@@ -5,7 +5,9 @@ import SalonProductCard from './SalonProductCard';
 import BookAppt from './BookAppt';
 import PurchaseProduct from './PurchaseProduct';
 
-function SalonShopTab({salon, userType}){
+function SalonShopTab({salon, userType, user}){
+
+    const customerId = user?.profile_id ?? '-';
 
     // Service Section
     const [services, setServices] = useState([]);
@@ -77,10 +79,12 @@ function SalonShopTab({salon, userType}){
         }
     };
 
-    console.log("SalonShopTab userType:", userType, typeof userType);
+    // console.log("SalonShopTab userType:", userType, typeof userType);
+    const userRole = user?.role ?? '-';
+    console.log("SALONDETAILS USERTYPE: ", userRole);
 
     const addServiceToCart = (service, salon) => {
-        if(userType != "CUSTOMER"){
+        if(userRole != "CUSTOMER"){
             setErrorMessage("Sign in as a customer to continue with checkout.");
             return;
         }
@@ -107,7 +111,7 @@ function SalonShopTab({salon, userType}){
     };
 
     const addProductToCart = (product) => {
-        if(userType != "CUSTOMER"){
+        if(userRole != "CUSTOMER"){
             setErrorMessage("Sign in as a customer to continue with checkout.");
             return;
         }
@@ -186,6 +190,7 @@ function SalonShopTab({salon, userType}){
                 onClose={() => setIsBookingModalOpen(false)}
                 service={selectedService}
                 salon={salon}
+                customerId={customerId}
             />
 
             <PurchaseProduct
@@ -193,6 +198,7 @@ function SalonShopTab({salon, userType}){
                 onClose={() => setPurchaseProductModalOpen(false)}
                 product={selectedProduct}
                 salon={salon}
+                customerId={customerId}
             />
         </div>
     );
