@@ -2,7 +2,7 @@ import { Search, MapPin } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-function LandingSearchBar({userType}) {
+function LandingSearchBar() {
 
     const [wordEntered, setWordEntered] = useState(""); // User Search Query
     const [selectedCity, setSelectedCity] = useState(null); // Default City 
@@ -97,8 +97,7 @@ function LandingSearchBar({userType}) {
                 results: searchResults,
                 cities: cities,
                 query: wordEntered,
-                city: searchLocation,
-                userType
+                city: searchLocation
             }
         });
     };
