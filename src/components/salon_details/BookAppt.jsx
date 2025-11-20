@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 
-function BookAppt({isOpen, onClose, service, salon}){
+function BookAppt({isOpen, onClose, service, salon, customerId}){
     
+    // console.log("Booking Appt for: ", customerId);
+
     const [currentStep, setCurrentStep] = useState(1);
     const [bookingData, setBookingData] = useState({
-        user_id: 1, //Temp hardcode the user booking
+        user_id: customerId,
         service_id: '',
         quantity: 1,
         appt_date: '',

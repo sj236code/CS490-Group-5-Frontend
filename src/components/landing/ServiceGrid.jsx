@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Scissors, Hand, Sparkles, Star, Palette } from 'lucide-react';
 
 // Under HeroSection, ServicesGrid with ServiceCard components organized
-function ServiceGrid(){
+function ServiceGrid({user}){
 
     const navigate = useNavigate();
 
@@ -71,7 +71,8 @@ function ServiceGrid(){
         navigate('/search', {
             state: {
                 presetTypeFilter: service.filterType,
-                query: service.name
+                query: service.name,
+                user
             }
         });
     };

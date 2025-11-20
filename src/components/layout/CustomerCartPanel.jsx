@@ -2,14 +2,14 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronRight, Trash2, ShoppingCart, Scissors, Milk } from 'lucide-react';
 
-function CustomerCartPanel({ onClose, cartItems }) {
+function CustomerCartPanel({ onClose, user }) {
     const [cart, setCart] = useState(null); // Cart data
     const navigate = useNavigate();
 
+    const customerId = user?.profile_id ?? userId ?? '-';
+
     // Correctly navigate and pass fetched cart items
     const handleCheckout = () => {
-
-        const customerId = cart.user_id
 
         if (!cart || !cart.items || cart.items.length === 0) {
             console.warn("Cart is empty — cannot proceed to checkout.");
@@ -31,12 +31,15 @@ function CustomerCartPanel({ onClose, cartItems }) {
 
     // Fetch cart when component mounts
     useEffect(() => {
+        if(!customerId) return;
         fetchCart();
     }, []);
 
     const fetchCart = async () => {
-        const userId = 1; // hardcoded for testing
-        const url = `${import.meta.env.VITE_API_URL}/api/cart/${userId}`;
+        // const userId = 1; // hardcoded for testing
+        const url = `${import.meta.env.VITE_API_URL}/api/cart/${customerId}`;
+
+        console.log("Importing cart from customer: ", customerId);
 
         try {
             const res = await fetch(url);

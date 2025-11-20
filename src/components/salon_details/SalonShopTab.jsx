@@ -1,11 +1,32 @@
 import { useState, useEffect } from 'react';
-import {Star, ChevronLeft, ChevronRight} from 'lucide-react';
+import {Star, X, ChevronLeft, ChevronRight} from 'lucide-react';
 import SalonServiceCard from './SalonServiceCard';
 import SalonProductCard from './SalonProductCard';
 import BookAppt from './BookAppt';
 import PurchaseProduct from './PurchaseProduct';
 
-function SalonShopTab({salon}){
+function ErrorModal({ message, onClose }) {
+    if (!message) return null;
+
+    return (
+        <div className="error-modal-backdrop" onClick={onClose}>
+            <div className="error-modal" onClick={(e) => e.stopPropagation()}>
+                <button type="button" className="error-modal-close" onClick={onClose}>
+                    <X size={18} />
+                </button>
+
+                <h3 className="error-modal-title">Heads up</h3>
+                <p className="error-modal-message">{message}</p>
+
+                <button type="button" className="error-modal-ok" onClick={onClose}>OK</button>
+            </div>
+        </div>
+    );
+}
+
+function SalonShopTab({salon, userType, user}){
+
+    const customerId = user?.profile_id ?? '-';
 
     // Service Section
     const [services, setServices] = useState([]);
@@ -75,7 +96,16 @@ function SalonShopTab({salon}){
         }
     };
 
+    // console.log("SalonShopTab userType:", userType, typeof userType);
+    const userRole = user?.role ?? '-';
+    console.log("SALONDETAILS USERTYPE: ", userRole);
+
     const addServiceToCart = (service, salon) => {
+        if(userRole != "CUSTOMER"){
+            setErrorMessage("Sign in as a customer to continue with checkout.");
+            return;
+        }
+        setErrorMessage("");
         setSelectedService(service);
         setIsBookingModalOpen(true);
         console.log("Booking modal for following service opening: ", service);
@@ -98,6 +128,11 @@ function SalonShopTab({salon}){
     };
 
     const addProductToCart = (product) => {
+        if(userRole != "CUSTOMER"){
+            setErrorMessage("Sign in as a customer to continue with checkout.");
+            return;
+        }
+        setErrorMessage("");
         console.log("PurchaseProduct Modal opening for: ", product);
         setSelectedProduct(product);
         setPurchaseProductModalOpen(true);
@@ -117,6 +152,8 @@ function SalonShopTab({salon}){
 
     return (
         <div className="salon-shop-tab">
+            <ErrorModal message={errorMessage} onClose={() => setErrorMessage("")} />
+            
             {/* Services */}
             <h2 className="shop-service-title">Available Services:</h2>
             <div className="shop-carousel">
@@ -166,6 +203,7 @@ function SalonShopTab({salon}){
                 onClose={() => setIsBookingModalOpen(false)}
                 service={selectedService}
                 salon={salon}
+                customerId={customerId}
             />
 
             <PurchaseProduct
@@ -173,6 +211,7 @@ function SalonShopTab({salon}){
                 onClose={() => setPurchaseProductModalOpen(false)}
                 product={selectedProduct}
                 salon={salon}
+                customerId={customerId}
             />
         </div>
     );
