@@ -880,10 +880,10 @@ body {
 }
 
 .book-appt-modal--calendar {
-  width: 1500px;
-  height: 750px;
-  max-width: 96vw;
-  max-height: 90vh;
+  width: 2300px;
+  height: 800px;
+  max-width: 100vw;
+  max-height: 95vh;
 }
 
 /* two-column layout – if you don't already have this */
@@ -1080,19 +1080,26 @@ body {
   border-radius: 12px;
   border: 1px solid #d1ddc6;
   padding: 12px;
-  height: 430px; 
+  height: 550px;
   overflow: hidden;
 }
 
-.book-appt-calendar-card .rbc-calendar {
-  height: 100%;
+.book-appt-calendar-card {
+  height: 70vh; 
 }
 
 .modal-content.book-appt-modal {
-  width: auto;
-  height: auto;
   max-width: none;
   max-height: none;
+  width: auto;
+  height: auto;
+}
+
+.modal-content.book-appt-modal.book-appt-modal--calendar {
+  width: 1500px;  
+  height: 850px;
+  max-width: 98vw; 
+  max-height: 95vh;
 }
 
 /* Header */
@@ -1448,11 +1455,18 @@ body {
 /* Booking Modal */
 
 .modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.45);
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start; 
+  padding: 24px;
   overflow: auto;
-  padding: 20px;
+  z-index: 1000;
 }
 
 .modal-content {
