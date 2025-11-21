@@ -45,13 +45,15 @@ function BookAppt({ isOpen, onClose, service, salon, customerId }) {
   const [calendarDate, setCalendarDate] = useState(new Date());
   const [calendarEvents, setCalendarEvents] = useState([]);
 
-  const [tempEvent, setTempEvent] = useState(null); // NEW: temporary selected block
+  const [tempEvent, setTempEvent] = useState(null); // temp selected block
 
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  const [employeeSchedule, setEmployeeSchedule] = useState([]); // NEW
+  const [employeeSchedule, setEmployeeSchedule] = useState([]);
+  const [notes, setNotes] = useState("");  // NEW
+
 
 
   // Calendar vertical bounds
@@ -75,7 +77,7 @@ function BookAppt({ isOpen, onClose, service, salon, customerId }) {
     return tempEvent ? [...calendarEvents, tempEvent] : calendarEvents;
   }, [calendarEvents, tempEvent]);
 
-  // ---- RESET WHEN OPEN/CLOSE ----
+  // RESET WHEN OPEN/CLOSE
   useEffect(() => {
     if (isOpen) {
       setError("");
@@ -85,11 +87,13 @@ function BookAppt({ isOpen, onClose, service, salon, customerId }) {
       setSelectedSlotLabel("");
       setCalendarDate(new Date());
       setCalendarEvents([]);
-      setTempEvent(null); // NEW
+      setTempEvent(null); 
+      setNotes("");
     } 
     else {
       setEmployees([]);
-      setTempEvent(null); // NEW
+      setTempEvent(null); 
+      setNotes("");
     }
   }, [isOpen]);
 
@@ -414,7 +418,8 @@ function BookAppt({ isOpen, onClose, service, salon, customerId }) {
     setSelectedEmployeeId(null);
     setSelectedDate(null);
     setSelectedSlotLabel("");
-    setTempEvent(null); // NEW
+    setTempEvent(null);
+    setNotes("");
     onClose && onClose();
   };
 
@@ -450,7 +455,7 @@ function BookAppt({ isOpen, onClose, service, salon, customerId }) {
         appt_time: timeStr,
         stylist: selectedEmployeeId,
         pictures: [],
-        notes: null,
+        notes: notes?.trim() || null,
       };
 
       const cartRes = await fetch(`${API_BASE}/api/cart/add-service`, {
@@ -470,9 +475,9 @@ function BookAppt({ isOpen, onClose, service, salon, customerId }) {
         );
       }
 
-      setSuccessMessage(
-        "Appointment time has been added to your cart. Complete checkout to confirm the booking."
-      );
+      // Close the modal after a successful add
+      handleClose();
+
     } catch (err) {
       console.error(err);
       setError(err.message || "Something went wrong while adding to cart.");
@@ -480,6 +485,7 @@ function BookAppt({ isOpen, onClose, service, salon, customerId }) {
       setSubmitting(false);
     }
   };
+
 
   const canSubmit = !!selectedEmployeeId && !!selectedDate && !submitting;
 
@@ -664,6 +670,19 @@ function BookAppt({ isOpen, onClose, service, salon, customerId }) {
                       },
                     };
                   }}
+                  />
+                </div>
+
+                <div className="book-appt-notes">
+                  <label className="book-appt-notes-label">
+                    Notes for your stylist (optional)
+                  </label>
+                  <textarea
+                    className="book-appt-notes-textarea"
+                    placeholder="e.g., hair length, goals, sensitivities, specific requests…"
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    rows={3}
                   />
                 </div>
 

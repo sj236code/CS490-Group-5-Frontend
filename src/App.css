@@ -1136,6 +1136,35 @@ body {
   transform: translateY(-1px);
 }
 
+.book-appt-notes {
+  margin-top: 10px;
+}
+
+.book-appt-notes-label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #4B5945;
+  margin-bottom: 4px;
+}
+
+.book-appt-notes-textarea {
+  width: 100%;
+  border-radius: 10px;
+  border: 1.5px solid #d0ddc6;
+  padding: 8px 10px;
+  font-size: 0.9rem;
+  resize: vertical;
+  min-height: 70px;
+  background-color: #f7f8f5;
+}
+
+.book-appt-notes-textarea:focus {
+  outline: none;
+  border-color: #4B5945;
+  background-color: #ffffff;
+}
+
 /* Service row */
 
 .book-appt-service-row {
