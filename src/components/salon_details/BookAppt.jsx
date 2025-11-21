@@ -141,6 +141,17 @@ function BookAppt({ isOpen, onClose, service, salon, customerId }) {
     loadEmployees();
   }, [isOpen, salon?.id, API_BASE]);
 
+  // Format "Wed, Nov 20 • 1:00 – 1:30 PM"
+  const formatSelectedSlot = (start, end) => {
+    if (!start || !end) return "";
+
+    const datePart = format(start, "EEE, MMM d");
+    const startPart = format(start, "h:mm a");
+    const endPart = format(end, "h:mm a");
+
+    return `${datePart} • ${startPart} – ${endPart}`;
+  };
+
   // ---- SLOT SELECT FROM CALENDAR ----
   const handleSlotSelect = (slotInfo) => {
     setSuccessMessage("");
@@ -184,7 +195,7 @@ function BookAppt({ isOpen, onClose, service, salon, customerId }) {
 
     setTempEvent(newTempEvent);
     setSelectedDate(start);
-    setSelectedSlotLabel(format(start, "EEE, MMM d • h:mm a"));
+    setSelectedSlotLabel(formatSelectedSlot(start, end));
   };
 
   // LOAD STYLIST APPTS FOR WEEK ----
@@ -241,7 +252,7 @@ function BookAppt({ isOpen, onClose, service, salon, customerId }) {
 
     setTempEvent(updatedTemp);
     setSelectedDate(start);
-    setSelectedSlotLabel(format(start, "EEE, MMM d • h:mm a"));
+    setSelectedSlotLabel(formatSelectedSlot(start, end));
     setError("");
   };
 
@@ -402,9 +413,15 @@ function BookAppt({ isOpen, onClose, service, salon, customerId }) {
           <div className="book-appt-service-name">
             {service?.name || "Selected Service"}
           </div>
-          {service?.price && (
+          {(service?.price || service?.duration) && (
             <div className="book-appt-service-price">
-              ${Number(service.price).toFixed(2)}
+              {service?.price && `$${Number(service.price).toFixed(2)}`}
+              {service?.duration && (
+                <span className="book-appt-service-duration">
+                  {service?.price ? " • " : ""}
+                  {service.duration} min
+                </span>
+              )}
             </div>
           )}
         </div>
