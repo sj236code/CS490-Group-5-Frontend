@@ -49,13 +49,13 @@ function Checkout() {
         if (!isoDateString) return "";
 
         console.log("Converting ISO date:", isoDateString);
-        
+
         const dateMatch = isoDateString.match(/^(\d{4})-(\d{2})-(\d{2})/);
 
         if (dateMatch) {
-            const year = dateMatch[1].slice(-2); 
-            const month = dateMatch[2]; 
-            
+            const year = dateMatch[1].slice(-2);
+            const month = dateMatch[2];
+
             const formatted = `${month}/${year}`;
             console.log("Converted from YYYY-MM-DD to MM/YY:", formatted);
             return formatted;
@@ -63,21 +63,21 @@ function Checkout() {
 
         try {
             const date = new Date(isoDateString);
-            
+
             if (isNaN(date.getTime())) {
                 console.warn("Invalid date format could not be parsed:", isoDateString);
                 return "";
             }
-            
+
             // Extract month (0-11) and add 1, then pad to 2 digits
             const month = String(date.getMonth() + 1).padStart(2, '0');
-            
+
             // Extract last 2 digits of year
             const year = String(date.getFullYear()).slice(-2);
-            
+
             const formatted = `${month}/${year}`;
             console.log("Converted from ISO via Date Object to MM/YY:", formatted);
-            
+
             return formatted;
         } catch (error) {
             console.error("Error converting date:", error);
@@ -91,8 +91,8 @@ function Checkout() {
             console.debug("No customer_id present; skipping fetch of saved payment methods.");
             return;
         }
-        
-        console.log("Customer ID found, starting fetch:", customer_id); 
+
+        console.log("Customer ID found, starting fetch:", customer_id);
 
         const fetchMethods = async () => {
             try {
@@ -110,23 +110,23 @@ function Checkout() {
                 // set default card if present
                 const defaultCard = methods.find((m) => m.is_default);
                 if (defaultCard) {
-                    console.log("Setting default card, calling convertISOToMMYY:", defaultCard); // LOG MODIFIED
+                    console.log("Setting default card, calling convertISOToMMYY:", defaultCard);
                     setSelectedCardId(defaultCard.id);
                     setCardDetails((prev) => ({
                         ...prev,
                         name: defaultCard.card_name || "",
                         // This call now uses the more robust conversion function
                         expiry: convertISOToMMYY(defaultCard.expiration || defaultCard.Expiration || defaultCard.expiry),
-                        number: "",
+                        // ⭐ CHANGE 1: Set number field to masked value on load for default card
+                        number: "************" + (defaultCard.last4 || ""), 
                         cvv: "",
                         zip: "",
                     }));
                 } else {
-                     console.log("No default card found in saved methods. Skipping expiry conversion."); // LOG ADDED
+                    console.log("No default card found in saved methods. Skipping expiry conversion.");
                 }
             } catch (error) {
                 console.error("Failed to fetch saved payment methods:", error);
-                // Helpful hint: show network response body if present
                 if (error.response) {
                     console.debug("server response:", error.response.status, error.response.data);
                 }
@@ -142,6 +142,7 @@ function Checkout() {
         setSelectedCardId(selectedId);
 
         if (!selectedId) {
+            // Reset to empty for "Use a New Card" option
             setCardDetails({ name: "", number: "", expiry: "", cvv: "", zip: "" });
             return;
         }
@@ -149,17 +150,17 @@ function Checkout() {
         const selectedMethod = savedMethods.find((m) => m.id === Number(selectedId));
         if (selectedMethod) {
             console.log("Selected method data:", selectedMethod);
-            
-            // Use the new conversion function
+
             const formattedExpiry = convertISOToMMYY(selectedMethod.expiration || selectedMethod.Expiration || selectedMethod.expiry);
             console.log("Final formatted expiration for display: ", formattedExpiry);
-            
+
             setCardDetails({
                 name: selectedMethod.card_name || "",
-                number: "", 
+                // ⭐ CHANGE 2: Pre-fill card number with 12 asterisks
+                number: "************" + (selectedMethod.last4 || ""),
                 expiry: formattedExpiry,
                 cvv: "",
-                zip: "", 
+                zip: "",
             });
         }
     };
@@ -169,8 +170,8 @@ function Checkout() {
         const { name, value } = e.target;
         let newValue = value;
 
-        // if a saved card was selected and user edits a field, clear selectedCardId (this indicates "use new card")
-        if (selectedCardId !== "") {
+        // If a saved card was selected and user edits a non-number field, clear selectedCardId (this indicates "use new card")
+        if (selectedCardId !== "" && name !== "number" && name !== "cvv" && name !== "zip") {
             setSelectedCardId("");
         }
 
@@ -179,17 +180,26 @@ function Checkout() {
                 newValue = value.replace(/[^A-Za-z\s]/g, "");
                 break;
             case "number":
-                newValue = value.replace(/\D/g, "").slice(0, 16);
+                if (selectedCardId) {
+                    // ⭐ CHANGE 3: Only allow changing the last 4 digits for a saved card
+                    const cleanInput = value.replace(/\D/g, "");
+                    const last4Digits = cleanInput.slice(-4);
+                    // Force the first 12 digits to be asterisks
+                    newValue = "************" + last4Digits;
+                } else {
+                    // Normal handling for a new card
+                    newValue = value.replace(/\D/g, "").slice(0, 16);
+                }
                 break;
             case "expiry":
                 // Allow digits and slash, format as MM/YY
                 newValue = value.replace(/[^\d/]/g, "");
-                
+
                 // Auto-insert slash after 2 digits
                 if (newValue.length === 2 && !newValue.includes('/')) {
                     newValue = newValue + '/';
                 }
-                
+
                 // Limit to MM/YY format (5 characters max)
                 if (newValue.length > 5) {
                     newValue = newValue.slice(0, 5);
@@ -223,19 +233,40 @@ function Checkout() {
         if (paymentMethod === "card") {
             if (selectedCardId === "") {
                 const { name, number, expiry, cvv, zip } = cardDetails;
-                // For validation, check if expiry has 5 characters (MM/YY format)
+                // Validation for a completely new card (unchanged)
                 if (!name || !number || !expiry || !cvv || !zip || number.length < 16 || expiry.length < 5 || cvv.length < 3 || zip.length < 5) {
                     alert("Please fill out all NEW card details before proceeding.");
                     return;
                 }
             } else {
-                const { cvv } = cardDetails;
+                // Logic for a SAVED card
+                const { number, cvv } = cardDetails;
+                const selectedMethod = savedMethods.find((m) => m.id === Number(selectedCardId));
+
+                if (!selectedMethod) {
+                     alert("Error: Saved card details not found.");
+                     return;
+                }
+
+                // 1. CVV check (unchanged)
                 if (cvv.length < 3) {
                     alert("Please enter the 3-digit CVV for the saved card.");
                     return;
                 }
+
+                // 2. ⭐ CHANGE 4: Card Number Match Validation
+                const last4Input = number.slice(-4);
+                const actualLast4 = selectedMethod.last4;
+                
+                if (last4Input !== actualLast4) {
+                    alert("The last 4 digits you entered do not match the saved card's last 4 digits. Please check the number and try again.");
+                    return;
+                }
+                // Validation passed, proceed
             }
         }
+
+        // --- Payment Confirmation and API Call (unchanged) ---
 
         const maskedCard =
             paymentMethod === "card"
@@ -243,6 +274,8 @@ function Checkout() {
                     ? `Saved Card ending in ${savedMethods.find(m => m.id === Number(selectedCardId))?.last4}`
                     : `${"*".repeat(12)} ${cardDetails.number.slice(-4)}`
                 : null;
+        
+        // ... (rest of booking data construction remains the same)
 
         const totalServiceDuration = cartItems
             .filter((item) => item.item_type === "service")
@@ -443,7 +476,9 @@ function Checkout() {
                         <input
                             name="number"
                             type="text"
-                            placeholder="1234 5678 9012 3456"
+                            // If a saved card is selected, the input will be readonly for the first 12 digits
+                            maxLength={selectedCardId ? 16 : undefined}
+                            placeholder="**** **** **** 1234"
                             value={cardDetails.number}
                             onChange={handleChange}
                         />
