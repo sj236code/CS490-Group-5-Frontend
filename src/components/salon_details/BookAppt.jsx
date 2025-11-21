@@ -262,7 +262,7 @@ function BookAppt({ isOpen, onClose, service, salon, customerId }) {
   };
 
 
-  // LOAD STYLIST APPTS FOR WEEK
+  // LOAD STYLIST APPTS FOR WWwek
   useEffect(() => {
     if (!selectedEmployeeId) {
       setCalendarEvents([]);
@@ -272,20 +272,57 @@ function BookAppt({ isOpen, onClose, service, salon, customerId }) {
     const weekStart = startOfWeek(calendarDate, { weekStartsOn: 0 });
     const weekEnd = endOfWeek(calendarDate, { weekStartsOn: 0 });
 
-    // Placeholder for real appointments; currently just clears events.
-    // When you wire an endpoint that returns this stylist's weekly appointments,
-    // map them into { start: Date, end: Date, title, resource: { colorIndex } }
-    console.log(
-      "Would load appointments for employee",
-      selectedEmployeeId,
-      "between",
-      weekStart.toISOString(),
-      "and",
-      weekEnd.toISOString()
-    );
+    const loadAppointments = async () => {
+      try {
+        // Re-use the same endpoint you use in DashboardCalendarTab
+        const res = await fetch(`${API_BASE}/api/employeesapp/${selectedEmployeeId}/appointments/upcoming`);
 
-    setCalendarEvents([]);
-  }, [selectedEmployeeId, calendarDate]);
+        if (!res.ok) {
+          console.error("Failed to load stylist appointments");
+          setCalendarEvents([]);
+          return;
+        }
+
+        const data = await res.json();
+        // Find this stylist's color index so busy blocks match their color
+        const colorIndex =
+          (employees.find((e) => e.id === selectedEmployeeId)?.colorIndex ??
+            0) % EVENT_COLORS.length;
+
+        // Map response -> react-big-calendar events
+        const mapped = (data || [])
+          .map((a) => {
+            // Adjust property names if endpoint uses different ones
+            const start = a.start_at ? new Date(a.start_at) : null;
+            const end = a.end_at ? new Date(a.end_at) : null;
+            if (!start || !end) return null;
+
+            return {
+              id: a.appointment_id || a.id,
+              title: a.service_name || "Booked",
+              start,
+              end,
+              resource: {
+                colorIndex,
+                status: a.status,
+                isTemp: false,
+              },
+            };
+          })
+          .filter(Boolean)
+          // only keep events in currently visible week
+          .filter((ev) => ev.start >= weekStart && ev.start <= weekEnd);
+
+        setCalendarEvents(mapped);
+      } catch (err) {
+        console.error("Error loading stylist appointments:", err);
+        setCalendarEvents([]);
+      }
+    };
+
+    loadAppointments();
+  }, [selectedEmployeeId, calendarDate, API_BASE, employees]);
+
 
   // DRAG & DROP HANDLERS FOR TEMP EVENT
   const handleEventDrop = ({ event, start }) => {
