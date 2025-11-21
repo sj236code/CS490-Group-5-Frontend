@@ -33,7 +33,7 @@ const localizer = dateFnsLocalizer({
 function BookAppt({ isOpen, onClose, service, salon, customerId }) {
   const API_BASE = import.meta.env.VITE_API_URL;
 
-  // ---- STATE ----
+  // STATE
   const [employees, setEmployees] = useState([]);
   const [loadingEmployees, setLoadingEmployees] = useState(false);
 
@@ -51,19 +51,15 @@ function BookAppt({ isOpen, onClose, service, salon, customerId }) {
   const [successMessage, setSuccessMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
+  const [employeeSchedule, setEmployeeSchedule] = useState([]); // NEW
+
+
   // Calendar vertical bounds
-  const minTime = useMemo(
-    () => new Date(1970, 0, 1, 8, 0, 0),
-    []
-  );
-  const maxTime = useMemo(
-    () => new Date(1970, 0, 1, 20, 0, 0),
-    []
-  );
+  const minTime = useMemo(() => new Date(1970, 0, 1, 8, 0, 0),[]);
+  const maxTime = useMemo(() => new Date(1970, 0, 1, 20, 0, 0),[]);
 
   // Selected employee object (for colorIndex, etc.) - NEW
-  const selectedEmployee =
-    employees.find((e) => e.id === selectedEmployeeId) || null;
+  const selectedEmployee = employees.find((e) => e.id === selectedEmployeeId) || null;
 
   // Helper: check if [start, end) overlaps any existing event - NEW
   const hasOverlap = (start, end, events) => {
@@ -90,13 +86,14 @@ function BookAppt({ isOpen, onClose, service, salon, customerId }) {
       setCalendarDate(new Date());
       setCalendarEvents([]);
       setTempEvent(null); // NEW
-    } else {
+    } 
+    else {
       setEmployees([]);
       setTempEvent(null); // NEW
     }
   }, [isOpen]);
 
-  // ---- LOAD EMPLOYEES (APPROVED ONLY) ----
+  // LOAD EMPLOYEES (APPROVED ONLY)
   useEffect(() => {
     if (!isOpen || !salon?.id) return;
 
@@ -105,9 +102,7 @@ function BookAppt({ isOpen, onClose, service, salon, customerId }) {
         setLoadingEmployees(true);
         setError("");
 
-        const res = await fetch(
-          `${API_BASE}/api/appointments/${salon.id}/employees`
-        );
+        const res = await fetch(`${API_BASE}/api/appointments/${salon.id}/employees`);
         if (!res.ok) {
           throw new Error("Unable to load stylists.");
         }
@@ -115,9 +110,7 @@ function BookAppt({ isOpen, onClose, service, salon, customerId }) {
         const raw = await res.json();
         const list = raw.employees || raw || [];
 
-        const approved = list.filter(
-          (emp) => emp.employment_status === "APPROVED"
-        );
+        const approved = list.filter((emp) => emp.employment_status === "APPROVED");
 
         const mapped = approved.map((emp, index) => ({
           id: emp.id,
@@ -129,17 +122,78 @@ function BookAppt({ isOpen, onClose, service, salon, customerId }) {
         }));
 
         setEmployees(mapped);
-      } catch (err) {
+      } 
+      catch (err) {
         console.error("Error loading stylists:", err);
         setError("Unable to load stylists for this salon.");
         setEmployees([]);
-      } finally {
+      } 
+      finally {
         setLoadingEmployees(false);
       }
     };
 
     loadEmployees();
   }, [isOpen, salon?.id, API_BASE]);
+
+  // Load Employee Schedule
+  useEffect(() => {
+    if (!isOpen || !selectedEmployeeId) {
+      setEmployeeSchedule([]);
+      return;
+    }
+
+    const loadSchedule = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/api/employees/${selectedEmployeeId}/schedule`);
+
+        if (!res.ok) {
+          console.error("Failed to load employee schedule");
+          setEmployeeSchedule([]);
+          return;
+        }
+
+        const data = await res.json();
+        const schedule = (data.schedule || []).map((rule) => {
+          // rule.start_time like "09:00:00" -> take HH:MM
+          const [sh, sm] = rule.start_time ? rule.start_time.split(":").map(Number) : [null, null];
+          const [eh, em] = rule.end_time ? rule.end_time.split(":").map(Number) : [null, null];
+
+          return {
+            weekday: rule.weekday, // 0=Sunday ... 6=Saturday (same as JS getDay)
+            startMinutes: sh != null && sm != null ? sh * 60 + sm : null,
+            endMinutes: eh != null && em != null ? eh * 60 + em : null,
+          };
+        });
+
+        setEmployeeSchedule(schedule);
+      } 
+      catch (err) {
+        console.error("Error loading employee schedule:", err);
+        setEmployeeSchedule([]);
+      }
+    };
+
+    loadSchedule();
+  }, [isOpen, selectedEmployeeId, API_BASE]);
+
+  // Check if a [start, end) slot is within the employee's working hours for that day
+  const isWithinEmployeeWorkingHours = (start, end) => {
+    if (!employeeSchedule || employeeSchedule.length === 0) return true; // if we don't know, don't block
+
+    const weekday = start.getDay(); // 0-6
+    const rule = employeeSchedule.find((r) => r.weekday === weekday);
+
+    if (!rule || rule.startMinutes == null || rule.endMinutes == null) {
+      // no schedule for this day = not working
+      return false;
+    }
+
+    const startMin = start.getHours() * 60 + start.getMinutes();
+    const endMin = end.getHours() * 60 + end.getMinutes();
+
+    return startMin >= rule.startMinutes && endMin <= rule.endMinutes;
+  };
 
   // Format "Wed, Nov 20 • 1:00 – 1:30 PM"
   const formatSelectedSlot = (start, end) => {
@@ -173,17 +227,20 @@ function BookAppt({ isOpen, onClose, service, salon, customerId }) {
     const start = slotInfo.start;
     const end = addMinutes(start, duration);
 
-    // 🚫 Block any time in the past
+    // Block any time in the past
     if (isInPast(start)) {
       setError("You can't book a time in the past. Please choose a future time.");
       return;
     }
 
+    if(!isWithinEmployeeWorkingHours(start,end)){
+      setError("This stylist is not scheduled to work during that time. Please choose a time within their working hours. ");
+      return;
+    }
+
     // Prevent overlap with existing events (busy slots)
     if (hasOverlap(start, end, calendarEvents)) {
-      setError(
-        "That time overlaps an existing appointment for this stylist. Please choose another time."
-      );
+      setError("That time overlaps an existing appointment for this stylist. Please choose another time.");
       return;
     }
 
@@ -205,7 +262,7 @@ function BookAppt({ isOpen, onClose, service, salon, customerId }) {
   };
 
 
-  // LOAD STYLIST APPTS FOR WEEK ----
+  // LOAD STYLIST APPTS FOR WEEK
   useEffect(() => {
     if (!selectedEmployeeId) {
       setCalendarEvents([]);
@@ -245,6 +302,11 @@ function BookAppt({ isOpen, onClose, service, salon, customerId }) {
     // Prevent dragging block into the past
     if (isInPast(start)) {
       setError("You can't move this appointment into the past. Please choose a future time.");
+      return;
+    }
+
+    if (!isWithinEmployeeWorkingHours(start, end)){
+      setError("This stylist is not scheduled to work durnig that time. Please choose a time within their working hours. ");
       return;
     }
 
@@ -523,18 +585,48 @@ function BookAppt({ isOpen, onClose, service, salon, customerId }) {
                     resizableAccessor={() => false}
                     draggableAccessor={(event) =>!!event?.resource?.isTemp}
                     slotPropGetter={(date) => {
-                      const now = new Date();
-                      if (date < now) {
-                        return {
-                          style: {
-                            backgroundColor: "#f5f5f5",
-                            opacity: 0.7,
-                            cursor: "not-allowed",
-                          },
-                        };
-                      }
-                      return {};
-                    }}
+                    const now = new Date();
+
+                    if (date < now) {
+                      return {
+                        style: {
+                          backgroundColor: "#f5f5f5",
+                          opacity: 0.7,
+                          cursor: "not-allowed",
+                        },
+                      };
+                    }
+
+                    if (!selectedEmployeeId || !employeeSchedule || employeeSchedule.length === 0) {
+                      return {style: {backgroundColor: "#ffffff",},};
+                    }
+
+                    const weekday = date.getDay();
+                    const minutes = date.getHours() * 60 + date.getMinutes();
+                    const rule = employeeSchedule.find((r) => r.weekday === weekday);
+
+                    if (!rule || rule.startMinutes == null || rule.endMinutes == null) {
+                      return {
+                        style: {
+                          backgroundColor: "#f7f7f7",
+                          opacity: 0.9,
+                          cursor: "not-allowed",
+                        },
+                      };
+                    }
+
+                    if (minutes >= rule.startMinutes && minutes < rule.endMinutes) {
+                      return {style: {backgroundColor: "#ffffff",},};
+                    }
+
+                    return {
+                      style: {
+                        backgroundColor: "#f7f7f7",
+                        opacity: 0.9,
+                        cursor: "not-allowed",
+                      },
+                    };
+                  }}
                   />
                 </div>
 
