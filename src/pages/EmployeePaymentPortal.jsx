@@ -179,7 +179,7 @@ function EmployeePaymentPortal() {
           </p>
           <div style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+            gridTemplateColumns: "repeat(4, 1fr)",
             gap: "16px"
           }}>
             <div style={{ textAlign: "center", padding: "12px", backgroundColor: "white", borderRadius: "6px" }}>
@@ -228,7 +228,7 @@ function EmployeePaymentPortal() {
 
             <div style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+              gridTemplateColumns: "repeat(3, 1fr)",
               gap: "16px"
             }}>
               <div style={{
