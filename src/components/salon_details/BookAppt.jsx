@@ -152,7 +152,7 @@ function BookAppt({ isOpen, onClose, service, salon, customerId }) {
     return `${datePart} • ${startPart} – ${endPart}`;
   };
 
-  // ---- SLOT SELECT FROM CALENDAR ----
+  // slot select from calendar
   const handleSlotSelect = (slotInfo) => {
     setSuccessMessage("");
     setError("");
@@ -172,6 +172,12 @@ function BookAppt({ isOpen, onClose, service, salon, customerId }) {
 
     const start = slotInfo.start;
     const end = addMinutes(start, duration);
+
+    // 🚫 Block any time in the past
+    if (isInPast(start)) {
+      setError("You can't book a time in the past. Please choose a future time.");
+      return;
+    }
 
     // Prevent overlap with existing events (busy slots)
     if (hasOverlap(start, end, calendarEvents)) {
@@ -198,6 +204,7 @@ function BookAppt({ isOpen, onClose, service, salon, customerId }) {
     setSelectedSlotLabel(formatSelectedSlot(start, end));
   };
 
+
   // LOAD STYLIST APPTS FOR WEEK ----
   useEffect(() => {
     if (!selectedEmployeeId) {
@@ -223,24 +230,26 @@ function BookAppt({ isOpen, onClose, service, salon, customerId }) {
     setCalendarEvents([]);
   }, [selectedEmployeeId, calendarDate]);
 
-  // ---- DRAG & DROP HANDLERS FOR TEMP EVENT ----
+  // DRAG & DROP HANDLERS FOR TEMP EVENT
   const handleEventDrop = ({ event, start }) => {
     if (!event?.resource?.isTemp) return;
 
     const duration = service?.duration;
     if (!duration || isNaN(duration)) {
-      setError(
-        "This service is missing a duration. Please choose another service or contact the salon."
-      );
+      setError("This service is missing a duration. Please choose another service or contact the salon.");
       return;
     }
 
-    const end = addMinutes(start, duration); // 👈 force fixed duration
+    const end = addMinutes(start, duration);
+
+    // Prevent dragging block into the past
+    if (isInPast(start)) {
+      setError("You can't move this appointment into the past. Please choose a future time.");
+      return;
+    }
 
     if (hasOverlap(start, end, calendarEvents)) {
-      setError(
-        "That time overlaps an existing appointment for this stylist. Please choose another time."
-      );
+      setError("That time overlaps an existing appointment for this stylist. Please choose another time.");
       return;
     }
 
@@ -256,29 +265,7 @@ function BookAppt({ isOpen, onClose, service, salon, customerId }) {
     setError("");
   };
 
-  const handleEventResize = ({ event, start, end }) => {
-    if (!event?.resource?.isTemp) return;
-
-    if (hasOverlap(start, end, calendarEvents)) {
-      setError(
-        "That time overlaps an existing appointment for this stylist. Please choose another time."
-      );
-      return;
-    }
-
-    const updatedTemp = {
-      ...event,
-      start,
-      end,
-    };
-
-    setTempEvent(updatedTemp);
-    setSelectedDate(start);
-    setSelectedSlotLabel(format(start, "EEE, MMM d • h:mm a"));
-    setError("");
-  };
-
-  // ---- EVENT STYLING (TEMP VS REAL) ----
+  // EVENT STYLING (TEMP VS REAL)
   const eventPropGetter = (event) => {
     const colorIndex = event?.resource?.colorIndex ?? 0;
     const baseColor = EVENT_COLORS[colorIndex % EVENT_COLORS.length];
@@ -314,7 +301,14 @@ function BookAppt({ isOpen, onClose, service, salon, customerId }) {
     };
   };
 
-  // ---- CLOSE ----
+  // Returns true if a Date is before "right now"
+  const isInPast = (date) => {
+    if (!date) return false;
+    const now = new Date();
+    return date < now;
+  };
+
+  // CLOSE
   const handleClose = () => {
     setError("");
     setSuccessMessage("");
@@ -325,7 +319,7 @@ function BookAppt({ isOpen, onClose, service, salon, customerId }) {
     onClose && onClose();
   };
 
-  // ---- ADD TO CART ----
+  // ADD TO CART 
   const handleConfirmBooking = async () => {
     setError("");
     setSuccessMessage("");
@@ -528,6 +522,19 @@ function BookAppt({ isOpen, onClose, service, salon, customerId }) {
                     resizable={false}
                     resizableAccessor={() => false}
                     draggableAccessor={(event) =>!!event?.resource?.isTemp}
+                    slotPropGetter={(date) => {
+                      const now = new Date();
+                      if (date < now) {
+                        return {
+                          style: {
+                            backgroundColor: "#f5f5f5",
+                            opacity: 0.7,
+                            cursor: "not-allowed",
+                          },
+                        };
+                      }
+                      return {};
+                    }}
                   />
                 </div>
 
