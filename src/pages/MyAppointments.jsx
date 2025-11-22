@@ -7,9 +7,10 @@ import "../App.css";
 const MyAppointments = () => {
   const location = useLocation();
   const userFromState = location.state?.user;
-  const customerId = userFromState?.profile_id ?? userIdFromState ?? null;
+  const customerId = userFromState?.profile_id ?? null;
 
   console.log("Customer id:", customerId);
+  console.log("User: ", location.state?.user);
 
   // const customerId = 2; // TODO: replace with real logged-in customer id
 
@@ -31,10 +32,33 @@ const MyAppointments = () => {
     setTimeout(() => setShowSuccess(false), 2000);
   };
 
-  const handleCancelClick = (apptId) => {
-    setUpcomingAppointments((prev) =>
-      prev.filter((appt) => appt.id !== apptId)
-    );
+  const handleCancelClick = async (apptId) => {
+    if (!customerId) return;
+
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/appointments/${customerId}/appointments/${apptId}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status: "CANCELLED" }),
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        console.error("Failed to cancel appointment:", data);
+        return;
+      }
+
+      // remove from upcoming list in UI
+      setUpcomingAppointments((prev) =>
+        prev.filter((appt) => appt.id !== apptId)
+      );
+    } 
+    catch (err) {
+      console.error("Error cancelling appointment:", err);
+    }
   };
 
   const formatApptDateTime = (isoString) => {
@@ -54,6 +78,8 @@ const MyAppointments = () => {
 
   // Load upcoming appointments from backend
   useEffect(() => {
+    if (!customerId) return; // guard
+
     const fetchUpcomingAppointments = async () => {
       try {
         const url = `${import.meta.env.VITE_API_URL}/api/appointments/${customerId}/upcoming`;
@@ -71,11 +97,16 @@ const MyAppointments = () => {
           return;
         }
 
-        const data = await res.json(); // this should be the list returned by your endpoint
-
+        const data = await res.json();
         console.log("Upcoming appointments from backend:", data);
 
-        const mapped = data.map((apt) => ({
+        // only keep BOOKED / Booked
+        const bookedOnly = (data || []).filter((apt) => {
+          const normalized = (apt.status || "").toUpperCase();
+          return normalized === "BOOKED";
+        });
+
+        const mapped = bookedOnly.map((apt) => ({
           id: apt.id,
           serviceName: apt.service_name || "Service",
           location: apt.salon_name || "Salon",
@@ -83,7 +114,6 @@ const MyAppointments = () => {
           staffName:
             (apt.employee_first_name || "") +
             (apt.employee_last_name ? ` ${apt.employee_last_name}` : ""),
-          // On "My Appointments" page, customer is the logged-in user
           customerName: "You",
         }));
 
@@ -96,6 +126,7 @@ const MyAppointments = () => {
 
     fetchUpcomingAppointments();
   }, [customerId]);
+
 
   // Load previous appointments from backend
   useEffect(() => {

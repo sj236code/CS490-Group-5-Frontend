@@ -453,7 +453,7 @@ function BookAppt({ isOpen, onClose, service, salon, customerId }) {
         quantity: 1,
         appt_date: dateStr,
         appt_time: timeStr,
-        stylist: selectedEmployeeId,
+        stylist_id: selectedEmployeeId,
         pictures: [],
         notes: notes?.trim() || null,
       };
@@ -465,6 +465,8 @@ function BookAppt({ isOpen, onClose, service, salon, customerId }) {
       });
 
       const cartData = await cartRes.json();
+
+      console.log("Sending following info to cart: ", cartData);
 
       if (!cartRes.ok) {
         console.error("Cart API error:", cartData);
