@@ -16,7 +16,7 @@ function Checkout() {
 
     const [paymentMethod, setPaymentMethod] = useState("card");
     const [tip, setTip] = useState();
-    const [employeeName] = useState("Alex Rivera");
+    const [employeeName] = useState("");
     const [savedMethods, setSavedMethods] = useState([]);
     const [selectedCardId, setSelectedCardId] = useState("");
 
