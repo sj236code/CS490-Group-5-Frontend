@@ -76,19 +76,25 @@ function Checkout() {
 
         try {
             await Promise.all(
-                serviceItems.map((item) =>
-                    axios.post(`${import.meta.env.VITE_API_URL}/api/appointments/add`,
-                        {
-                            customer_id,
-                            salon_id: item.salon_id || cartItems[0]?.salon_id || null,
-                            service_id: item.service_id,
-                            employee_id: item.stylist || null,
-                            start_at: item.start_at, 
-                            notes: item.notes || null,
-                            status: "Booked",
-                        }
-                    )
-                )
+            serviceItems.map((item, index) => {
+                const salonIdForThisService = item.salon_id ?? item.service_salon_id ?? item.salon?.id ?? null;
+
+                const serviceIdForThisService = item.service_id ?? item.service?.id ?? item.serviceID ?? null;
+
+                const payload = {
+                    customer_id,
+                    salon_id: salonIdForThisService,
+                    service_id: serviceIdForThisService,
+                    employee_id: item.stylist || null,
+                    start_at: item.start_at, // should be ISO already
+                    notes: item.notes || null,
+                    status: "Booked",
+                };
+
+                console.log(`Creating appointment #${index + 1}`, payload);
+
+                return axios.post(`${import.meta.env.VITE_API_URL}/api/appointments/add`,payload);
+            })
             );
 
             console.log("All service appointments created successfully.");
@@ -97,7 +103,6 @@ function Checkout() {
             console.error("Error creating one or more appointments:", err);
         }
     };
-
 
     const confirmPayment = async () => {
 
