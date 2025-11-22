@@ -1,14 +1,9 @@
 import { UserRound, Gift, Calendar } from "lucide-react";
 import { useEffect, useState } from "react";
-import {useLocation} from "react-router-dom";
 import ProgramCard from "../components/layout/ProgramCard";
 
 function CustomerLoyalty() {
-  const location = useLocation();
-  const userFromState = location.state?.user;
-  const user = userFromState;
-  const customerId = userFromState?.profile_id ?? userIdFromState ?? null;
-  // const customerId = 2;
+  const customerId = 2;
 
   // const lifetimePoints = 920;
   // const activePrograms = 3;
@@ -20,11 +15,11 @@ function CustomerLoyalty() {
 
   const [programs, setPrograms] = useState([]);
 
-  // const activity = [
-  //   { title: "Haircut & Style", date: "Jan 6, 2025", pts: 85 },
-  //   { title: "Color Treatment", date: "Dec 15, 2024", pts: 150 },
-  //   { title: "Manicure", date: "Oct 15, 2024", pts: 45 },
-  // ];
+  const activity = [
+     { title: "Haircut & Style", date: "Jan 6, 2025", pts: 85 },
+     { title: "Color Treatment", date: "Dec 15, 2024", pts: 150 },
+     { title: "Manicure", date: "Oct 15, 2024", pts: 45 },
+ ];
 
   const getTierFromPoints = (points) => {
     if (points >= 500) return "Gold";
@@ -171,7 +166,6 @@ function CustomerLoyalty() {
         />
       ))}
 
-      {/* 3 program cards
       <ProgramCard
         name="Jade Boutique"
         tier="Gold"
@@ -181,7 +175,7 @@ function CustomerLoyalty() {
         activity={activity}
       />
 
-      <ProgramCard
+      {/*<ProgramCard
         name="Glow Studio"
         tier="Silver"
         points={260}

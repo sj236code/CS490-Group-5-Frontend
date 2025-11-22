@@ -50,7 +50,7 @@ function MyWallet() {
         id: method.id,
         brand: method.brand, // visa, mastercard, etc
         last4: method.last4,
-        name: displayName,
+        name: method.card_name,
         exp: formatExpiration(method.expiration), // MM/YYYY
         added: formatCreatedAt(method.created_at), // Nov 8, 2025
         isDefault: !!method.is_default,
@@ -119,6 +119,7 @@ function MyWallet() {
                 ...m,
                 isDefault: !!updated.is_default,
                 exp: formatExpiration(updated.expiration || m.exp),
+                name: updated.card_name || m.name
               }
             : { ...m, isDefault: false }
         )
@@ -166,9 +167,30 @@ function MyWallet() {
     setShowAddPayment(true);
   };
 
-  const handleAddSuccess = () => {
+  const handleAddSuccess = (createdMethod) => {
     setShowAddPayment(false);
     fetchMethods();
+
+    const mappedNewMethod = {
+      id: createdMethod.id,
+      brand: createdMethod.brand,
+      last4: createdMethod.last4,
+      name: createdMethod.card_name,
+      exp: formatExpiration(createdMethod.expiration),
+      added: formatCreatedAt(createdMethod.created_at),
+      isDefault: !!createdMethod.is_default
+    };
+
+    setMethods((prev) => {
+      let newMethods = [mappedNewMethod, ...prev];
+
+      if (mappedNewMethod.isDefault) {
+        newMethods = newMethods.map(m => 
+          m.id === mappedNewMethod.id ? m : { ...m, isDefault: false}
+        );
+      }
+      return newMethods;
+    });
   };
 
   const handleAddCancel = () => {

@@ -1,16 +1,24 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
 import "./Checkout.css";
 
 function Checkout() {
+
     const navigate = useNavigate();
     const location = useLocation();
+
+    const customerIdFromState = (location.state && location.state.customer_id);
+    const customerIdFromSession = sessionStorage.getItem("checkout_customer_id");
+
+    const customer_id = customerIdFromState || customerIdFromSession;
+
     const cartItems = (location.state && location.state.cartItems) || [];
+    //const { cartItems = [], customer_id } = location.state || {};
 
     const [paymentMethod, setPaymentMethod] = useState("card");
     const [tip, setTip] = useState();
     const [employeeName] = useState("Alex Rivera");
-    const [appointmentDateTime, setAppointmentDateTime] = useState(null);
 
     const presubtotal = cartItems.reduce(
         (sum, item) => sum + (item.item_price || 0) * (item.quantity || 1), 0
@@ -56,10 +64,55 @@ function Checkout() {
         setCardDetails((prev) => ({ ...prev, [name]: newValue }));
     };
 
-    const confirmPayment = () => {
+    const createAppointmentsForServices = async () => {
+        const serviceItems = cartItems.filter(
+            (item) => item.item_type === "service" && item.start_at
+        );
+
+        if (!serviceItems.length) {
+            console.log("No service items in cart; skipping appointment creation.");
+            return;
+        }
+
+        try {
+            await Promise.all(
+                serviceItems.map((item, index) => {
+                    const salonIdForThisService = item.salon_id ?? item.service_salon_id ?? item.salon?.id ?? null;
+                    const serviceIdForThisService = item.service_id ?? item.service?.id ?? item.serviceID ?? null;
+                    const employeeIdForThisService = item.stylist_id ?? item.employee_id ?? item.employeeId ?? null;
+                    const payload = {
+                        customer_id,
+                        salon_id: salonIdForThisService,
+                        service_id: serviceIdForThisService,
+                        employee_id: employeeIdForThisService, 
+                        start_at: item.start_at,
+                        notes: item.notes || null,
+                        status: "Booked",
+                    };
+
+                    console.log(`Creating appointment #${index + 1}`, payload);
+
+                    return axios.post(`${import.meta.env.VITE_API_URL}/api/appointments/add`, payload);
+                })
+            );
+
+            console.log("All service appointments created successfully.");
+        } 
+        catch (err) {
+            console.error("Error creating one or more appointments:", err);
+        }
+    };
+
+    const confirmPayment = async () => {
+
+        if (!customer_id) {
+            alert("Error: Customer ID is missing. This can happen if you refresh the page. Please return to your cart and check out again.");
+            return;
+        }
+
+        // 3. Card validation
         if (paymentMethod === "card") {
             const { name, number, expiry, cvv, zip } = cardDetails;
-
             if (!name || !number || !expiry || !cvv || !zip) {
                 alert("Please fill out all card details before proceeding.");
                 return;
@@ -82,18 +135,17 @@ function Checkout() {
             }
         }
 
-        const maskedCard = 
+        const maskedCard =
             paymentMethod === "card"
                 ? `${"*".repeat(12)} ${cardDetails.number.slice(-4)}`
                 : null;
-        
-        const totalServiceDuration = cartItems
-            .filter(item => item.item_type === "service")
-            .reduce((sum, service) => sum + (service.service_duration || 0), 0)
 
+        const totalServiceDuration = cartItems
+            .filter((item) => item.item_type === "service")
+            .reduce((sum, service) => sum + (service.service_duration || 0), 0);
 
         const firstStartItem = cartItems.find(
-            item => item.start_at && item.start_at !== null
+            (item) => item.start_at && item.start_at !== null
         );
 
         let appointmentDate = "N/A";
@@ -118,20 +170,62 @@ function Checkout() {
         } else {
             console.warn("No valid start_at found in cartItems:", cartItems);
         }
-        
+
         const bookingData = {
+            customer_id,
             date: appointmentDate,
             time: appointmentTime,
             duration: totalServiceDuration,
             staff: employeeName,
-            paymentMethod, 
-            maskedCard, 
+            paymentMethod,
+            maskedCard,
             cartItems,
             total,
             salesTax,
         };
 
-        navigate("/payment-confirmation", {state: { bookingData } });
+        try {
+            const response = await axios.post(
+                `${import.meta.env.VITE_API_URL}/api/payments/create_order`,
+                {
+                    customer_id: customer_id, 
+                    
+                    salon_id: cartItems[0]?.salon_id || null,
+                    subtotal: presubtotal,
+                    tip_amnt: parseFloat(tip || 0),
+                    tax_amnt: salesTax,
+                    total_amnt: total,
+                    promo_id: null,
+                    cart_items: cartItems.map((item) => ({
+                        kind: item.item_type,
+                        product_id: item.item_type === "product" ? item.product_id : null,
+                        service_id: item.item_type === "service" ? item.service_id : null,
+                        qty: item.quantity || 1,
+                        unit_price: item.item_price,
+                    })),
+                }
+            );
+
+            if (response.status === 201) {
+                console.log("order created successfully", response.data);
+
+                await createAppointmentsForServices();
+
+                navigate("/payment-confirmation", { state: { bookingData } });
+            } 
+            else {
+                alert("Unexpected response from server.");
+            }
+        } catch (error) {
+            console.error("Error creating order:", error);
+            
+            if (error.response) {
+                console.error("Server Response Data:", error.response.data);
+                alert(`Error: ${error.response.data.error || error.response.data.details || 'Bad Request'}`);
+            } else {
+                alert("Error processing payment. Please try again.");
+            }
+        }
     };
 
     useEffect(() => {
@@ -203,6 +297,9 @@ function Checkout() {
             {paymentMethod === "card" && (
                 <div className="card-form">
                     <div className="form-group">
+                        <label>Select Saved Card</label>
+                        {/* add the card dropdown menu here */}
+
                         <label>Cardholder Name</label>
                         <input
                             name="name"

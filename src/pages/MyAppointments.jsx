@@ -7,9 +7,10 @@ import "../App.css";
 const MyAppointments = () => {
   const location = useLocation();
   const userFromState = location.state?.user;
-  const customerId = userFromState?.profile_id ?? userIdFromState ?? null;
+  const customerId = userFromState?.profile_id ?? null;
 
   console.log("Customer id:", customerId);
+  console.log("User: ", location.state?.user);
 
   // const customerId = 2; // TODO: replace with real logged-in customer id
 
@@ -19,6 +20,46 @@ const MyAppointments = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [selectedAppt, setSelectedAppt] = useState(null);
+
+  const handleEditClick = (appt) => {
+    setSelectedAppt(appt);
+    setShowEditModal(true);
+  };
+
+  const handleSave = () => {
+    setShowEditModal(false);
+    setShowSuccess(true);
+    setTimeout(() => setShowSuccess(false), 2000);
+  };
+
+  const handleCancelClick = async (apptId) => {
+    if (!customerId) return;
+
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/appointments/${customerId}/appointments/${apptId}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status: "CANCELLED" }),
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        console.error("Failed to cancel appointment:", data);
+        return;
+      }
+
+      // remove from upcoming list in UI
+      setUpcomingAppointments((prev) =>
+        prev.filter((appt) => appt.id !== apptId)
+      );
+    } 
+    catch (err) {
+      console.error("Error cancelling appointment:", err);
+    }
+  };
 
   const formatApptDateTime = (isoString) => {
     if (!isoString) return "Date & time TBD";
@@ -35,31 +76,10 @@ const MyAppointments = () => {
     return `${datePart} at ${timePart}`;
   };
 
-  // Map backend appointment → shape used in UI + modal
-  const mapAppointment = (apt) => ({
-    id: apt.id,
-    serviceName: apt.service_name || "Service",
-    location: apt.salon_name || "Salon",
-    dateTime: formatApptDateTime(apt.start_at),
-    staffName:
-      (apt.employee_first_name || "") +
-      (apt.employee_last_name ? ` ${apt.employee_last_name}` : ""),
-    customerName: "You",
-
-    // extra fields for editing
-    salonId: apt.salon_id,
-    serviceId: apt.service_id,
-    employeeId: apt.employee_id,
-    startAt: apt.start_at,
-    endAt: apt.end_at,
-    status: apt.status,
-    serviceDuration: apt.service_duration, // in minutes
-    priceAtBook: apt.price_at_book,
-    notes: apt.notes,
-  });
-
-  // Load upcoming appointments
+  // Load upcoming appointments from backend
   useEffect(() => {
+    if (!customerId) return; // guard
+
     const fetchUpcomingAppointments = async () => {
       try {
         const url = `${import.meta.env.VITE_API_URL}/api/appointments/${customerId}/upcoming`;
@@ -80,7 +100,23 @@ const MyAppointments = () => {
         const data = await res.json();
         console.log("Upcoming appointments from backend:", data);
 
-        const mapped = data.map(mapAppointment);
+        // only keep BOOKED / Booked
+        const bookedOnly = (data || []).filter((apt) => {
+          const normalized = (apt.status || "").toUpperCase();
+          return normalized === "BOOKED";
+        });
+
+        const mapped = bookedOnly.map((apt) => ({
+          id: apt.id,
+          serviceName: apt.service_name || "Service",
+          location: apt.salon_name || "Salon",
+          dateTime: formatApptDateTime(apt.start_at),
+          staffName:
+            (apt.employee_first_name || "") +
+            (apt.employee_last_name ? ` ${apt.employee_last_name}` : ""),
+          customerName: "You",
+        }));
+
         setUpcomingAppointments(mapped);
       } catch (err) {
         console.error("Error fetching upcoming appointments:", err);
@@ -91,7 +127,8 @@ const MyAppointments = () => {
     fetchUpcomingAppointments();
   }, [customerId]);
 
-  // Load previous appointments
+
+  // Load previous appointments from backend
   useEffect(() => {
     const fetchPreviousAppointments = async () => {
       try {
@@ -111,9 +148,20 @@ const MyAppointments = () => {
         }
 
         const data = await res.json();
+
         console.log("Previous appointments from backend:", data);
 
-        const mapped = data.map(mapAppointment);
+        const mapped = data.map((apt) => ({
+          id: apt.id,
+          serviceName: apt.service_name || "Service",
+          location: apt.salon_name || "Salon",
+          dateTime: formatApptDateTime(apt.start_at),
+          staffName:
+            (apt.employee_first_name || "") +
+            (apt.employee_last_name ? ` ${apt.employee_last_name}` : ""),
+          customerName: "You",
+        }));
+
         setPreviousAppointments(mapped);
       } catch (err) {
         console.error("Error fetching previous appointments:", err);
@@ -123,43 +171,6 @@ const MyAppointments = () => {
 
     fetchPreviousAppointments();
   }, [customerId]);
-
-  // --- Handlers ---
-
-  const handleEditClick = (appt) => {
-    setSelectedAppt(appt);
-    setShowEditModal(true);
-  };
-
-  const handleEditSaved = (updatedFromBackend) => {
-    const updatedMapped = mapAppointment(updatedFromBackend);
-
-    setUpcomingAppointments((prev) =>
-      prev.map((appt) =>
-        appt.id === updatedMapped.id ? updatedMapped : appt
-      )
-    );
-
-    setPreviousAppointments((prev) =>
-      prev.map((appt) =>
-        appt.id === updatedMapped.id ? updatedMapped : appt
-      )
-    );
-
-    setShowEditModal(false);
-    setShowSuccess(true);
-    setTimeout(() => setShowSuccess(false), 2000);
-  };
-
-  // For now, cancel/delete just removes from UI.
-  const handleCancelClick = (apptId) => {
-    setUpcomingAppointments((prev) => prev.filter((appt) => appt.id !== apptId));
-  };
-
-  const handleDeleteFromModal = (apptId) => {
-    handleCancelClick(apptId);
-    setShowEditModal(false);
-  };
 
   return (
     <div className="appointments-container">
@@ -187,7 +198,9 @@ const MyAppointments = () => {
                 <User size={16} style={{ marginRight: "6px" }} />
                 with {appt.staffName}
               </p>
-              <p className="appt-customer">Customer: {appt.customerName}</p>
+              <p className="appt-customer">
+                Customer: {appt.customerName}
+              </p>
             </div>
 
             <div className="appt-buttons">
@@ -228,7 +241,9 @@ const MyAppointments = () => {
                 <User size={16} style={{ marginRight: "6px" }} />
                 with {appt.staffName}
               </p>
-              <p className="appt-customer">Customer: {appt.customerName}</p>
+              <p className="appt-customer">
+                Customer: {appt.customerName}
+              </p>
             </div>
 
             <div className="appt-buttons">
@@ -244,15 +259,54 @@ const MyAppointments = () => {
         ))}
       </section>
 
-      {/* Edit Appointment Modal */}
+      {/* Edit Modal */}
       {showEditModal && selectedAppt && (
-        <EditAppointmentModal
-          customerId={customerId}
-          appointment={selectedAppt}
-          onClose={() => setShowEditModal(false)}
-          onSaved={handleEditSaved}
-          onDelete={handleDeleteFromModal}
-        />
+        <div className="modal-overlay">
+          <div className="modal-box">
+            <h3 className="modal-title">Edit Appointment</h3>
+
+            <label>Service</label>
+            <select
+              className="service-select"
+              defaultValue={selectedAppt.serviceName}
+            >
+              <option>Classic Fade</option>
+              <option>Beard Trim</option>
+              <option>Hair Color</option>
+            </select>
+
+            <label>Select Experts</label>
+            <div className="expert-container">
+              {[1, 2, 3, 4].map((n) => (
+                <div key={n} className="expert-card">
+                  <img
+                    src={`https://i.pravatar.cc/100?img=${n}`}
+                    alt="Expert"
+                  />
+                  <p>Name Last Name</p>
+                </div>
+              ))}
+            </div>
+
+            <label>Date & Time</label>
+            <div className="calendar-container">
+              {["7:30am", "8:00am", "8:30am", "9:00am", "9:30am", "10:00am"].map(
+                (time) => (
+                  <button key={time} className="time-btn">
+                    {time}
+                  </button>
+                )
+              )}
+            </div>
+
+            <div className="modal-buttons">
+              <button className="btn-delete">Delete Appt</button>
+              <button className="btn-save" onClick={handleSave}>
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Success Popup */}
