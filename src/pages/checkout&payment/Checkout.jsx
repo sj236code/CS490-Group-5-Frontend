@@ -76,25 +76,24 @@ function Checkout() {
 
         try {
             await Promise.all(
-            serviceItems.map((item, index) => {
-                const salonIdForThisService = item.salon_id ?? item.service_salon_id ?? item.salon?.id ?? null;
+                serviceItems.map((item, index) => {
+                    const salonIdForThisService = item.salon_id ?? item.service_salon_id ?? item.salon?.id ?? null;
+                    const serviceIdForThisService = item.service_id ?? item.service?.id ?? item.serviceID ?? null;
+                    const employeeIdForThisService = item.stylist_id ?? item.employee_id ?? item.employeeId ?? null;
+                    const payload = {
+                        customer_id,
+                        salon_id: salonIdForThisService,
+                        service_id: serviceIdForThisService,
+                        employee_id: employeeIdForThisService, 
+                        start_at: item.start_at,
+                        notes: item.notes || null,
+                        status: "Booked",
+                    };
 
-                const serviceIdForThisService = item.service_id ?? item.service?.id ?? item.serviceID ?? null;
+                    console.log(`Creating appointment #${index + 1}`, payload);
 
-                const payload = {
-                    customer_id,
-                    salon_id: salonIdForThisService,
-                    service_id: serviceIdForThisService,
-                    employee_id: item.stylist || null,
-                    start_at: item.start_at, // should be ISO already
-                    notes: item.notes || null,
-                    status: "Booked",
-                };
-
-                console.log(`Creating appointment #${index + 1}`, payload);
-
-                return axios.post(`${import.meta.env.VITE_API_URL}/api/appointments/add`,payload);
-            })
+                    return axios.post(`${import.meta.env.VITE_API_URL}/api/appointments/add`, payload);
+                })
             );
 
             console.log("All service appointments created successfully.");
