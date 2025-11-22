@@ -208,7 +208,6 @@ function App() {
         {/* Employee Nav Bar Routes */}
         <Route path="/employee-appointments" element={<EmployeeAppointments />} />
         <Route path="/employee-availability" element={<EmployeeAvailability />} />
-        <Route path="/employee-schedule" element={<EmployeeSchedule />} />
         <Route path="/employee-payment-portal" element={<EmployeePaymentPortal />} />
 
         <Route path="/contact" element={<ContactPage />} />
