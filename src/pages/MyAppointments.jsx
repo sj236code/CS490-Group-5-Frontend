@@ -7,9 +7,10 @@ import "../App.css";
 const MyAppointments = () => {
   const location = useLocation();
   const userFromState = location.state?.user;
-  const customerId = userFromState?.profile_id ?? userIdFromState ?? null;
+  const customerId = userFromState?.profile_id ?? null;
 
   console.log("Customer id:", customerId);
+  console.log("User: ", location.state?.user);
 
   // const customerId = 2; // TODO: replace with real logged-in customer id
 
@@ -31,10 +32,33 @@ const MyAppointments = () => {
     setTimeout(() => setShowSuccess(false), 2000);
   };
 
-  const handleCancelClick = (apptId) => {
-    setUpcomingAppointments((prev) =>
-      prev.filter((appt) => appt.id !== apptId)
-    );
+  const handleCancelClick = async (apptId) => {
+    if (!customerId) return;
+
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/appointments/${customerId}/appointments/${apptId}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status: "CANCELLED" }),
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        console.error("Failed to cancel appointment:", data);
+        return;
+      }
+
+      // remove from upcoming list in UI
+      setUpcomingAppointments((prev) =>
+        prev.filter((appt) => appt.id !== apptId)
+      );
+    } 
+    catch (err) {
+      console.error("Error cancelling appointment:", err);
+    }
   };
 
   const formatApptDateTime = (isoString) => {
