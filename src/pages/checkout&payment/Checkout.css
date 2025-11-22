@@ -108,6 +108,51 @@ body {
   background-color: #e5f0db;
 }
 
+.card-dropdown {
+    width: 100%;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+    background: white;
+}
+
+.dropdown-with-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo-wrapper {
+    width: 44px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-logo {
+    max-width: 44px;
+    max-height: 28px;
+    object-fit: contain;
+}
+
+input[disabled] {
+    background: #f6f6f6;
+    color: #6b6b6b;
+}
+
+.pay-btn {
+    background: #007bff;
+    color: white;
+    padding: 12px 18px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+.pay-btn:hover {
+    opacity: 0.95;
+}
 
 .card-form {
   background-color: #fff;
