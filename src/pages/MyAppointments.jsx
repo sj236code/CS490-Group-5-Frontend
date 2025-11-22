@@ -78,6 +78,8 @@ const MyAppointments = () => {
 
   // Load upcoming appointments from backend
   useEffect(() => {
+    if (!customerId) return; // guard
+
     const fetchUpcomingAppointments = async () => {
       try {
         const url = `${import.meta.env.VITE_API_URL}/api/appointments/${customerId}/upcoming`;
@@ -95,11 +97,16 @@ const MyAppointments = () => {
           return;
         }
 
-        const data = await res.json(); // this should be the list returned by your endpoint
-
+        const data = await res.json();
         console.log("Upcoming appointments from backend:", data);
 
-        const mapped = data.map((apt) => ({
+        // only keep BOOKED / Booked
+        const bookedOnly = (data || []).filter((apt) => {
+          const normalized = (apt.status || "").toUpperCase();
+          return normalized === "BOOKED";
+        });
+
+        const mapped = bookedOnly.map((apt) => ({
           id: apt.id,
           serviceName: apt.service_name || "Service",
           location: apt.salon_name || "Salon",
@@ -107,7 +114,6 @@ const MyAppointments = () => {
           staffName:
             (apt.employee_first_name || "") +
             (apt.employee_last_name ? ` ${apt.employee_last_name}` : ""),
-          // On "My Appointments" page, customer is the logged-in user
           customerName: "You",
         }));
 
@@ -120,6 +126,7 @@ const MyAppointments = () => {
 
     fetchUpcomingAppointments();
   }, [customerId]);
+
 
   // Load previous appointments from backend
   useEffect(() => {
