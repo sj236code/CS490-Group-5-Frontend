@@ -64,6 +64,41 @@ function Checkout() {
         setCardDetails((prev) => ({ ...prev, [name]: newValue }));
     };
 
+    const createAppointmentsForServices = async () => {
+        const serviceItems = cartItems.filter(
+            (item) => item.item_type === "service" && item.start_at
+        );
+
+        if (!serviceItems.length) {
+            console.log("No service items in cart; skipping appointment creation.");
+            return;
+        }
+
+        try {
+            await Promise.all(
+                serviceItems.map((item) =>
+                    axios.post(`${import.meta.env.VITE_API_URL}/api/appointments/add`,
+                        {
+                            customer_id,
+                            salon_id: item.salon_id || cartItems[0]?.salon_id || null,
+                            service_id: item.service_id,
+                            employee_id: item.stylist || null,
+                            start_at: item.start_at, 
+                            notes: item.notes || null,
+                            status: "Booked",
+                        }
+                    )
+                )
+            );
+
+            console.log("All service appointments created successfully.");
+        } 
+        catch (err) {
+            console.error("Error creating one or more appointments:", err);
+        }
+    };
+
+
     const confirmPayment = async () => {
 
         if (!customer_id) {
@@ -71,7 +106,7 @@ function Checkout() {
             return;
         }
 
-        // 3. Card validation (this was already here)
+        // 3. Card validation
         if (paymentMethod === "card") {
             const { name, number, expiry, cvv, zip } = cardDetails;
             if (!name || !number || !expiry || !cvv || !zip) {
@@ -169,8 +204,12 @@ function Checkout() {
 
             if (response.status === 201) {
                 console.log("order created successfully", response.data);
+
+                await createAppointmentsForServices();
+
                 navigate("/payment-confirmation", { state: { bookingData } });
-            } else {
+            } 
+            else {
                 alert("Unexpected response from server.");
             }
         } catch (error) {
