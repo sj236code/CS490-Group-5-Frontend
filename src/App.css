@@ -4783,3 +4783,644 @@ label {
   background: #5A6A54;
   color: #ffffff;
 }
+
+/* Employee payment portal!!!! */
+
+/* Payment Container */
+.payment-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Commission Reminder Banner */
+.commission-reminder {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.commission-reminder p {
+  margin: 0;
+  font-size: 14px;
+  color: #856404;
+}
+
+.commission-reminder strong {
+  color: #333;
+}
+
+/* Monthly Total Banner */
+.monthly-total-banner {
+  background: white;
+  padding: 24px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  border: 2px solid #0066cc;
+}
+
+.monthly-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.monthly-header h2 {
+  margin: 0;
+  font-size: 22px;
+  color: #0066cc;
+}
+
+.monthly-stats {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.monthly-stat {
+  flex: 1;
+  min-width: 150px;
+  background: #f9f9f9;
+  padding: 16px;
+  border-radius: 6px;
+}
+
+.monthly-stat.highlight {
+  background: #e6f3ff;
+  border: 1px solid #0066cc;
+}
+
+.monthly-label {
+  margin: 0 0 8px 0;
+  font-size: 12px;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.monthly-value {
+  margin: 0;
+  font-size: 24px;
+  color: #1a1a1a;
+}
+
+.monthly-stat.highlight .monthly-value {
+  color: #0066cc;
+}
+
+/* Payment Summary Section */
+.payment-summary {
+  background: white;
+  padding: 24px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  border: 1px solid #e0e0e0;
+}
+
+.payment-summary h2 {
+  margin-top: 0;
+  margin-bottom: 8px;
+  font-size: 24px;
+  color: #1a1a1a;
+}
+
+.period-dates {
+  display: flex;
+  align-items: center;
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.payment-stats {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.stat-card {
+  flex: 1;
+  min-width: 200px;
+  background: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  border: 1px solid #e8e8e8;
+}
+
+.stat-card.highlight {
+  background: #f0f8ff;
+  border: 1px solid #b8d8ff;
+}
+
+.stat-icon {
+  background: white;
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0066cc;
+  flex-shrink: 0;
+}
+
+.stat-info {
+  flex: 1;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: #666;
+  margin: 0 0 4px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-value {
+  font-size: 24px;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.stat-value.projected {
+  color: #0066cc;
+  font-size: 28px;
+}
+
+.stat-subtext {
+  font-size: 12px;
+  color: #888;
+  margin: 4px 0 0 0;
+}
+
+.period-info {
+  background: #f5f5f5;
+  padding: 12px 16px;
+  border-radius: 6px;
+  margin-top: 16px;
+}
+
+.period-info p {
+  margin: 0;
+  font-size: 14px;
+  color: #333;
+}
+
+/* Payment History Section */
+.payment-history {
+  background: white;
+  padding: 24px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+.payment-history h2 {
+  margin-top: 0;
+  margin-bottom: 4px;
+  font-size: 24px;
+  color: #1a1a1a;
+}
+
+.section-subtitle {
+  color: #666;
+  font-size: 14px;
+  margin: 0 0 20px 0;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.history-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  background: #fafafa;
+  border-radius: 8px;
+  border: 1px solid #e8e8e8;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.history-period {
+  flex: 1;
+  min-width: 180px;
+}
+
+.history-dates {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  color: #1a1a1a;
+}
+
+.history-dates-detail {
+  margin: 0;
+  font-size: 12px;
+  color: #888;
+}
+
+.history-details {
+  display: flex;
+  gap: 16px;
+  flex: 1;
+  min-width: 200px;
+  flex-wrap: wrap;
+}
+
+.history-stat {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: #666;
+}
+
+.history-earnings {
+  text-align: right;
+  min-width: 120px;
+}
+
+.earnings-label {
+  margin: 0 0 4px 0;
+  font-size: 12px;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.earnings-value {
+  margin: 0;
+  font-size: 20px;
+  color: #0066cc;
+}
+
+/* Employee Payment Portal */
+
+.payment-container {
+  min-height: 100vh;
+  background-color: #f7f5f2;
+}
+
+/* Shared message styles (loading / error / no-employee) */
+.payment-message {
+  padding: 20px;
+  text-align: center;
+  color: #5a6d57;
+}
+
+.payment-message--loading {
+  color: #5a6d57;
+}
+
+.payment-message--error {
+  color: #5a6d57;
+}
+
+.payment-error-text {
+  color: #8b4513;
+  margin-bottom: 10px;
+}
+
+.payment-error-id {
+  color: #5a6d57;
+}
+
+.payment-retry-button {
+  margin-top: 10px;
+  padding: 8px 16px;
+  background-color: #5a6d57;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.payment-retry-button:hover {
+  opacity: 0.92;
+}
+
+/* Commission info banner */
+.commission-info {
+  background-color: #f5f0e8;
+  border: 1px solid #d4c5a9;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.commission-info__icon {
+  color: #8b7355;
+  flex-shrink: 0;
+}
+
+.commission-info__text {
+  margin: 0;
+  color: #5a6d57;
+  font-size: 14px;
+}
+
+.commission-info__title {
+  color: #3d4f3a;
+}
+
+/* Monthly total section */
+.monthly-total {
+  background-color: #e8f0e3;
+  border: 1px solid #c5d9ba;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 20px;
+}
+
+.monthly-total__header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.monthly-total__icon {
+  color: #5a6d57;
+}
+
+.monthly-total__title {
+  margin: 0;
+  color: #3d4f3a;
+  font-size: 20px;
+}
+
+.monthly-total__note {
+  font-size: 13px;
+  color: #7a6f5d;
+  margin-bottom: 16px;
+  font-style: italic;
+}
+
+.monthly-total__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.stat-card {
+  text-align: center;
+  padding: 12px;
+  background-color: #ffffff;
+  border-radius: 6px;
+}
+
+.stat-card--highlight {
+  background-color: #f8fdf5;
+  border-radius: 6px;
+  border: 2px solid #c5d9ba;
+}
+
+.stat-card__label {
+  margin: 0 0 6px 0;
+  font-size: 13px;
+  color: #7a6f5d;
+}
+
+.stat-card__value {
+  margin: 0;
+  font-size: 24px;
+  color: #3d4f3a;
+}
+
+/* Generic card section wrapper (Current period, History) */
+.card-section {
+  margin: 20px;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #e5e5e5;
+}
+
+.card-section__title {
+  color: #3d4f3a;
+  margin-bottom: 8px;
+}
+
+.card-section__subtitle {
+  display: flex;
+  align-items: center;
+  color: #7a6f5d;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.card-section__subtitle-icon {
+  margin-right: 6px;
+}
+
+.card-section__subtitle--muted {
+  color: #7a6f5d;
+}
+
+/* Current period grid/cards */
+.current-period__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.current-period__card {
+  padding: 16px;
+  background-color: #fafafa;
+  border-radius: 8px;
+  border: 1px solid #e5e5e5;
+}
+
+.current-period__card--highlight {
+  background-color: #f8fdf5;
+  border: 2px solid #c5d9ba;
+}
+
+.current-period__content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.current-period__icon-wrap {
+  border-radius: 50%;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.current-period__icon-wrap--soft {
+  background-color: #e8f0e3;
+}
+
+.current-period__icon-wrap--solid {
+  background-color: #5a6d57;
+}
+
+.current-period__icon {
+  color: #5a6d57;
+}
+
+.current-period__icon--inverse {
+  color: #ffffff;
+}
+
+.current-period__label {
+  margin: 0;
+  font-size: 13px;
+  color: #7a6f5d;
+}
+
+.current-period__label--strong {
+  color: #5a6d57;
+}
+
+.current-period__value {
+  margin: 4px 0 0 0;
+  font-size: 26px;
+  color: #3d4f3a;
+}
+
+.current-period__meta {
+  margin: 4px 0 0 0;
+  font-size: 12px;
+  color: #999999;
+}
+
+.current-period__meta--strong {
+  color: #7a6f5d;
+}
+
+/* Current period banner */
+.current-period__banner {
+  margin-top: 20px;
+  padding: 12px;
+  background-color: #f5f0e8;
+  border-radius: 6px;
+  border-left: 4px solid #8b7355;
+}
+
+.current-period__banner-text {
+  margin: 0;
+  font-size: 14px;
+  color: #5a6d57;
+}
+
+.current-period__banner-label {
+  color: #3d4f3a;
+}
+
+/* History list */
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.history-item {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  gap: 16px;
+  padding: 16px;
+  background-color: #fafafa;
+  border-radius: 8px;
+  border: 1px solid #e5e5e5;
+  align-items: center;
+}
+
+.history-item--recent {
+  background-color: #f8fdf5;
+  border: 1px solid #c5d9ba;
+}
+
+.history-item__period {
+  margin: 0;
+  font-size: 15px;
+  color: #3d4f3a;
+}
+
+.history-item__dates {
+  margin: 4px 0 0 0;
+  font-size: 12px;
+  color: #999999;
+}
+
+.history-item__metrics {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}
+
+.history-item__metric {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.history-item__metric-icon {
+  color: #7a6f5d;
+}
+
+.history-item__metric-text {
+  font-size: 14px;
+  color: #5a6d57;
+}
+
+.history-item__earnings {
+  text-align: right;
+}
+
+.history-item__earnings-label {
+  margin: 0;
+  font-size: 12px;
+  color: #7a6f5d;
+}
+
+.history-item__earnings-value {
+  margin: 4px 0 0 0;
+  font-size: 22px;
+  color: #3d4f3a;
+}
+
+/* Basic responsiveness */
+@media (max-width: 900px) {
+  .monthly-total__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .current-period__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .history-item {
+    grid-template-columns: 1fr;
+    text-align: left;
+  }
+
+  .history-item__earnings {
+    text-align: left;
+  }
+
+  .history-item__metrics {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+}
