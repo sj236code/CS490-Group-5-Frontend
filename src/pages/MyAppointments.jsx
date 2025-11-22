@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { MapPin, Calendar, User } from "lucide-react";
 import {useLocation} from "react-router-dom";
-import EditAppointmentModal from "../components/layout/EditAppointmentModal";
+import EditAppt from "../components/layout/EditAppt";
 import "../App.css";
 
 const MyAppointments = () => {
@@ -115,6 +115,15 @@ const MyAppointments = () => {
             (apt.employee_first_name || "") +
             (apt.employee_last_name ? ` ${apt.employee_last_name}` : ""),
           customerName: "You",
+            salonId: apt.salon_id,
+            employeeId: apt.employee_id,
+            serviceId: apt.service_id,
+            serviceDuration: apt.service_duration,
+            servicePrice: apt.service_price,
+            startAt: apt.start_at,
+            endAt: apt.end_at,
+            notes: apt.notes,
+            status: apt.status,
         }));
 
         setUpcomingAppointments(mapped);
@@ -261,52 +270,38 @@ const MyAppointments = () => {
 
       {/* Edit Modal */}
       {showEditModal && selectedAppt && (
-        <div className="modal-overlay">
-          <div className="modal-box">
-            <h3 className="modal-title">Edit Appointment</h3>
-
-            <label>Service</label>
-            <select
-              className="service-select"
-              defaultValue={selectedAppt.serviceName}
-            >
-              <option>Classic Fade</option>
-              <option>Beard Trim</option>
-              <option>Hair Color</option>
-            </select>
-
-            <label>Select Experts</label>
-            <div className="expert-container">
-              {[1, 2, 3, 4].map((n) => (
-                <div key={n} className="expert-card">
-                  <img
-                    src={`https://i.pravatar.cc/100?img=${n}`}
-                    alt="Expert"
-                  />
-                  <p>Name Last Name</p>
-                </div>
-              ))}
-            </div>
-
-            <label>Date & Time</label>
-            <div className="calendar-container">
-              {["7:30am", "8:00am", "8:30am", "9:00am", "9:30am", "10:00am"].map(
-                (time) => (
-                  <button key={time} className="time-btn">
-                    {time}
-                  </button>
-                )
-              )}
-            </div>
-
-            <div className="modal-buttons">
-              <button className="btn-delete">Delete Appt</button>
-              <button className="btn-save" onClick={handleSave}>
-                Save Changes
-              </button>
-            </div>
-          </div>
-        </div>
+        <EditAppt
+          isOpen={showEditModal}
+          onClose={() => setShowEditModal(false)}
+          appointment={selectedAppt}
+          customerId={customerId}
+          onUpdated={(updated) => {
+            // update upcoming list so UI reflects backend changes
+            setUpcomingAppointments((prev) =>
+              prev.map((appt) =>
+                appt.id === updated.id ? {
+                    ...appt,
+                    serviceName: updated.service_name || appt.serviceName,
+                    location: updated.salon_name || appt.location,
+                    dateTime: formatApptDateTime(updated.start_at),
+                    staffName:
+                      (updated.employee_first_name || "") +
+                      (updated.employee_last_name
+                        ? ` ${updated.employee_last_name}`
+                        : ""),
+                    employeeId: updated.employee_id,
+                    startAt: updated.start_at,
+                    endAt: updated.end_at,
+                    notes: updated.notes,
+                    status: updated.status,
+                  }
+                : appt
+              )
+            );
+            setShowSuccess(true);
+            setTimeout(() => setShowSuccess(false), 2000);
+          }}
+        />
       )}
 
       {/* Success Popup */}
