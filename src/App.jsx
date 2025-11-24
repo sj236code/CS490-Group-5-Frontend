@@ -31,6 +31,7 @@ import SalonSettings from "./pages/SalonSettings.jsx";
 import SalonPayments from "./pages/SalonPayments.jsx";
 import CustomerSettings from "./pages/CustomerSettings.jsx";
 import EmployeeSettings from "./pages/EmployeeSettings.jsx";
+import AdminSettings from "./pages/AdminSettings.jsx";
 
 // Firebase
 import PaymentConfirmation from './pages/checkout&payment/PaymentConfirmation.jsx';
@@ -200,6 +201,7 @@ function App() {
 
         {/* Admin Nav Bar Routes */}
         <Route path="/adminDashboard" element={<AdminDashboard />} />
+        <Route path="/adminSettings" element={<AdminSettings />} />
 
         {/* Customer Nav Bar Routes */}
         <Route path="/customerLoyalty" element={<CustomerLoyalty />} />
