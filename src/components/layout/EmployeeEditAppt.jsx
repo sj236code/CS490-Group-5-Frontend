@@ -1,43 +1,34 @@
 // src/components/layout/EmployeeEditAppt.jsx
 import { useState, useEffect } from "react";
 import { X } from "lucide-react";
-import { addMinutes } from "date-fns";
 
 function EmployeeEditAppt({ isOpen, onClose, employeeId, appointment, onUpdated }) {
     const API_BASE = import.meta.env.VITE_API_URL;
 
-    const [date, setDate] = useState("");
-    const [time, setTime] = useState("");
     const [notes, setNotes] = useState(appointment?.notes || "");
+    const [currentStatus, setCurrentStatus] = useState(appointment?.status || "SCHEDULED");
+    const [selectedStatus, setSelectedStatus] = useState(appointment?.status || "SCHEDULED");
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState("");
 
-    // Pre-fill date/time from appointment.rawStart
+    // When modal opens or appointment changes, sync local state
     useEffect(() => {
-    if (!isOpen || !appointment?.rawStart) return;
+        if (!isOpen || !appointment) return;
 
-    try {
-        const start = new Date(appointment.rawStart);
-        const yyyy = start.getFullYear();
-        const mm = String(start.getMonth() + 1).padStart(2, "0");
-        const dd = String(start.getDate()).padStart(2, "0");
-        const hh = String(start.getHours()).padStart(2, "0");
-        const mi = String(start.getMinutes()).padStart(2, "0");
-
-        setDate(`${yyyy}-${mm}-${dd}`);
-        setTime(`${hh}:${mi}`);
         setNotes(appointment.notes || "");
+        const status = appointment.status || "SCHEDULED";
+        setCurrentStatus(status);
+        setSelectedStatus(status);
         setError("");
-    } catch (e) {
-        console.error("Error parsing appointment start:", e);
-    }
     }, [isOpen, appointment]);
 
     const handleCloseInternal = () => {
-    if (submitting) return;
-    setError("");
-    onClose && onClose();
+        if (submitting) return;
+        setError("");
+        onClose && onClose();
     };
+
+    const handleStatusClick = (status) => {setSelectedStatus(status);};
 
     const handleSave = async () => {
     setError("");
@@ -47,41 +38,12 @@ function EmployeeEditAppt({ isOpen, onClose, employeeId, appointment, onUpdated 
         return;
     }
 
-    if (!date || !time) {
-        setError("Please select a date and time.");
-        return;
-    }
-
     try {
         setSubmitting(true);
 
-        // Build start datetime from date + time
-        const [hourStr, minuteStr] = time.split(":");
-        const startDate = new Date(date);
-        startDate.setHours(Number(hourStr), Number(minuteStr), 0, 0);
-
-        // Compute duration from original start/end if possible
-        let durationMinutes = 30;
-        if (appointment.rawStart && appointment.rawEnd) {
-        const origStart = new Date(appointment.rawStart);
-        const origEnd = new Date(appointment.rawEnd);
-        const diffMs = origEnd.getTime() - origStart.getTime();
-        const diffMin = Math.round(diffMs / (1000 * 60));
-        if (!isNaN(diffMin) && diffMin > 0) {
-            durationMinutes = diffMin;
-        }
-        }
-
-        const endDate = addMinutes(startDate, durationMinutes);
-
-        const startIso = startDate.toISOString();
-        const endIso = endDate.toISOString();
-
         const payload = {
-        start_at: startIso,
-        end_at: endIso,
+        status: selectedStatus,
         notes: notes?.trim() || null,
-        // service_id could go here if you ever expose a "change service" UI
         };
 
         const res = await fetch(
@@ -96,16 +58,14 @@ function EmployeeEditAppt({ isOpen, onClose, employeeId, appointment, onUpdated 
         const data = await res.json();
 
         if (!res.ok) {
-        console.error("Employee edit appointment API error:", data);
+        console.error("Employee update appointment API error:", data);
         throw new Error(data.error || data.message || "Unable to update appointment.");
         }
 
-        // On success, let parent update its local state using the new start/end/notes
         if (onUpdated) {
         onUpdated({
             id: appointment.id,
-            start_at: startIso,
-            end_at: endIso,
+            status: selectedStatus,
             notes: notes?.trim() || "",
         });
         }
@@ -132,7 +92,7 @@ function EmployeeEditAppt({ isOpen, onClose, employeeId, appointment, onUpdated 
             <button className="book-appt-back-btn" onClick={handleCloseInternal}>
             <X size={22} />
             </button>
-            <h2 className="book-appt-title">Edit Appointment</h2>
+            <h2 className="book-appt-title">Appointment Details</h2>
         </div>
 
         {/* SERVICE BAR */}
@@ -142,7 +102,7 @@ function EmployeeEditAppt({ isOpen, onClose, employeeId, appointment, onUpdated 
             </div>
             {appointment?.status && (
             <div className="book-appt-service-price">
-                Status: {appointment.status}
+                Status: {currentStatus}
             </div>
             )}
         </div>
@@ -152,9 +112,9 @@ function EmployeeEditAppt({ isOpen, onClose, employeeId, appointment, onUpdated 
             <div className="book-appt-alert book-appt-alert-error">{error}</div>
         )}
 
-        {/* MAIN FORM (simple, no schedule logic here) */}
+        {/* MAIN CONTENT */}
         <div className="book-appt-grid">
-            {/* LEFT: Customer / meta info */}
+            {/* LEFT: read-only info */}
             <div className="book-appt-column book-appt-column-left">
             <h3 className="book-appt-subtitle">Client</h3>
             <p className="book-appt-hint">
@@ -167,37 +127,19 @@ function EmployeeEditAppt({ isOpen, onClose, employeeId, appointment, onUpdated 
             <p className="book-appt-hint">
                 {appointment?.location || "Salon"}
             </p>
+
+            <h3 className="book-appt-subtitle" style={{ marginTop: "1rem" }}>
+                Scheduled Time
+            </h3>
+            <p className="book-appt-hint">
+                {appointment?.dateTime || "Date & time TBD"}
+            </p>
             </div>
 
-            {/* RIGHT: Editable date/time + notes */}
+            {/* RIGHT: notes + status controls */}
             <div className="book-appt-column book-appt-column-right">
-            <h3 className="book-appt-subtitle">Date &amp; Time</h3>
-            <div className="edit-employee-datetime-row">
-                <label className="book-appt-notes-label">
-                Date
-                <input
-                    type="date"
-                    className="book-appt-input"
-                    value={date}
-                    onChange={(e) => setDate(e.target.value)}
-                />
-                </label>
-
-                <label className="book-appt-notes-label">
-                Time
-                <input
-                    type="time"
-                    className="book-appt-input"
-                    value={time}
-                    onChange={(e) => setTime(e.target.value)}
-                />
-                </label>
-            </div>
-
-            <div className="book-appt-notes" style={{ marginTop: "1rem" }}>
-                <label className="book-appt-notes-label">
-                Internal Notes
-                </label>
+            <h3 className="book-appt-subtitle">Internal Notes</h3>
+            <div className="book-appt-notes" style={{ marginBottom: "1rem" }}>
                 <textarea
                 className="book-appt-notes-textarea"
                 placeholder="Add notes about this appointment…"
@@ -206,24 +148,80 @@ function EmployeeEditAppt({ isOpen, onClose, employeeId, appointment, onUpdated 
                 rows={4}
                 />
             </div>
+
+            <h3 className="book-appt-subtitle">Update Status</h3>
+            <div className="edit-employee-status-row">
+                <button
+                type="button"
+                className={
+                    "status-chip " +
+                    (selectedStatus === "CHECKED_IN" ? "status-chip-active" : "")
+                }
+                onClick={() => handleStatusClick("CHECKED_IN")}
+                >
+                Check In
+                </button>
+                <button
+                type="button"
+                className={
+                    "status-chip " +
+                    (selectedStatus === "IN_PROGRESS" ? "status-chip-active" : "")
+                }
+                onClick={() => handleStatusClick("IN_PROGRESS")}
+                >
+                Start Service
+                </button>
+                <button
+                type="button"
+                className={
+                    "status-chip " +
+                    (selectedStatus === "COMPLETED" ? "status-chip-active" : "")
+                }
+                onClick={() => handleStatusClick("COMPLETED")}
+                >
+                Completed
+                </button>
+                <button
+                type="button"
+                className={
+                    "status-chip status-chip-warn " +
+                    (selectedStatus === "NO_SHOW" ? "status-chip-active" : "")
+                }
+                onClick={() => handleStatusClick("NO_SHOW")}
+                >
+                No-Show
+                </button>
+                <button
+                type="button"
+                className={
+                    "status-chip status-chip-danger " +
+                    (selectedStatus === "CANCELLED_BY_EMPLOYEE"
+                    ? "status-chip-active"
+                    : "")
+                }
+                onClick={() => handleStatusClick("CANCELLED_BY_EMPLOYEE")}
+                >
+                Cancel Appointment
+                </button>
+            </div>
             </div>
         </div>
 
         {/* FOOTER */}
         <div className="book-appt-footer">
             <button
-            type="button"
-            className="book-appt-cancel-btn"
-            onClick={handleCloseInternal}
-            disabled={submitting}
+                type="button"
+                className="book-appt-cancel-btn"
+                onClick={handleCloseInternal}
+                disabled={submitting}
             >
-            Cancel
+                Close
             </button>
             <button
-            type="button"
-            className="book-appt-confirm-btn"
-            onClick={handleSave}
-            disabled={submitting || !date || !time}
+                type="button"
+                className="book-appt-confirm-btn"
+                onClick={handleSave}
+                disabled={submitting}
             >
             {submitting ? "Saving…" : "Save Changes"}
             </button>

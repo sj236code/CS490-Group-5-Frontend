@@ -1165,6 +1165,61 @@ body {
   background-color: #ffffff;
 }
 
+/* Employee Appointments */
+
+.edit-employee-status-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.status-chip {
+  border-radius: 999px;
+  padding: 6px 12px;
+  border: 1px solid #cbd5ce;
+  background-color: #f8faf7;
+  font-size: 13px;
+  cursor: pointer;
+  transition: 0.15s ease;
+  color: #374151;
+}
+
+.status-chip:hover {
+  background-color: #e5f1dc;
+}
+
+.status-chip-active {
+  background-color: #5a8c4f;
+  border-color: #4c7a43;
+  color: #ffffff;
+}
+
+.status-chip-warn {
+  border-color: #f97316;
+  background-color: #fff7ed;
+  color: #7c2d12;
+}
+
+.status-chip-warn.status-chip-active {
+  background-color: #ea580c;
+  border-color: #c2410c;
+  color: #ffffff;
+}
+
+.status-chip-danger {
+  border-color: #f87171;
+  background-color: #fef2f2;
+  color: #7f1d1d;
+}
+
+.status-chip-danger.status-chip-active {
+  background-color: #dc2626;
+  border-color: #b91c1c;
+  color: #ffffff;
+}
+
+
 /* Service row */
 
 .book-appt-service-row {

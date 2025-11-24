@@ -1,4 +1,3 @@
-// src/pages/EmployeeAppointments.jsx
 import React, { useState, useEffect } from "react";
 import { MapPin, Calendar, User } from "lucide-react";
 import { useLocation } from "react-router-dom";
@@ -289,14 +288,19 @@ const EmployeeAppointments = () => {
                 appt.id === updated.id
                   ? {
                       ...appt,
-                      rawStart: updated.start_at,
-                      rawEnd: updated.end_at,
-                      dateTime: formatApptDateTime(updated.start_at),
+                      status: updated.status,
                       notes: updated.notes ?? "",
                     }
                   : appt
               )
             );
+
+            setSelectedAppt((prev) =>
+              prev && prev.id === updated.id
+                ? { ...prev, status: updated.status, notes: updated.notes ?? "" }
+                : prev
+            );
+
             setShowSuccess(true);
             setTimeout(() => setShowSuccess(false), 2000);
           }}
