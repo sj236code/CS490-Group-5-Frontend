@@ -4138,3 +4138,161 @@ label {
   background: #5A6A54;
   color: #ffffff;
 }
+
+/* WRAPPER */
+.admin-wrapper {
+  width: 100%;
+  padding: 20px 40px;
+}
+
+/* PAGE HEADER */
+.sa-section-header {
+  margin-bottom: 20px;
+}
+
+.sa-main-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: #2f3e29;
+  text-align: center;
+}
+
+/* GRID LAYOUT */
+.sa-top-row {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 25px;
+}
+
+/* BOX STYLE (green pastel background) */
+.sa-box {
+  background: #e9f2e4;
+  border: 1px solid #b8c7b0;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+/* Full width chart container */
+.sa-full {
+  margin-top: 15px;
+}
+
+/* TITLES */
+.sa-box-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2f3e29;
+  margin-bottom: 10px;
+}
+
+/* LISTS */
+.sa-list {
+  list-style: none;
+  padding-left: 10px;
+}
+
+.sa-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 0;
+  font-size: 15px;
+  border-bottom: 1px dotted #c3d0be;
+}
+
+.sa-row:last-child {
+  border-bottom: none;
+}
+
+/* APPROVE / REJECT BUTTONS */
+.sa-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.sa-green-btn,
+.sa-red-btn {
+  border: none;
+  padding: 5px 8px;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.sa-green-btn {
+  background: #cce8cc;
+  color: #2f5f2f;
+}
+
+.sa-red-btn {
+  background: #f3d2d2;
+  color: #8b1a1a;
+}
+
+/* AVG TIME BOX */
+.sa-time-value {
+  font-size: 30px;
+  font-weight: bold;
+  color: #2f3e29;
+  margin-top: 10px;
+}
+
+/* CHART AREA */
+.sa-chart-area {
+  width: 100%;
+  height: 300px;
+  margin-top: 10px;
+}
+
+/* Fix alignment for Top Salons */
+.sa-top-row-fixed {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 0;
+  font-size: 15px;
+  color: #2f3e29;
+}
+
+.sa-rank {
+  font-weight: 600;
+  width: 20px;         /* keeps 1. 2. 3. aligned */
+  text-align: left;
+}
+
+.sa-name {
+  flex-grow: 1;        /* keeps name left-aligned */
+}
+
+.sa-bookings {
+  font-weight: 500;
+  color: #4b5945;
+}
+/* Toast Notification Styles */
+.sa-toast {
+  position: fixed;
+  top: 20px;
+  right: 25px;
+  background: #4B5945;
+  color: white;
+  padding: 12px 22px;
+  border-radius: 8px;
+  font-size: 16px;
+  z-index: 9999;
+  box-shadow: 0px 4px 10px rgba(0,0,0,0.2);
+  opacity: 0;
+  animation: fadeInOut 2.5s ease forwards;
+}
+
+.sa-toast.error {
+  background: #c0392b;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateY(-10px); }
+  10% { opacity: 1; transform: translateY(0); }
+  90% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-10px); }
+}
