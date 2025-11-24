@@ -262,9 +262,7 @@ function Checkout() {
             console.error("Error creating one or more appointments:", err);
         }
     };
-
-    const confirmPayment = async () => {
-
+    
     const confirmPayment = async () => {
         if (!customer_id) {
             alert("Error: Customer ID is missing. Please return to your cart and check out again.");
