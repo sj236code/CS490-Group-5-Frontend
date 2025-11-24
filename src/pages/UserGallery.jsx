@@ -17,6 +17,10 @@ function UserGallery() {
   const [error, setError] = useState("");
   const fileInputRef = useRef(null);
 
+  // track which image is being deleted
+  const [imageToDelete, setImageToDelete] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   // Fetch current gallery on mount / when customerId changes
   useEffect(() => {
     const fetchGallery = async () => {
@@ -74,8 +78,7 @@ function UserGallery() {
         formDataToSend.append("customer_id", customerId);
         formDataToSend.append("image_file", file);
 
-        const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/api/user_gallery/upload_image`,
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/user_gallery/upload_image`,
           {
             method: "POST",
             body: formDataToSend,
@@ -110,13 +113,25 @@ function UserGallery() {
     }
   };
 
-  const handleDeleteImage = async (imageId) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this image from your gallery?"
-    );
-    if (!confirmed) return;
+  // Open the custom delete modal
+  const openDeleteModal = (img) => {
+    setImageToDelete(img);
+  };
 
+  // Close the custom delete modal
+  const closeDeleteModal = () => {
+    setImageToDelete(null);
+    setIsDeleting(false);
+  };
+
+  // Actually delete the image (called from modal "Delete" button)
+  const handleConfirmDelete = async () => {
+    if (!imageToDelete) return;
+
+    const imageId = imageToDelete.id;
+    console.log("Deleting: ", imageId);
     setError("");
+    setIsDeleting(true);
 
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/user_gallery/image/${imageId}`,
@@ -133,9 +148,12 @@ function UserGallery() {
 
       // Remove from state
       setGalleryImages((prev) => prev.filter((img) => img.id !== imageId));
-    } catch (err) {
+      closeDeleteModal();
+    } 
+    catch (err) {
       console.error("Error deleting image: ", err);
       setError(err.message || "Something went wrong deleting the image.");
+      setIsDeleting(false);
     }
   };
 
@@ -229,7 +247,7 @@ function UserGallery() {
               <button
                 type="button"
                 className="gallery-delete-btn"
-                onClick={() => handleDeleteImage(img.id)}
+                onClick={() => openDeleteModal(img)}
                 title="Delete image"
               >
                 <Trash2 size={16} />
@@ -262,6 +280,52 @@ function UserGallery() {
           </ul>
         </div>
       </section>
+
+      {/* DELETE CONFIRM MODAL */}
+      {imageToDelete && (
+        <div
+          className="gallery-delete-overlay"
+          onClick={closeDeleteModal}
+        >
+          <div
+            className="gallery-delete-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 className="gallery-delete-title">Remove this image?</h2>
+            <p className="gallery-delete-text">
+              This image will be removed from your inspiration gallery. You can
+              always upload it again later.
+            </p>
+
+            <div className="gallery-delete-preview">
+              <img
+                src={imageToDelete.url}
+                alt="Image to delete"
+                className="gallery-delete-preview-img"
+              />
+            </div>
+
+            <div className="gallery-delete-actions">
+              <button
+                type="button"
+                className="gallery-delete-cancel-btn"
+                onClick={closeDeleteModal}
+                disabled={isDeleting}
+              >
+                Keep Image
+              </button>
+              <button
+                type="button"
+                className="gallery-delete-confirm-btn"
+                onClick={handleConfirmDelete}
+                disabled={isDeleting}
+              >
+                {isDeleting ? "Deleting..." : "Delete"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

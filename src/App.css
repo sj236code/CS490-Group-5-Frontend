@@ -3496,6 +3496,101 @@ label {
   background-color: #f4f5f2; /* light grey-beige like Figma */
 }
 
+/* Overlay */
+.gallery-delete-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+/* Modal container */
+.gallery-delete-modal {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px 24px 18px;
+  max-width: 420px;
+  width: 100%;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.18);
+  border: 1px solid #d9e9cf; /* light jade green border */
+}
+
+/* Title & text */
+.gallery-delete-title {
+  margin: 0 0 8px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #2f3b27; /* deep green-ish */
+}
+
+.gallery-delete-text {
+  margin: 0 0 16px;
+  font-size: 14px;
+  color: #4f5b45;
+}
+
+/* Image preview */
+.gallery-delete-preview {
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 16px;
+  border: 1px solid #eef5e7;
+}
+
+.gallery-delete-preview-img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+}
+
+/* Actions */
+.gallery-delete-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* Buttons – match your green theme */
+.gallery-delete-cancel-btn {
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid #c3cfd4;
+  background-color: #ffffff;
+  color: #4a5563;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.15s ease;
+}
+
+.gallery-delete-cancel-btn:hover:enabled {
+  background-color: #f3f4f6;
+}
+
+.gallery-delete-confirm-btn {
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: none;
+  background-color: #5a8c4f; /* jade-ish green */
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.15s ease;
+}
+
+.gallery-delete-confirm-btn:hover:enabled {
+  background-color: #4c7a43;
+}
+
+.gallery-delete-confirm-btn:disabled,
+.gallery-delete-cancel-btn:disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+
 /* Header */
 .gallery-header h1 {
   font-size: 28px;
