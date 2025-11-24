@@ -6296,3 +6296,282 @@ label {
   margin-bottom: 10px;
   color: "#444";
 }
+
+/* Customer Settings */
+.customer-settings-page {
+  min-height: calc(100vh - 100px);
+  padding: 24px 16px 40px;
+  background-color: #F0F0F0; /* Off-white */
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.customer-settings-card {
+  width: 100%;
+  max-width: 900px;
+  background-color: #ffffff; /* Keep card white for contrast */
+  border-radius: 18px;
+  box-shadow: 0 8px 24px rgba(75, 89, 69, 0.10); /* jade deep tint */
+  padding: 24px 24px 20px;
+  box-sizing: border-box;
+}
+
+.customer-settings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.customer-settings-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #4B5945; /* Jade Deep */
+  margin: 0;
+}
+
+.customer-settings-subtitle {
+  font-size: 13px;
+  color: #66785F; /* Jade Medium */
+  margin-top: 4px;
+}
+
+/* Loading */
+.settings-loading-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background-color: #D9E9CF; /* Jade Mist */
+  font-size: 12px;
+  color: #4B5945; /* Jade Deep */
+}
+
+.settings-spinner {
+  animation: jade-spin 0.8s linear infinite;
+}
+
+@keyframes jade-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.settings-section {
+  border-top: 1px solid #B6CEB4; /* Light Sage border */
+  padding-top: 16px;
+  margin-top: 12px;
+}
+
+.settings-section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #66785F; /* Jade medium */
+  margin: 0 0 10px;
+}
+
+.settings-field-block {
+  margin-bottom: 14px;
+}
+
+.settings-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.settings-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #4B5945; /* Jade deep */
+}
+
+.settings-edit-btn {
+  border: none;
+  background: #D9E9CF; /* Jade Mist */
+  width: 26px;
+  height: 26px;
+  border-radius: 100px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.settings-edit-btn:hover {
+  background: #B6CEB4; /* Light Sage */
+  transform: translateY(-1px);
+}
+
+.settings-value-text {
+  font-size: 14px;
+  color: #4B5945; /* Jade Deep */
+  margin: 0;
+  padding: 8px 10px;
+  background-color: #F0F0F0; /* Off-white */
+  border-radius: 10px;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+}
+
+.settings-placeholder {
+  color: #96A78D; /* Jade Sage */
+  font-style: italic;
+}
+
+.settings-edit-area {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.settings-input {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid #96A78D; /* Jade Sage */
+  padding: 8px 10px;
+  font-size: 14px;
+  outline: none;
+  background-color: #ffffff;
+}
+
+.settings-input:focus {
+  border-color: #66785F; /* Jade Medium */
+  box-shadow: 0 0 0 1px rgba(102, 120, 95, 0.3);
+}
+
+.settings-inline-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.settings-confirm-btn,
+.settings-cancel-btn {
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 13px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+/* Confirm */
+.settings-confirm-btn {
+  background-color: #66785F; /* Jade Medium */
+  color: #ffffff;
+  box-shadow: 0 4px 10px rgba(102, 120, 95, 0.30);
+}
+
+.settings-confirm-btn:hover {
+  background-color: #4B5945; /* Jade Deep */
+  transform: translateY(-1px);
+}
+
+/* Cancel */
+.settings-cancel-btn {
+  background-color: #F0F0F0; /* Off-white */
+  color: #4B5945; /* Jade Deep */
+}
+
+.settings-cancel-btn:hover {
+  background-color: #D9E9CF; /* Mist */
+}
+
+.customer-settings-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 22px;
+  padding-top: 16px;
+  border-top: 1px solid #B6CEB4; /* Light Sage */
+}
+
+.settings-back-btn,
+.settings-save-btn {
+  border-radius: 999px;
+  padding: 8px 18px;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.15s ease, transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+/* Back */
+.settings-back-btn {
+  background-color: #F0F0F0; /* Off-white */
+  color: #4B5945; /* Jade deep */
+}
+
+.settings-back-btn:hover {
+  background-color: #D9E9CF; /* Mist */
+}
+
+/* Save */
+.settings-save-btn {
+  background-color: #66785F; /* Jade Medium */
+  color: #ffffff;
+  box-shadow: 0 6px 16px rgba(102, 120, 95, 0.35);
+}
+
+.settings-save-btn:hover {
+  background-color: #4B5945; /* Jade Deep */
+  transform: translateY(-1px);
+}
+
+.settings-save-btn:disabled {
+  opacity: 0.7;
+  cursor: default;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Alerts */
+.settings-error {
+  margin: 4px 0 10px;
+  padding: 8px 10px;
+  background-color: #fee2e2;
+  color: #b91c1c;
+  font-size: 13px;
+  border-radius: 10px;
+}
+
+.settings-success {
+  margin: 4px 0 10px;
+  padding: 8px 10px;
+  background-color: #D9E9CF; /* Mist */
+  color: #4B5945; /* Deep */
+  font-size: 13px;
+  border-radius: 10px;
+}
+
+@media (max-width: 640px) {
+  .customer-settings-card {
+    padding: 18px 16px 16px;
+  }
+
+  .customer-settings-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .customer-settings-footer {
+    flex-direction: column-reverse;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .settings-back-btn,
+  .settings-save-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
