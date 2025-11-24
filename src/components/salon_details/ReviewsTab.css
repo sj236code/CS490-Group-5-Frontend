@@ -2,39 +2,59 @@
 .reviews-list {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem; /* Space between review items */
-    padding: 1rem; /* Padding around the list of reviews */
+    gap: 1.5rem;
+    /* Space between review items */
+    padding: 1rem;
+    /* Padding around the list of reviews */
+    margin: 0 auto;
+    /* Center the reviews */
+    max-width: 800px;
+    /* Optional: limit width for better readability */
 }
 
 /* Individual review item container */
 .review-item {
-    background-color: #E6EADF; /* Light green background, similar to the image */
-    padding: 1.5rem; /* Increased padding inside the review box */
-    border-radius: 8px; /* Slightly rounded corners */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Subtle shadow */
+    background-color: #E6EADF;
+    /* Light green background, similar to the image */
+    padding: 1.5rem;
+    /* Increased padding inside the review box */
+    border-radius: 8px;
+    /* Slightly rounded corners */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    /* Subtle shadow */
     display: flex;
     flex-direction: column;
-    gap: 1rem; /* Space between header/comment */
+    gap: 1rem;
+    /* Space between header/comment */
 }
 
 /* Header section containing avatar, name, stars, and review images */
 .review-content-header {
     display: flex;
-    align-items: flex-start; /* Align items to the top (avatar, name) */
-    gap: 1rem; /* Space between avatar section and user info */
+    align-items: flex-start;
+    /* Align items to the top (avatar, name) */
+    gap: 1rem;
+    /* Space between avatar section and user info */
 }
 
 /* Avatar section */
 .review-avatar-section {
-    flex-shrink: 0; /* Don't shrink the avatar */
-    width: 48px; /* Fixed width for the avatar */
-    height: 48px; /* Fixed height for the avatar */
-    display: flex; /* To center the icon if using Lucide */
+    flex-shrink: 0;
+    /* Don't shrink the avatar */
+    width: 48px;
+    /* Fixed width for the avatar */
+    height: 48px;
+    /* Fixed height for the avatar */
+    display: flex;
+    /* To center the icon if using Lucide */
     justify-content: center;
     align-items: center;
-    background-color: #D3D8CF; /* Slightly darker background for the avatar circle */
-    border-radius: 50%; /* Make it circular */
-    overflow: hidden; /* Ensure anything overflowing is clipped */
+    background-color: #D3D8CF;
+    /* Slightly darker background for the avatar circle */
+    border-radius: 50%;
+    /* Make it circular */
+    overflow: hidden;
+    /* Ensure anything overflowing is clipped */
 }
 
 /* If you use an actual img for avatar */
@@ -48,48 +68,146 @@
 .review-user-info {
     display: flex;
     flex-direction: column;
-    flex-grow: 1; /* Allows user info to take available space */
+    flex-grow: 1;
+    /* Allows user info to take available space */
 }
 
 .review-customer-name {
-    font-weight: 600; /* Bolder for name */
-    color: #333; /* Darker text for name */
-    font-size: 1.1rem; /* Slightly larger font for name */
+    font-weight: 600;
+    /* Bolder for name */
+    color: #333;
+    /* Darker text for name */
+    font-size: 1.1rem;
+    /* Slightly larger font for name */
     margin-bottom: 0.25rem;
 }
 
 /* Star rating container */
 .star-rating {
     display: flex;
-    gap: 0.1rem; /* Tighter gap between stars */
+    gap: 0.1rem;
+    /* Tighter gap between stars */
     /* Adjust size for Star icon in JS if needed */
 }
 
 /* Review comment text */
 .review-comment {
-    font-size: 1rem; /* Standard font size */
-    color: #555; /* Medium grey for comment text */
-    line-height: 1.5; /* Good readability */
-    margin-top: -0.5rem; /* Pull comment up slightly if needed to reduce gap */
+    font-size: 1rem;
+    /* Standard font size */
+    color: #555;
+    /* Medium grey for comment text */
+    line-height: 1.5;
+    /* Good readability */
+    margin-top: -0.5rem;
+    /* Pull comment up slightly if needed to reduce gap */
 }
 
 /* Flex container for review images (next to user info) */
 .review-images-flex-container {
     display: flex;
-    gap: 0.5rem; /* Space between images */
-    flex-shrink: 0; /* Prevent images from shrinking */
-    margin-left: auto; /* Push images to the right */
-    align-items: flex-start; /* Align images to the top */
+    gap: 0.5rem;
+    /* Space between images */
+    margin-left: auto;
+    /* Push images to the right */
+    align-items: flex-start;
+    /* Align images to the top */
 }
 
 .review-image-thumbnail {
-    width: 48px; /* Fixed width for thumbnail */
-    height: 48px; /* Fixed height for thumbnail */
-    object-fit: cover; /* Crop to fit */
-    border-radius: 4px; /* Slightly rounded corners for images */
-    border: 1px solid #D3D8CF; /* Light border */
+    width: 32px;
+    /* Fixed width for thumbnail */
+    height: 32px;
+    /* Fixed height for thumbnail */
+    object-fit: cover;
+    /* Crop to fit */
+    border-radius: 4px;
+    /* Slightly rounded corners for images */
+    border: 1px solid #D3D8CF;
+    /* Light border */
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .review-date {
-    display: none; 
+    font-size: 0.85rem;
+    color: #888;
+}
+
+/* Container for the whole reviews section */
+.reviews-container {
+    padding: 1rem;
+}
+
+.reviews-empty {
+    text-align: center;
+    padding: 2rem;
+    color: #666;
+}
+
+.reviews-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+}
+
+.reviews-header h2 {
+    margin: 0;
+    font-size: 1.3rem;
+    color: #333;
+    text-align: center;
+    width: 100%;
+}
+
+.reviews-header .btn-post-review {
+    align-self: flex-start;
+    margin-left: calc((100% - 800px) / 2 + 1rem);
+}
+
+.btn-post-review {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background-color: #d9c9ef;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-post-review:hover {
+    background-color: #c9b7e0;
+}
+
+.login-prompt {
+    color: #999;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+/* Review images grid container */
+.review-images-grid {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 0.75rem;
+}
+
+/* Individual review image item */
+.review-image-item {
+    width: 480px;
+    height: 480px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid #D3D8CF;
+    cursor: pointer;
 }

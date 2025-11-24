@@ -2,12 +2,14 @@ import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { Star } from 'lucide-react';
 import DashboardManageTab from '../components/salon_dashboard/DashboardManageTab';
+import DashboardLoyaltyTab from '../components/salon_dashboard/DashboardLoyaltyTab';
+import DashboardCalendarTab from '../components/salon_dashboard/DashboardCalendarTab';
 
 function SalonDashboard() {
     const location = useLocation();
     const navigate = useNavigate();
     const [searchParams] = useSearchParams(); 
-    const { salon } = location.state || {};
+    const { salon, user } = location.state || {};
 
     const [workingTab, setWorkingTab] = useState("Manage");
     const [salonDetails, setSalonDetails] = useState(null);
@@ -87,8 +89,8 @@ function SalonDashboard() {
 
             <div className="salon-details-tab-content">
                 {workingTab === "Metrics" && <h2>Metrics Page for: {salonDetails.name}</h2>}
-                {workingTab === "Calendar" && <h2>Calendar Page for: {salonDetails.name}</h2>}
-                {workingTab === "Loyalty" && <h2>Loyalty Page for: {salonDetails.name}</h2>}
+                {workingTab === "Calendar" && <DashboardCalendarTab salon={salonDetails} user={user}/>}
+                {workingTab === "Loyalty" && <DashboardLoyaltyTab salon={salonDetails} />}
                 {workingTab === "Manage" && <DashboardManageTab salon={salonDetails} />}
             </div>
         </div>
