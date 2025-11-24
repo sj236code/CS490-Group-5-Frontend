@@ -4081,6 +4081,13 @@ label {
   background-color: #bfd4b5;
 }
 
+/* Modal buttons */
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+}
+  
 .loyalty-legend-redeemed {
   background-color: #8faa84;
 }
@@ -4510,6 +4517,7 @@ label {
   color: white;
 }
 
+/* ----- Form Rows */
 .payments-tab:disabled {
   opacity: 0.5;
   cursor: not-allowed;
@@ -5475,6 +5483,13 @@ label {
   color: #3d4f3a;
 }
 
+/* Empty state  */
+.payments-empty-state {
+  text-align: center;
+  color: #777;
+  margin: 40px 0;
+}
+
 .history-item__dates {
   margin: 4px 0 0 0;
   font-size: 12px;
@@ -5493,6 +5508,10 @@ label {
   gap: 6px;
 }
 
+.userprof-pill:hover {
+  background-color: rgba(75, 89, 69, 0.1); 
+}
+
 .history-item__metric-icon {
   color: #7a6f5d;
 }
@@ -5504,6 +5523,22 @@ label {
 
 .history-item__earnings {
   text-align: right;
+}
+
+/* Dropdown button */
+.userprof-dropdown button {
+  width: 100%;
+  text-align: left;
+  padding: 8px 14px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #2F3A2B;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.2s ease;
 }
 
 .history-item__earnings-label {
@@ -5541,4 +5576,295 @@ label {
     justify-content: flex-start;
     flex-wrap: wrap;
   }
+}
+
+/* Owner Calendar */
+/* Page wrapper */
+
+.calendar-page {
+  background: #f6f5f1;
+  min-height: 100vh;
+  padding: 20px 32px;
+  font-family: "Inter", sans-serif;
+  color: #333;
+}
+
+/* Top row */
+
+.calendar-view-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.calendar-view-buttons {
+  display: flex;
+  gap: 6px;
+}
+
+.calendar-view-btn {
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: 1px solid #d8dfd0;
+  background: #f7f8f4;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.calendar-view-btn--active {
+  background: #788a6c;
+  border-color: #788a6c;
+  color: #fff;
+}
+
+.calendar-employee-filter {
+  font-size: 0.85rem;
+  color: #555;
+}
+
+.calendar-employee-filter select {
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid #d4d4d4;
+  background: #fff;
+  font-size: 0.85rem;
+}
+
+.calendar-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.calendar-action-btn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: none;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.calendar-action-btn--secondary {
+  background: #e6e6e6;
+  color: #444;
+}
+
+/* === Main layout: calendar + availability === */
+
+.calendar-main {
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  gap: 16px;
+}
+
+/* === Calendar grid === */
+
+.calendar-grid {
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid #e1e1dd;
+  padding: 10px 12px 12px;
+}
+
+/* Header row (Mon–Fri) */
+
+.calendar-grid-header {
+  display: grid;
+  grid-template-columns: 60px repeat(5, 1fr);
+  font-size: 0.85rem;
+  color: #555;
+  border-bottom: 1px solid #f0f0ea;
+  padding-bottom: 4px;
+}
+
+.calendar-time-header {
+  /* empty cell over the time column */
+}
+
+.calendar-day-header {
+  text-align: center;
+}
+
+/* Body (time column + day columns) */
+
+.calendar-grid-body {
+  display: grid;
+  grid-template-columns: 60px 1fr;
+}
+
+/* Time column */
+
+.calendar-time-column {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: #777;
+  padding: 8px 4px 8px 0;
+}
+
+.calendar-time-slot {
+  height: 40px;
+}
+
+/* Day columns */
+
+.calendar-day-columns {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  position: relative;
+}
+
+.calendar-day-column {
+  position: relative;
+  border-left: 1px solid #f3f3ee;
+}
+
+.calendar-day-column:last-child {
+  border-right: 1px solid #f3f3ee;
+}
+
+.calendar-hour-row {
+  height: 40px;
+  border-top: 1px solid #f5f5f0;
+}
+
+/* Appointments */
+
+.calendar-appointment {
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  border-radius: 4px;
+  padding: 4px 6px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #222;
+  box-sizing: border-box;
+}
+
+.calendar-appointment-name {
+  margin-bottom: 2px;
+}
+
+.calendar-appointment-service {
+  font-weight: 400;
+}
+
+/* Appointment colors (match Figma) */
+
+.appt-red {
+  background-color: #f6c1c1;
+}
+
+.appt-gray {
+  background-color: #d6d6d6;
+}
+
+.appt-blue {
+  background-color: #c7cff9;
+}
+
+/* === Right sidebar: employee availability === */
+
+.calendar-availability {
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid #e1e1dd;
+  padding: 12px;
+  font-size: 0.85rem;
+}
+
+.availability-header {
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.availability-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.availability-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.availability-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+}
+
+/* Employee dot colors */
+
+.emp-dot-blue {
+  background: #6b7edc;
+}
+
+.emp-dot-green {
+  background: #8dbb7a;
+}
+
+.emp-dot-red {
+  background: #d96a6a;
+}
+
+.availability-add-btn {
+  margin-top: 4px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #d4d4d4;
+  background: #f7f7f7;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+/* === Bottom stats row === */
+
+.calendar-stats-row {
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.calendar-stat-card {
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid #e1e1dd;
+  padding: 10px 14px;
+}
+
+.calendar-stat-label {
+  font-size: 0.8rem;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.calendar-stat-value {
+  font-size: 1.3rem;
+}
+
+@media (max-width: 900px) {
+  .calendar-main {
+    grid-template-columns: 1fr;
+  }
+
+  .calendar-stats-row {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/*Calendar header*/
+.calendar-header{
+  text-align: "center";
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: "#444";
 }
