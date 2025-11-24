@@ -2,9 +2,18 @@ import { useState, useEffect } from 'react';
 import SalonCard from "./SalonCard";
 import { useNavigate } from 'react-router-dom';
 
-function SalonsSection(){
+function SalonsSection({userType, user}){
 
     const navigate = useNavigate();
+
+    const navTo = (path) => {
+        navigate(path, {
+            state: {
+                userType,
+                user
+            }
+        });
+    };
 
     // Store salon array
     const [salons, setSalons] = useState([]);
@@ -89,7 +98,7 @@ function SalonsSection(){
         console.log(`Clicked on salon ID: `, salon);
         //navigate line goes here
         navigate('/salon', {
-            state: { salon }
+            state: { salon, userType, user }
         });
     };
 

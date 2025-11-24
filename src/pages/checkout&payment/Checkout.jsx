@@ -1,25 +1,33 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
 import "./Checkout.css";
 
 function Checkout() {
     const navigate = useNavigate();
     const location = useLocation();
+
+    // derive customer id (same logic you already had)
+    const customerIdFromState = (location.state && location.state.customer_id);
+    const customerIdFromSession = sessionStorage.getItem("checkout_customer_id");
+    const customer_id = customerIdFromState || customerIdFromSession;
+
     const cartItems = (location.state && location.state.cartItems) || [];
 
     const [paymentMethod, setPaymentMethod] = useState("card");
     const [tip, setTip] = useState();
-    const [employeeName] = useState("Alex Rivera");
-    const [appointmentDateTime, setAppointmentDateTime] = useState(null);
+    const [employeeName] = useState("");
+    const [savedMethods, setSavedMethods] = useState([]);
+    const [selectedCardId, setSelectedCardId] = useState("");
 
     const presubtotal = cartItems.reduce(
         (sum, item) => sum + (item.item_price || 0) * (item.quantity || 1), 0
     );
 
     const taxRate = Number(import.meta.env.VITE_TAX_RATE) || 0.066;
-    const salesTax = presubtotal * taxRate; 
+    const salesTax = presubtotal * taxRate;
     const subtotal = salesTax + presubtotal;
-    const total = parseFloat(subtotal) + parseFloat(tip || 0); 
+    const total = parseFloat(subtotal) + parseFloat(tip || 0);
 
     const [cardDetails, setCardDetails] = useState({
         name: "",
@@ -29,19 +37,173 @@ function Checkout() {
         zip: "",
     });
 
+    // Optional: logos (replace with local assets if preferred)
+    const brandLogo = {
+        visa: "https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg",
+        mastercard: "https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg",
+        amex: "https://1000logos.net/wp-content/uploads/2016/10/American-Express-logo-1536x864.png",
+        discover: "https://1000logos.net/wp-content/uploads/2020/11/Discover-Logo.jpg"
+    };
+
+    const convertISOToMMYY = (isoDateString) => {
+        if (!isoDateString) return "";
+
+        console.log("Converting ISO date:", isoDateString);
+
+        const dateMatch = isoDateString.match(/^(\d{4})-(\d{2})-(\d{2})/);
+
+        if (dateMatch) {
+            const year = dateMatch[1].slice(-2);
+            const month = dateMatch[2];
+
+            const formatted = `${month}/${year}`;
+            console.log("Converted from YYYY-MM-DD to MM/YY:", formatted);
+            return formatted;
+        }
+
+        try {
+            const date = new Date(isoDateString);
+
+            if (isNaN(date.getTime())) {
+                console.warn("Invalid date format could not be parsed:", isoDateString);
+                return "";
+            }
+
+            // Extract month (0-11) and add 1, then pad to 2 digits
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+
+            // Extract last 2 digits of year
+            const year = String(date.getFullYear()).slice(-2);
+
+            const formatted = `${month}/${year}`;
+            console.log("Converted from ISO via Date Object to MM/YY:", formatted);
+
+            return formatted;
+        } catch (error) {
+            console.error("Error converting date:", error);
+            return "";
+        }
+    };
+
+    // Fetch saved methods
+    useEffect(() => {
+        if (!customer_id) {
+            console.debug("No customer_id present; skipping fetch of saved payment methods.");
+            return;
+        }
+
+        console.log("Customer ID found, starting fetch:", customer_id);
+
+        const fetchMethods = async () => {
+            try {
+                console.debug("fetching methods for customer_id:", customer_id);
+
+                const response = await axios.get(
+                    `${import.meta.env.VITE_API_URL}/api/payments/${customer_id}/methods`,
+                );
+
+                console.debug("saved methods response:", response.data);
+
+                const methods = Array.isArray(response.data) ? response.data : response.data.methods || [];
+                setSavedMethods(methods);
+
+                // set default card if present
+                const defaultCard = methods.find((m) => m.is_default);
+                if (defaultCard) {
+                    console.log("Setting default card, calling convertISOToMMYY:", defaultCard);
+                    setSelectedCardId(defaultCard.id);
+                    setCardDetails((prev) => ({
+                        ...prev,
+                        name: defaultCard.card_name || "",
+                        // This call now uses the more robust conversion function
+                        expiry: convertISOToMMYY(defaultCard.expiration || defaultCard.Expiration || defaultCard.expiry),
+                        // ⭐ CHANGE 1: Set number field to masked value on load for default card
+                        number: "************" + (defaultCard.last4 || ""), 
+                        cvv: "",
+                        zip: "",
+                    }));
+                } else {
+                    console.log("No default card found in saved methods. Skipping expiry conversion.");
+                }
+            } catch (error) {
+                console.error("Failed to fetch saved payment methods:", error);
+                if (error.response) {
+                    console.debug("server response:", error.response.status, error.response.data);
+                }
+            }
+        };
+
+        fetchMethods();
+    }, [customer_id]);
+
+    // card select handler
+    const handleCardSelect = (e) => {
+        const selectedId = e.target.value;
+        setSelectedCardId(selectedId);
+
+        if (!selectedId) {
+            // Reset to empty for "Use a New Card" option
+            setCardDetails({ name: "", number: "", expiry: "", cvv: "", zip: "" });
+            return;
+        }
+
+        const selectedMethod = savedMethods.find((m) => m.id === Number(selectedId));
+        if (selectedMethod) {
+            console.log("Selected method data:", selectedMethod);
+
+            const formattedExpiry = convertISOToMMYY(selectedMethod.expiration || selectedMethod.Expiration || selectedMethod.expiry);
+            console.log("Final formatted expiration for display: ", formattedExpiry);
+
+            setCardDetails({
+                name: selectedMethod.card_name || "",
+                // ⭐ CHANGE 2: Pre-fill card number with 12 asterisks
+                number: "************" + (selectedMethod.last4 || ""),
+                expiry: formattedExpiry,
+                cvv: "",
+                zip: "",
+            });
+        }
+    };
+
+    // Input change handler
     const handleChange = (e) => {
         const { name, value } = e.target;
         let newValue = value;
+
+        // If a saved card was selected and user edits a non-number field, clear selectedCardId (this indicates "use new card")
+        if (selectedCardId !== "" && name !== "number" && name !== "cvv" && name !== "zip") {
+            setSelectedCardId("");
+        }
 
         switch (name) {
             case "name":
                 newValue = value.replace(/[^A-Za-z\s]/g, "");
                 break;
             case "number":
-                newValue = value.replace(/\D/g, "").slice(0, 16);
+                if (selectedCardId) {
+                    // ⭐ CHANGE 3: Only allow changing the last 4 digits for a saved card
+                    const cleanInput = value.replace(/\D/g, "");
+                    const last4Digits = cleanInput.slice(-4);
+                    // Force the first 12 digits to be asterisks
+                    newValue = "************" + last4Digits;
+                } else {
+                    // Normal handling for a new card
+                    newValue = value.replace(/\D/g, "").slice(0, 16);
+                }
                 break;
             case "expiry":
-                newValue = value.replace(/\D/g, "").slice(0, 4);
+                // Allow digits and slash, format as MM/YY
+                newValue = value.replace(/[^\d/]/g, "");
+
+                // Auto-insert slash after 2 digits
+                if (newValue.length === 2 && !newValue.includes('/')) {
+                    newValue = newValue + '/';
+                }
+
+                // Limit to MM/YY format (5 characters max)
+                if (newValue.length > 5) {
+                    newValue = newValue.slice(0, 5);
+                }
                 break;
             case "cvv":
                 newValue = value.replace(/\D/g, "").slice(0, 3);
@@ -56,44 +218,111 @@ function Checkout() {
         setCardDetails((prev) => ({ ...prev, [name]: newValue }));
     };
 
-    const confirmPayment = () => {
-        if (paymentMethod === "card") {
-            const { name, number, expiry, cvv, zip } = cardDetails;
+    const formatCardOption = (method) => {
+        const brand = method.brand ? method.brand.charAt(0).toUpperCase() + method.brand.slice(1).toLowerCase() : "Card";
+        const defaultTag = method.is_default ? " (Default)" : "";
+        return `${brand} ending in ${method.last4 || "xxxx"}${defaultTag}`;
+    };
 
-            if (!name || !number || !expiry || !cvv || !zip) {
-                alert("Please fill out all card details before proceeding.");
-                return;
-            }
-            if (number.length < 16) {
-                alert("Card number must be 16 digits.");
-                return;
-            }
-            if (expiry.length < 4) {
-                alert("Expiration date must be 4 digits (MMYY).");
-                return;
-            }
-            if (cvv.length < 3) {
-                alert("CVV must be 3 digits.");
-                return;
-            }
-            if (zip.length < 5) {
-                alert("ZIP code must be 5 digits.");
-                return;
+    const createAppointmentsForServices = async () => {
+        const serviceItems = cartItems.filter(
+            (item) => item.item_type === "service" && item.start_at
+        );
+
+        if (!serviceItems.length) {
+            console.log("No service items in cart; skipping appointment creation.");
+            return;
+        }
+
+        try {
+            await Promise.all(
+                serviceItems.map((item, index) => {
+                    const salonIdForThisService = item.salon_id ?? item.service_salon_id ?? item.salon?.id ?? null;
+                    const serviceIdForThisService = item.service_id ?? item.service?.id ?? item.serviceID ?? null;
+                    const employeeIdForThisService = item.stylist_id ?? item.employee_id ?? item.employeeId ?? null;
+                    const payload = {
+                        customer_id,
+                        salon_id: salonIdForThisService,
+                        service_id: serviceIdForThisService,
+                        employee_id: employeeIdForThisService, 
+                        start_at: item.start_at,
+                        notes: item.notes || null,
+                        status: "Booked",
+                    };
+
+                    console.log(`Creating appointment #${index + 1}`, payload);
+
+                    return axios.post(`${import.meta.env.VITE_API_URL}/api/appointments/add`, payload);
+                })
+            );
+
+            console.log("All service appointments created successfully.");
+        } 
+        catch (err) {
+            console.error("Error creating one or more appointments:", err);
+        }
+    };
+    
+    const confirmPayment = async () => {
+        if (!customer_id) {
+            alert("Error: Customer ID is missing. Please return to your cart and check out again.");
+            return;
+        }
+
+        // 3. Card validation
+        if (paymentMethod === "card") {
+            if (selectedCardId === "") {
+                const { name, number, expiry, cvv, zip } = cardDetails;
+                // Validation for a completely new card (unchanged)
+                if (!name || !number || !expiry || !cvv || !zip || number.length < 16 || expiry.length < 5 || cvv.length < 3 || zip.length < 5) {
+                    alert("Please fill out all NEW card details before proceeding.");
+                    return;
+                }
+            } else {
+                // Logic for a SAVED card
+                const { number, cvv } = cardDetails;
+                const selectedMethod = savedMethods.find((m) => m.id === Number(selectedCardId));
+
+                if (!selectedMethod) {
+                     alert("Error: Saved card details not found.");
+                     return;
+                }
+
+                // 1. CVV check (unchanged)
+                if (cvv.length < 3) {
+                    alert("Please enter the 3-digit CVV for the saved card.");
+                    return;
+                }
+
+                // 2. ⭐ CHANGE 4: Card Number Match Validation
+                const last4Input = number.slice(-4);
+                const actualLast4 = selectedMethod.last4;
+                
+                if (last4Input !== actualLast4) {
+                    alert("The last 4 digits you entered do not match the saved card's last 4 digits. Please check the number and try again.");
+                    return;
+                }
+                // Validation passed, proceed
             }
         }
 
-        const maskedCard = 
+        // --- Payment Confirmation and API Call (unchanged) ---
+
+        const maskedCard =
             paymentMethod === "card"
-                ? `${"*".repeat(12)} ${cardDetails.number.slice(-4)}`
+                ? selectedCardId
+                    ? `Saved Card ending in ${savedMethods.find(m => m.id === Number(selectedCardId))?.last4}`
+                    : `${"*".repeat(12)} ${cardDetails.number.slice(-4)}`
                 : null;
         
-        const totalServiceDuration = cartItems
-            .filter(item => item.item_type === "service")
-            .reduce((sum, service) => sum + (service.service_duration || 0), 0)
+        // ... (rest of booking data construction remains the same)
 
+        const totalServiceDuration = cartItems
+            .filter((item) => item.item_type === "service")
+            .reduce((sum, service) => sum + (service.service_duration || 0), 0);
 
         const firstStartItem = cartItems.find(
-            item => item.start_at && item.start_at !== null
+            (item) => item.start_at && item.start_at !== null
         );
 
         let appointmentDate = "N/A";
@@ -103,14 +332,10 @@ function Checkout() {
             const dateObj = new Date(firstStartItem.start_at);
             if (!isNaN(dateObj.getTime())) {
                 appointmentDate = dateObj.toLocaleDateString("en-US", {
-                    weekday: "long",
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
+                    weekday: "long", year: "numeric", month: "long", day: "numeric"
                 });
                 appointmentTime = dateObj.toLocaleTimeString("en-US", {
-                    hour: "2-digit",
-                    minute: "2-digit",
+                    hour: "2-digit", minute: "2-digit"
                 });
             } else {
                 console.warn("Invalid start_at date:", firstStartItem.start_at);
@@ -118,25 +343,65 @@ function Checkout() {
         } else {
             console.warn("No valid start_at found in cartItems:", cartItems);
         }
-        
+
         const bookingData = {
+            customer_id,
             date: appointmentDate,
             time: appointmentTime,
             duration: totalServiceDuration,
             staff: employeeName,
-            paymentMethod, 
-            maskedCard, 
+            paymentMethod: selectedCardId ? "Saved Card" : paymentMethod,
+            maskedCard,
             cartItems,
             total,
             salesTax,
         };
 
-        navigate("/payment-confirmation", {state: { bookingData } });
-    };
+        try {
+            const response = await axios.post(
+                `${import.meta.env.VITE_API_URL}/api/payments/create_order`,
+                {
+                    customer_id: customer_id,
+                    salon_id: cartItems[0]?.salon_id || null,
+                    subtotal: presubtotal,
+                    tip_amnt: parseFloat(tip || 0),
+                    tax_amnt: salesTax,
+                    total_amnt: total,
+                    promo_id: null,
+                    cart_items: cartItems.map((item) => ({
+                        kind: item.item_type,
+                        product_id: item.item_type === "product" ? item.product_id : null,
+                        service_id: item.item_type === "service" ? item.service_id : null,
+                        qty: item.quantity || 1,
+                        unit_price: item.item_price,
+                    })),
+                },
+                {
+                    // Attach token for create_order as well if available
+                    headers: localStorage.getItem("token") ? { Authorization: `Bearer ${localStorage.getItem("token")}` } : {}
+                }
+            );
 
-    useEffect(() => {
-        console.log("Checkout received cartItems:", JSON.stringify(cartItems, null, 2));
-    }, [cartItems]);
+            if (response.status === 201) {
+                console.log("order created successfully", response.data);
+
+                await createAppointmentsForServices();
+
+                navigate("/payment-confirmation", { state: { bookingData } });
+            } 
+            else {
+                alert("Unexpected response from server.");
+            }
+        } catch (error) {
+            console.error("Error creating order:", error);
+            if (error.response) {
+                console.error("Server Response Data:", error.response.data);
+                alert(`Error: ${error.response.data.error || error.response.data.details || 'Bad Request'}`);
+            } else {
+                alert("Error processing payment. Please try again.");
+            }
+        }
+    };
 
     return (
         <div className="payment-container">
@@ -153,9 +418,9 @@ function Checkout() {
                     {cartItems.length > 0 ? (
                         cartItems.map((item, index) => (
                             <span key={index}>
-                                    {(item.service_name || item.product_name)} - $
-                                    {(item.item_price * item.quantity).toFixed(2)}{" "}
-                                    {item.quantity > 1 ? `(${item.quantity}x)` : " "}
+                                {(item.service_name || item.product_name)} - $
+                                {(item.item_price * item.quantity).toFixed(2)}{" "}
+                                {item.quantity > 1 ? `(${item.quantity}x)` : " "}
                             </span>
                         ))
                     ) : (
@@ -203,6 +468,42 @@ function Checkout() {
             {paymentMethod === "card" && (
                 <div className="card-form">
                     <div className="form-group">
+                        <label>Select Saved Card</label>
+
+                        <div className="dropdown-with-logo">
+                            <select
+                                className="card-dropdown"
+                                value={selectedCardId}
+                                onChange={handleCardSelect}
+                            >
+                                <option value="">Use a New Card</option>
+                                {savedMethods
+                                    .slice()
+                                    .sort((a, b) => (b.is_default ? 1 : -1)) // default first
+                                    .map((method) => (
+                                        <option key={method.id} value={method.id}>
+                                            {formatCardOption(method)}
+                                        </option>
+                                    ))}
+                            </select>
+
+                            {/* small logo preview for selected saved card */}
+                            <div className="logo-wrapper">
+                                {selectedCardId ? (
+                                    <img
+                                        alt="card-logo"
+                                        className="card-logo"
+                                        src={
+                                            brandLogo[
+                                                (savedMethods.find((x) => x.id === Number(selectedCardId))?.brand || "")
+                                                    .toLowerCase()
+                                            ] || ""
+                                        }
+                                    />
+                                ) : null}
+                            </div>
+                        </div>
+
                         <label>Cardholder Name</label>
                         <input
                             name="name"
@@ -210,6 +511,7 @@ function Checkout() {
                             placeholder="ex: John Doe"
                             value={cardDetails.name}
                             onChange={handleChange}
+                            disabled={selectedCardId !== ""}
                         />
                     </div>
 
@@ -218,7 +520,9 @@ function Checkout() {
                         <input
                             name="number"
                             type="text"
-                            placeholder="1234 5678 9012 3456"
+                            // If a saved card is selected, the input will be readonly for the first 12 digits
+                            maxLength={selectedCardId ? 16 : undefined}
+                            placeholder="**** **** **** 1234"
                             value={cardDetails.number}
                             onChange={handleChange}
                         />
@@ -230,9 +534,10 @@ function Checkout() {
                             <input
                                 name="expiry"
                                 type="text"
-                                placeholder="MMYY"
+                                placeholder="MM/YY"
                                 value={cardDetails.expiry}
                                 onChange={handleChange}
+                                disabled={selectedCardId !== ""}
                             />
                         </div>
                         <div className="form-group">

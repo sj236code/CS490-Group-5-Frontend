@@ -6,6 +6,10 @@
     /* Space between review items */
     padding: 1rem;
     /* Padding around the list of reviews */
+    margin: 0 auto;
+    /* Center the reviews */
+    max-width: 800px;
+    /* Optional: limit width for better readability */
 }
 
 /* Individual review item container */
@@ -122,8 +126,72 @@
     /* Light border */
 }
 
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
 .review-date {
-    display: none;
+    font-size: 0.85rem;
+    color: #888;
+}
+
+/* Container for the whole reviews section */
+.reviews-container {
+    padding: 1rem;
+}
+
+.reviews-empty {
+    text-align: center;
+    padding: 2rem;
+    color: #666;
+}
+
+.reviews-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+}
+
+.reviews-header h2 {
+    margin: 0;
+    font-size: 1.3rem;
+    color: #333;
+    text-align: center;
+    width: 100%;
+}
+
+.reviews-header .btn-post-review {
+    align-self: flex-start;
+    margin-left: calc((100% - 800px) / 2 + 1rem);
+}
+
+.btn-post-review {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background-color: #d9c9ef;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-post-review:hover {
+    background-color: #c9b7e0;
+}
+
+.login-prompt {
+    color: #999;
+    font-size: 0.9rem;
+    margin: 0;
 }
 
 /* Review images grid container */

@@ -1,18 +1,28 @@
 import { ChevronLeft } from 'lucide-react';
+import LoginButton from './LoginButton.jsx';
+import { useNavigate } from 'react-router-dom';
 
-/* NavBar component for an unregistered user */
 function NavBar({onClose}){
 
-    return(
-        <div className="nav-bar">
-            <button className="nav-close-button" onClick={onClose}>
-                <ChevronLeft strokeWidth={3} />
-            </button>
-            <h1>Login to see the Navigation Bar</h1>
-        </div>
-        
-    );
+    const navigate = useNavigate();
 
+    const navigateToLogin = () => {
+        navigate('/signup');
+    }
+
+    return(
+        <div className="nav-bar-overlay" onClick={onClose}>
+            <div className="nav-bar" onClick={e => e.stopPropagation()}>
+                <button className="nav-close-button" onClick={onClose}>
+                    <ChevronLeft strokeWidth={3} />
+                </button>
+                <div>
+                    <LoginButton onClick={navigateToLogin} style={{cursor: 'pointer'}}/>
+
+                </div>
+            </div>
+        </div>
+    );
 }
 
 export default NavBar;

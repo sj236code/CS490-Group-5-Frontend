@@ -4,15 +4,18 @@ import { ChevronRight } from 'lucide-react';
 function CartPanel({onClose}){
 
     return(
-        <div className="cart-panel">
-            <button className="cart-panel-close-button" onClick={onClose}>
-                <ChevronRight strokeWidth={3} />
-            </button>
-            <ul>
-                <li>Checkout</li>
-                <li>Sorry You're Broke</li>
-            </ul>
+        <div className="cart-panel-overlay" onClick={onClose}>
+            <div className="cart-panel" onClick={(e) => e.stopPropagation()}>
+                <button className="cart-panel-close-button" onClick={onClose}>
+                    <ChevronRight strokeWidth={3} />
+                </button>
+                <ul>
+                    <li>Checkout</li>
+                    <li>Sorry You're Broke</li>
+                </ul>
+            </div>
         </div>
+        
     )
 
 }
