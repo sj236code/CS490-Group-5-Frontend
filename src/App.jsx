@@ -30,6 +30,7 @@ import UserGallery from "./pages/UserGallery.jsx";
 import SalonSettings from "./pages/SalonSettings.jsx";
 import SalonPayments from "./pages/SalonPayments.jsx";
 import CustomerSettings from "./pages/CustomerSettings.jsx";
+import EmployeeSettings from "./pages/EmployeeSettings.jsx";
 
 // Firebase
 import PaymentConfirmation from './pages/checkout&payment/PaymentConfirmation.jsx';
@@ -211,6 +212,7 @@ function App() {
         <Route path="/employee-appointments" element={<EmployeeAppointments />} />
         <Route path="/employee-availability" element={<EmployeeAvailability />} />
         <Route path="/employee-payment-portal" element={<EmployeePaymentPortal />} />
+        <Route path="/employeeSettings" element={<EmployeeSettings />} />
 
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/faq" element={<FAQPage />} />
