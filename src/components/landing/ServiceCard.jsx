@@ -1,11 +1,12 @@
 // Modeled after ServiceCard used in SalonDetailsPage
 // Made to show salon-specific details like price & rating
 import { useState, useEffect } from 'react';
-import {Star, Sparkle, ChevronLeft, ChevronRight, Rows4, BookDashed} from 'lucide-react';
+import { Sparkle, ChevronLeft, ChevronRight, Rows4, BookDashed } from 'lucide-react';
 
-function ServiceCard({service, onClick}) {
+function ServiceCard({ service, onClick }) {
 
     const [imageError, setImageError] = useState(false);
+    /* REMOVED FUNCTIONALITY -Barek 10/20/25
     const rating = service.rating || service.avgRating || 4;
     
     // Calculate filled and empty stars
@@ -42,13 +43,13 @@ function ServiceCard({service, onClick}) {
         }
 
         return stars;
-    };
+    }; */
 
     const handleImageError = () => {
         setImageError(true);
     };
 
-    return(
+    return (
         <div className="salon-service-card" onClick={onClick}>
 
             <div className="salon-service-image">
@@ -69,10 +70,10 @@ function ServiceCard({service, onClick}) {
             {/* Service Name */}
             <h3 className="salon-service-name">{service.name}</h3>
 
-            {/* Rating */}
+            {/* Rating REMOVED FUNCTIONALITY -Barek 10/20/25 
             <div className="salon-service-rating">
                 {calcStars()}
-            </div>
+            </div>  */}
 
         </div>
     );

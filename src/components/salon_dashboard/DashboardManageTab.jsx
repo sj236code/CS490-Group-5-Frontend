@@ -217,6 +217,7 @@ function DashboardManageTab({salon}){
                 isOpen={isEditServiceModalOpen}
                 onClose={handleCloseModal}
                 service={selectedService}
+                salonId={salon.id}
                 onServiceUpdated={fetchServices}
             />
 
@@ -225,6 +226,7 @@ function DashboardManageTab({salon}){
                 isOpen={isEditProductModalOpen}
                 onClose={handleCloseModal}
                 product={selectedProduct}
+                salonId={salon.id}
                 onProductUpdated={fetchProducts}
             />
 
