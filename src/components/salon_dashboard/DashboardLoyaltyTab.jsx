@@ -2,7 +2,11 @@
 import { useEffect, useState } from "react";
 import { BarChart3, Users } from "lucide-react";
 
-function DashboardLoyaltyTab({salon}) {
+const API_BASE = import.meta.env.VITE_API_URL
+  ? import.meta.env.VITE_API_URL.replace(/\/+$/, "")
+  : "";
+
+function DashboardLoyaltyTab({ salon }) {
   // Program Summary
   const [programSummary, setProgramSummary] = useState({
     pointsPerDollar: 1,
@@ -12,14 +16,14 @@ function DashboardLoyaltyTab({salon}) {
   // Manage Program Settings form
   const [programSettings, setProgramSettings] = useState({
     pointsPerDollar: 1,
-    redemptionValue: "10 pts = $1",
+    redemptionValue: "100 pts = $10 off",
     expirationDays: 365,
   });
 
   // Pause state
   const [isPaused, setIsPaused] = useState(false);
 
-  // Chart + customer table
+  // Chart + customer table (still mock for now)
   const [engagementData, setEngagementData] = useState([]);
   const [customerPoints, setCustomerPoints] = useState([]);
 
@@ -30,39 +34,56 @@ function DashboardLoyaltyTab({salon}) {
       loadEngagementData();
       loadCustomerPoints();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [salon?.id]);
 
-  // Later you can replace this with a real endpoint for summary + settings
+  // --- CONNECTED TO BACKEND: GET /api/loyalty/salon/<salon_id> ---
   const loadProgramDetails = async () => {
+    if (!salon?.id) return;
+
     try {
-      // Example shape if you fetch from your backend:
-      // const res = await fetch(`${import.meta.env.VITE_API_URL}/api/loyalty/${salon.id}/settings`);
-      // const data = await res.json();
-      // setProgramSummary({
-      //   pointsPerDollar: data.points_per_dollar,
-      //   redeemText: data.redemption_text,
-      // });
-      // setProgramSettings({
-      //   pointsPerDollar: data.points_per_dollar,
-      //   redemptionValue: data.redemption_value,
-      //   expirationDays: data.expiration_days,
-      // });
-      // setIsPaused(data.is_paused);
+      const res = await fetch(`${API_BASE}/api/loyalty/salon/${salon.id}`);
+      if (!res.ok) {
+        console.error("Failed to load loyalty program:", res.status);
+        // fall back to defaults if backend returns 404 or error
+        setProgramSummary({
+          pointsPerDollar: 1,
+          redeemText: "100 pts = $10 off",
+        });
+        setProgramSettings((prev) => ({
+          ...prev,
+          pointsPerDollar: 1,
+          redemptionValue: "100 pts = $10 off",
+        }));
+        setIsPaused(false);
+        return;
+      }
 
-      // For now, use mock data
-      const mockSummary = {
-        pointsPerDollar: 1,
-        redeemText: "100 pts = $10 off",
-      };
-      const mockSettings = {
-        pointsPerDollar: 1,
-        redemptionValue: "10 pts = $1",
-        expirationDays: 365,
-      };
+      const data = await res.json();
+      console.log("Loyalty program for salon:", data);
 
-      setProgramSummary(mockSummary);
-      setProgramSettings(mockSettings);
-      setIsPaused(false);
+      // reward_description is where we store the “Redeem: …” text
+      const redeemText =
+        data.reward_description || "100 pts = $10 off";
+
+      // We don’t have a points_per_dollar field in this endpoint yet,
+      // so just default to 1 for now. (You can add it later server-side.)
+      const pointsPerDollar = 1;
+
+      setProgramSummary({
+        pointsPerDollar,
+        redeemText,
+      });
+
+      setProgramSettings((prev) => ({
+        ...prev,
+        pointsPerDollar,
+        redemptionValue: redeemText,
+      }));
+
+      // active is 0/1 – treat 0/False as paused
+      const active = data.active;
+      setIsPaused(active === 0 || active === false);
     } catch (err) {
       console.error("Unable to load program details:", err);
     }
@@ -70,11 +91,6 @@ function DashboardLoyaltyTab({salon}) {
 
   const loadEngagementData = async () => {
     try {
-      // Later:
-      // const res = await fetch(`${import.meta.env.VITE_API_URL}/api/loyalty/${salon.id}/engagement`);
-      // const data = await res.json();
-      // setEngagementData(data);
-
       const mockEngagement = [
         { month: "Jan", earned: 300, redeemed: 100 },
         { month: "Feb", earned: 600, redeemed: 250 },
@@ -91,11 +107,7 @@ function DashboardLoyaltyTab({salon}) {
 
   const loadCustomerPoints = async () => {
     try {
-      // Later:
-      // const res = await fetch(`${import.meta.env.VITE_API_URL}/api/loyalty/${salon.id}/customers`);
-      // const data = await res.json();
-      // setCustomerPoints(data.customers);
-
+      // TODO: replace with real endpoint in future
       const mockCustomers = [
         { id: 1, name: "John Doe", points: 320, visits: 12, lastVisit: "Jan 6" },
         { id: 2, name: "Jane Doe", points: 80, visits: 3, lastVisit: "Sept 28" },
@@ -114,46 +126,81 @@ function DashboardLoyaltyTab({salon}) {
     }));
   };
 
+  // --- CONNECTED TO BACKEND: PUT /api/loyalty/salon/<salon_id> ---
   const handleSaveSettings = async () => {
-    // When user saves, update summary to match settings
+    // Keep existing UI behavior: update summary immediately
     const newSummary = {
       pointsPerDollar: programSettings.pointsPerDollar,
       redeemText: programSettings.redemptionValue,
     };
     setProgramSummary(newSummary);
 
+    if (!salon?.id) {
+      console.warn("No salon id available to save settings");
+      return;
+    }
+
     try {
-      // Later you can send to backend:
-      // await fetch(`${import.meta.env.VITE_API_URL}/api/loyalty/${salon.id}/settings`, {
-      //   method: "PUT",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify({
-      //     points_per_dollar: programSettings.pointsPerDollar,
-      //     redemption_value: programSettings.redemptionValue,
-      //     expiration_days: programSettings.expirationDays,
-      //     is_paused: isPaused,
-      //   }),
-      // });
-      console.log("Saving settings:", programSettings, "Paused:", isPaused);
+      const body = {
+        // store redemption text as reward_description
+        reward_description: programSettings.redemptionValue,
+        // also send active so backend always has consistent state
+        active: isPaused ? 0 : 1,
+        // optional: backend currently ignores this unless you add logic
+        // points_per_dollar: programSettings.pointsPerDollar,
+      };
+
+      const res = await fetch(`${API_BASE}/api/loyalty/salon/${salon.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+
+      if (!res.ok) {
+        const errBody = await res.json().catch(() => null);
+        console.error("Unable to save settings:", errBody || res.status);
+      } else {
+        const data = await res.json();
+        console.log("Saved loyalty settings:", data);
+      }
     } catch (err) {
       console.error("Unable to save settings:", err);
     }
   };
 
+  // --- CONNECTED TO BACKEND: PUT /api/loyalty/salon/<salon_id> (active) ---
   const handlePauseToggle = async () => {
+    if (!salon?.id) {
+      console.warn("No salon id available to toggle pause");
+      return;
+    }
+
     const newPaused = !isPaused;
     setIsPaused(newPaused);
 
     try {
-      // Later:
-      // await fetch(`${import.meta.env.VITE_API_URL}/api/loyalty/${salon.id}/pause`, {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify({ is_paused: newPaused }),
-      // });
-      console.log(newPaused ? "Program paused" : "Program unpaused");
+      const body = {
+        active: newPaused ? 0 : 1,
+      };
+
+      const res = await fetch(`${API_BASE}/api/loyalty/salon/${salon.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+
+      if (!res.ok) {
+        const errBody = await res.json().catch(() => null);
+        console.error("Unable to update pause state:", errBody || res.status);
+        // revert UI if backend failed
+        setIsPaused(!newPaused);
+      } else {
+        const data = await res.json();
+        console.log("Updated pause state:", data);
+      }
     } catch (err) {
       console.error("Unable to update pause state:", err);
+      setIsPaused(!newPaused);
     }
   };
 
