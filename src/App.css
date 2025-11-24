@@ -1243,6 +1243,86 @@ body {
   font-size: 0.96rem;
 }
 
+/* Base badge styling */
+.status-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 6px;
+  width: fit-content;
+}
+
+.availability-status .status-badge {
+  float: right;
+  background: #e7eddf;
+  padding: 0.3rem 1rem;
+  border-radius: 6px;
+}
+
+.status-badge-booked {
+  background-color: #e4e9e1;
+  color: #374151;
+}
+
+.status-badge-confirmed {
+  background-color: #d1f0d0;
+  color: #2f6b2f;
+}
+
+.status-badge-checked-in {
+  background-color: #cdeafe;
+  color: #1e4f7b;
+}
+
+.status-badge-in-progress {
+  background-color: #fde7c7;
+  color: #b45309;
+}
+
+.status-badge-completed {
+  background-color: #cde9d4;
+  color: #2f6b2f;
+}
+
+.status-badge-no-show {
+  background-color: #ffe4e6;
+  color: #b91c1c;
+}
+
+.status-badge-cancelled {
+  background-color: #fce8e8;
+  color: #991b1b;
+}
+
+.appointment-card .status-badge {
+  margin-top: 10px;
+  display: inline-block;
+}
+
+.appt-notes + .status-badge {
+  margin-top: 6px;
+}
+
+.appointment-card .status-badge {
+  margin-bottom: 4px;
+}
+
+.appt-status-wrapper {
+  margin-top: 10px;
+  margin-bottom: 4px;
+}
+
+.appointment-card .status-badge {
+  float: none;
+  display: inline-block;
+}
+.appt-status-wrapper {
+  margin-top: 8px;
+}
+
+
 /* Alerts */
 
 .book-appt-alert {

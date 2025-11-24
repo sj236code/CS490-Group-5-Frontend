@@ -171,6 +171,44 @@ const EmployeeAppointments = () => {
     fetchPreviousAppointments();
   }, [employeeId, API_BASE]);
 
+  // Small status pill component
+  const StatusBadge = ({ status }) => {
+    if (!status) return null;
+
+    const normalized = status.toUpperCase();
+
+    let variantClass = "status-badge-booked";
+    switch (normalized) {
+      case "CONFIRMED":
+        variantClass = "status-badge-confirmed";
+        break;
+      case "CHECKED_IN":
+        variantClass = "status-badge-checked-in";
+        break;
+      case "IN_PROGRESS":
+        variantClass = "status-badge-in-progress";
+        break;
+      case "COMPLETED":
+        variantClass = "status-badge-completed";
+        break;
+      case "NO_SHOW":
+        variantClass = "status-badge-no-show";
+        break;
+      case "CANCELLED":
+      case "CANCELLED_BY_EMPLOYEE":
+        variantClass = "status-badge-cancelled";
+        break;
+      default:
+        variantClass = "status-badge-booked";
+    }
+
+    return (
+      <span className={`status-badge ${variantClass}`}>
+        {normalized.replace(/_/g, " ")}
+      </span>
+    );
+  };
+
   return (
     <div className="appointments-container">
       {/* Header */}
@@ -200,13 +238,15 @@ const EmployeeAppointments = () => {
                 <User size={16} style={{ marginRight: "6px" }} />
                 {appt.customerName}
               </p>
-              {appt.status && (
-                <p className="appt-customer">Status: {appt.status}</p>
-              )}
               {appt.notes && (
                 <p className="appt-notes">
                   <strong>Notes:</strong> {appt.notes}
                 </p>
+              )}
+              {appt.status && (
+                <div className="appt-status-wrapper">
+                  <StatusBadge status={appt.status} />
+                </div>
               )}
             </div>
 
@@ -255,13 +295,15 @@ const EmployeeAppointments = () => {
                 <User size={16} style={{ marginRight: "6px" }} />
                 {appt.customerName}
               </p>
-              {appt.status && (
-                <p className="appt-customer">Status: {appt.status}</p>
-              )}
               {appt.notes && (
                 <p className="appt-notes">
                   <strong>Notes:</strong> {appt.notes}
                 </p>
+              )}
+              {appt.status && (
+                <div className="appt-status-wrapper">
+                  <StatusBadge status={appt.status} />
+                </div>
               )}
             </div>
 
