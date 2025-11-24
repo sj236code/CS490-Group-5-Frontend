@@ -25,6 +25,7 @@ import CustomerLoyalty from './pages/CustomerLoyalty.jsx';
 import MyWallet from './pages/MyWallet.jsx';
 import EmployeeAvailability from "./pages/EmployeeAvailability";
 import EmployeeAppointments from "./pages/EmployeeAppointments.jsx";
+import EmployeePaymentPortal from "./pages/EmployeePaymentPortal.jsx";
 import UserGallery from "./pages/UserGallery.jsx";
 import SalonSettings from "./pages/SalonSettings.jsx";
 import SalonPayments from "./pages/SalonPayments.jsx";
@@ -207,6 +208,7 @@ function App() {
         {/* Employee Nav Bar Routes */}
         <Route path="/employee-appointments" element={<EmployeeAppointments />} />
         <Route path="/employee-availability" element={<EmployeeAvailability />} />
+        <Route path="/employee-payment-portal" element={<EmployeePaymentPortal />} />
 
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/faq" element={<FAQPage />} />
