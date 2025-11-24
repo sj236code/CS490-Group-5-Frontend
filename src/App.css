@@ -3466,6 +3466,29 @@ label {
 
 /* === User Gallery Page === */
 
+.gallery-thumb {
+  position: relative;
+}
+
+.gallery-delete-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: rgba(0, 0, 0, 0.55);
+  color: white;
+  border: none;
+  padding: 4px;
+  border-radius: 6px;
+  cursor: pointer;
+  opacity: 0.85;
+  transition: 0.15s ease;
+}
+
+.gallery-delete-btn:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
 .gallery-page {
   max-width: 1050px;
   margin: 0 auto;
