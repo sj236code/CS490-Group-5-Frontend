@@ -13,12 +13,10 @@ function PaymentConfirmation() {
         return <p>Missing booking data</p>
     }
 
-    const { date, time, duration, staff, paymentMethod, maskedCard, cartItems, total, salesTax } = bookingData;
-
+    const { date, time, paymentMethod, maskedCard, cartItems, total, salesTax } = bookingData;
     const services = cartItems.filter((item) => item.item_type === "service");
     const products = cartItems.filter((item) => item.item_type === "product");
     
-
     const returnToSalon = () => {
         navigate("/");
     };
@@ -41,12 +39,7 @@ function PaymentConfirmation() {
                     <div className="detail-card">
                         <p className="label">Time</p>
                         <p>{time}</p>
-                        <span>{duration} minutes total</span>
-                    </div>
 
-                    <div className="detail-card">
-                        <p className="label">Staff</p>
-                        <p>{staff}</p>
                     </div>
 
                     <div className="detail-card payment-method">
@@ -87,18 +80,18 @@ function PaymentConfirmation() {
                             <span>Quantity: {product.quantity}</span>
                             </div>
                             <p className="price">
-                            ${(product.product_price * product.quantity).toFixed(2)}
+                            {(product.product_price * product.quantity).toFixed(2)}
                             </p>
                         </div>
-                    ))}
-                    <div className="service-total">
-                        <span>Tax</span>
-                        <span>${salesTax.toFixed(2)}</span>
-                    </div>
-                    <div className="service-total">
-                        <span>Total</span>
-                        <span>${total.toFixed(2)}</span>
-                    </div>
+                        ))}
+                        <div className="service-total">
+                            <span>Tax</span>
+                            <span>${salesTax.toFixed(2)}</span>
+                        </div>
+                        <div className="service-total">
+                            <span>Total</span>
+                            <span>${total.toFixed(2)}</span>
+                        </div>
                 </div>
             </div>
 
