@@ -1,64 +1,84 @@
+// src/components/salon_dashboard/SalonSettings.jsx
 import { useEffect, useState } from "react";
-import { Pencil } from "lucide-react";
+import { Pencil, Loader2 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 function SalonSettings({ salon }) {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { salonId } = location.state || {};
+  const salonIdFromState = location.state && location.state.salonId;
+  const salonIdFromProp = salon?.id;
+  const salonId = salonIdFromState || salonIdFromProp;
 
-  // const salonId = 1;
+  console.log("Salon ID: ", salonId);
 
-  // Salon data
   const [salonDetails, setSalonDetails] = useState({
-    name: "Jade Boutique",
-    type: "Hair Salon & Spa",
-    address: "123 Main Street, New York, NY 10001",
-    phone: "(555) 123-4567",
-    email: "contact@jadeboutique.com",
+    name: "",
+    types: "",
+    address: "",
+    city: "",
+    phone: "",
+    about: "",
   });
 
-  // Which field is being edited
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadError, setLoadError] = useState(null);
+
+  const [saving, setSaving] = useState(false);
+  const [saveMessage, setSaveMessage] = useState("");
+
   const [editingField, setEditingField] = useState(null);
   const [editingValue, setEditingValue] = useState("");
 
-  // Load salon data from endpoint
   useEffect(() => {
-    if (salon?.id) {
-      loadSalonDetails();
-    }
-  }, [salon?.id]);
+    if (!salonId) return;
+    loadSalonDetails();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [salonId]);
 
   const loadSalonDetails = async () => {
     try {
+      setIsLoading(true);
+      setLoadError(null);
+      setSaveMessage("");
+
       const res = await fetch(
         `${import.meta.env.VITE_API_URL}/api/salons/details/${salonId}`
       );
-      const data = await res.json();
-      console.log("SalonDetails: ", data);
 
-      const mock = {
-        name: "Jade Boutique",
-        type: "Hair Salon & Spa",
-        address: "123 Main Street, New York, NY 10001",
-        phone: "(555) 123-4567",
-        email: "contact@jadeboutique.com",
-      };
-      setSalonDetails(mock);
+      if (!res.ok) {
+        throw new Error(`Failed to load salon details (${res.status})`);
+      }
+
+      const data = await res.json();
+      console.log("SalonSettings details:", data);
+
+      setSalonDetails({
+        name: data.name || "",
+        types: data.types && Array.isArray(data.types)
+          ? data.types.join(", ")
+          : "",
+        address: data.address || "",
+        city: data.city || "",
+        phone: data.phone || "",
+        about: data.about || "",
+      });
     } catch (err) {
       console.error("Unable to load salon details:", err);
+      setLoadError("Unable to load salon details. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  // Start editing
-  const handleEdit = (field) => {
-    setEditingField(field);
-    setEditingValue(salonDetails[field]);
+  const handleEdit = (fieldKey) => {
+    setEditingField(fieldKey);
+    setEditingValue(salonDetails[fieldKey] || "");
+    setSaveMessage("");
   };
 
-  // Confirm edit
-  const handleConfirm = () => {
+  const handleConfirmEdit = () => {
     if (!editingField) return;
     setSalonDetails((prev) => ({
       ...prev,
@@ -68,204 +88,244 @@ function SalonSettings({ salon }) {
     setEditingValue("");
   };
 
-  // Cancel edit
-  const handleCancel = () => {
+  const handleCancelEdit = () => {
     setEditingField(null);
     setEditingValue("");
   };
 
-  // Save to backend
   const handleSaveChanges = async () => {
+    if (!salonId) return;
+
     try {
-      // TODO: replace with actual API call
-      // await fetch(`${import.meta.env.VITE_API_URL}/api/salons/${salon.id}/details`, {
-      //   method: "PUT",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify(salonDetails),
-      // });
-      console.log("Saved changes:", salonDetails);
+      setSaving(true);
+      setSaveMessage("");
+      setLoadError(null);
+
+      // Adjust this endpoint/method to match whatever you implement on the backend
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/salons/details/${salonId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(salonDetails),
+        }
+      );
+
+      if (!res.ok) {
+        throw new Error(`Failed to save changes (${res.status})`);
+      }
+
+      const data = await res.json();
+      console.log("SalonSettings saved:", data);
+      setSaveMessage("Changes saved successfully.");
     } catch (err) {
       console.error("Error saving salon details:", err);
+      setLoadError("There was a problem saving your changes.");
+    } finally {
+      setSaving(false);
     }
   };
+
+  const renderEditableRow = (label, fieldKey, placeholder) => {
+    const isEditing = editingField === fieldKey;
+
+    return (
+      <div className="settings-field-block">
+        <div className="settings-label-row">
+          <span className="settings-label">{label}</span>
+          <button
+            type="button"
+            className="settings-edit-btn"
+            onClick={() => handleEdit(fieldKey)}
+          >
+            <Pencil size={14} />
+          </button>
+        </div>
+
+        {isEditing ? (
+          <div className="settings-edit-area">
+            <input
+              className="settings-input"
+              type="text"
+              placeholder={placeholder}
+              value={editingValue}
+              onChange={(e) => setEditingValue(e.target.value)}
+            />
+            <div className="settings-inline-buttons">
+              <button
+                type="button"
+                className="settings-confirm-btn"
+                onClick={handleConfirmEdit}
+              >
+                Confirm
+              </button>
+              <button
+                type="button"
+                className="settings-cancel-btn"
+                onClick={handleCancelEdit}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        ) : (
+          <p className="settings-value-text">
+            {salonDetails[fieldKey] || <span className="settings-placeholder">Not set</span>}
+          </p>
+        )}
+      </div>
+    );
+  };
+
+  const renderAboutRow = () => {
+    const isEditing = editingField === "about";
+
+    return (
+      <div className="settings-field-block">
+        <div className="settings-label-row">
+          <span className="settings-label">About / Description</span>
+          <button
+            type="button"
+            className="settings-edit-btn"
+            onClick={() => handleEdit("about")}
+          >
+            <Pencil size={14} />
+          </button>
+        </div>
+
+        {isEditing ? (
+          <div className="settings-edit-area">
+            <textarea
+              className="settings-textarea"
+              rows={4}
+              placeholder="Share what makes your salon unique..."
+              value={editingValue}
+              onChange={(e) => setEditingValue(e.target.value)}
+            />
+            <div className="settings-inline-buttons">
+              <button
+                type="button"
+                className="settings-confirm-btn"
+                onClick={handleConfirmEdit}
+              >
+                Confirm
+              </button>
+              <button
+                type="button"
+                className="settings-cancel-btn"
+                onClick={handleCancelEdit}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        ) : (
+          <p className="settings-value-text multiline">
+            {salonDetails.about || (
+              <span className="settings-placeholder">
+                Add a short description so customers know what to expect.
+              </span>
+            )}
+          </p>
+        )}
+      </div>
+    );
+  };
+
+  if (!salonId) {
+    return (
+      <div className="salon-settings-page">
+        <div className="salon-settings-card">
+          <h1 className="salon-settings-title">Settings</h1>
+          <p className="settings-error">
+            No salon selected. Try going back to your dashboard and opening settings
+            again.
+          </p>
+          <div className="salon-settings-footer">
+            <button className="settings-back-btn" onClick={() => navigate(-1)}>
+              Back
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="salon-settings-page">
       <div className="salon-settings-card">
-        <h1 className="salon-settings-title">Settings</h1>
-
-        {/* Salon Name */}
-        <div className="settings-field-block">
-          <div className="settings-label-row">
-            <span className="settings-label">Salon Name</span>
-            <button
-              className="settings-edit-btn"
-              onClick={() => handleEdit("name")}
-            >
-              <Pencil size={14} />
-            </button>
+        <div className="salon-settings-header">
+          <div>
+            <h1 className="salon-settings-title">Salon Settings</h1>
+            <p className="salon-settings-subtitle">
+              Update how your salon appears to customers.
+            </p>
           </div>
-          {editingField === "name" ? (
-            <div className="settings-edit-area">
-              <input
-                className="settings-input"
-                type="text"
-                value={editingValue}
-                onChange={(e) => setEditingValue(e.target.value)}
-              />
-              <div className="settings-inline-buttons">
-                <button className="settings-confirm-btn" onClick={handleConfirm}>
-                  Confirm
-                </button>
-                <button className="settings-cancel-btn" onClick={handleCancel}>
-                  Cancel
-                </button>
-              </div>
+          {isLoading && (
+            <div className="settings-loading-pill">
+              <Loader2 className="settings-spinner" size={16} />
+              <span>Loading</span>
             </div>
-          ) : (
-            <p className="settings-value-text">{salonDetails.name}</p>
           )}
         </div>
 
-        {/* Salon Type */}
-        <div className="settings-field-block">
-          <div className="settings-label-row">
-            <span className="settings-label">Salon Type</span>
-            <button
-              className="settings-edit-btn"
-              onClick={() => handleEdit("type")}
-            >
-              <Pencil size={14} />
-            </button>
-          </div>
-          {editingField === "type" ? (
-            <div className="settings-edit-area">
-              <input
-                className="settings-input"
-                type="text"
-                value={editingValue}
-                onChange={(e) => setEditingValue(e.target.value)}
-              />
-              <div className="settings-inline-buttons">
-                <button className="settings-confirm-btn" onClick={handleConfirm}>
-                  Confirm
-                </button>
-                <button className="settings-cancel-btn" onClick={handleCancel}>
-                  Cancel
-                </button>
-              </div>
-            </div>
-          ) : (
-            <p className="settings-value-text">{salonDetails.type}</p>
+        {loadError && <p className="settings-error">{loadError}</p>}
+        {saveMessage && !loadError && (
+          <p className="settings-success">{saveMessage}</p>
+        )}
+
+        {/* Basic Info Section */}
+        <div className="settings-section">
+          <h2 className="settings-section-title">Basic Info</h2>
+          {renderEditableRow("Salon Name", "name", "e.g. Jade Beauty Bar")}
+          {renderEditableRow(
+            "Salon Type / Categories",
+            "types",
+            "e.g. Hair, Nails, Makeup"
           )}
         </div>
 
-        {/* Address */}
-        <div className="settings-field-block">
-          <div className="settings-label-row">
-            <span className="settings-label">Address</span>
-            <button
-              className="settings-edit-btn"
-              onClick={() => handleEdit("address")}
-            >
-              <Pencil size={14} />
-            </button>
-          </div>
-          {editingField === "address" ? (
-            <div className="settings-edit-area">
-              <input
-                className="settings-input"
-                type="text"
-                value={editingValue}
-                onChange={(e) => setEditingValue(e.target.value)}
-              />
-              <div className="settings-inline-buttons">
-                <button className="settings-confirm-btn" onClick={handleConfirm}>
-                  Confirm
-                </button>
-                <button className="settings-cancel-btn" onClick={handleCancel}>
-                  Cancel
-                </button>
-              </div>
-            </div>
-          ) : (
-            <p className="settings-value-text">{salonDetails.address}</p>
+        {/* Location Section */}
+        <div className="settings-section">
+          <h2 className="settings-section-title">Location</h2>
+          {renderEditableRow(
+            "Street Address",
+            "address",
+            "123 Main Street, Suite 4B"
           )}
+          {renderEditableRow("City", "city", "Newark, NJ")}
         </div>
 
-        {/* Phone */}
-        <div className="settings-field-block">
-          <div className="settings-label-row">
-            <span className="settings-label">Phone</span>
-            <button
-              className="settings-edit-btn"
-              onClick={() => handleEdit("phone")}
-            >
-              <Pencil size={14} />
-            </button>
-          </div>
-          {editingField === "phone" ? (
-            <div className="settings-edit-area">
-              <input
-                className="settings-input"
-                type="text"
-                value={editingValue}
-                onChange={(e) => setEditingValue(e.target.value)}
-              />
-              <div className="settings-inline-buttons">
-                <button className="settings-confirm-btn" onClick={handleConfirm}>
-                  Confirm
-                </button>
-                <button className="settings-cancel-btn" onClick={handleCancel}>
-                  Cancel
-                </button>
-              </div>
-            </div>
-          ) : (
-            <p className="settings-value-text">{salonDetails.phone}</p>
-          )}
+        {/* Contact Section */}
+        <div className="settings-section">
+          <h2 className="settings-section-title">Contact</h2>
+          {renderEditableRow("Phone", "phone", "(555) 123-4567")}
         </div>
 
-        {/* Email */}
-        <div className="settings-field-block">
-          <div className="settings-label-row">
-            <span className="settings-label">Email</span>
-            <button
-              className="settings-edit-btn"
-              onClick={() => handleEdit("email")}
-            >
-              <Pencil size={14} />
-            </button>
-          </div>
-          {editingField === "email" ? (
-            <div className="settings-edit-area">
-              <input
-                className="settings-input"
-                type="text"
-                value={editingValue}
-                onChange={(e) => setEditingValue(e.target.value)}
-              />
-              <div className="settings-inline-buttons">
-                <button className="settings-confirm-btn" onClick={handleConfirm}>
-                  Confirm
-                </button>
-                <button className="settings-cancel-btn" onClick={handleCancel}>
-                  Cancel
-                </button>
-              </div>
-            </div>
-          ) : (
-            <p className="settings-value-text">{salonDetails.email}</p>
-          )}
+        {/* About Section */}
+        <div className="settings-section">
+          <h2 className="settings-section-title">About</h2>
+          {renderAboutRow()}
         </div>
 
         {/* Footer Buttons */}
         <div className="salon-settings-footer">
-          <button className="settings-back-btn" onClick={() => navigate(-1)}>
-            Back
-          </button>
-          <button className="settings-save-btn" onClick={handleSaveChanges}>
-            Save Changes
+          <button
+            type="button"
+            className="settings-save-btn"
+            onClick={handleSaveChanges}
+            disabled={saving}
+          >
+            {saving ? (
+              <>
+                <Loader2 className="settings-spinner" size={16} />
+                Saving...
+              </>
+            ) : (
+              "Save Changes"
+            )}
           </button>
         </div>
       </div>
