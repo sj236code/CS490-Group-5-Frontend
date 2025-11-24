@@ -8,89 +8,78 @@ import {
   Tooltip,
   BarChart,
   Bar,
-  PieChart,
-  Pie,
-  Cell,
   ResponsiveContainer,
 } from "recharts";
 import "../../App.css";
 
-const COLORS = ["#4B5945", "#66785F", "#A3B18A", "#D9E9CF"];
-
 function AnalyticsPage() {
   const [summary, setSummary] = useState(null);
   const [engagementData, setEngagementData] = useState([]);
-  const [featureData, setFeatureData] = useState([]);
   const [retentionData, setRetentionData] = useState([]);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch all endpoints in parallel using native fetch()
   useEffect(() => {
-    const fetchAllAnalytics = async () => {
+    const fetchAnalytics = async () => {
+      const base = import.meta.env.VITE_API_URL;
+
       try {
-        const base = import.meta.env.VITE_API_URL;
+        const [summaryRes, engagementRes, retentionRes] = await Promise.all([
+          fetch(`${base}/api/admin/analytics/summary`),
+          fetch(`${base}/api/admin/analytics/engagement-trend`),
+          fetch(`${base}/api/admin/analytics/retention-cohort`),
+        ]);
 
-        const [summaryRes, engagementRes, featureRes, retentionRes] =
-          await Promise.all([
-            fetch(`${base}/api/admin/analytics/summary`),
-            fetch(`${base}/api/admin/analytics/engagement-trend`),
-            fetch(`${base}/api/admin/analytics/feature-usage`),
-            fetch(`${base}/api/admin/analytics/retention-cohort`),
-          ]);
-
-        if (!summaryRes.ok || !engagementRes.ok || !featureRes.ok || !retentionRes.ok) {
-          throw new Error("One or more requests failed");
+        if (!summaryRes.ok || !engagementRes.ok || !retentionRes.ok) {
+          throw new Error("One or more analytics endpoints failed.");
         }
 
-        const [summaryData, engagementData, featureData, retentionData] =
+        const [summaryData, engagementTrendData, retentionCohortData] =
           await Promise.all([
             summaryRes.json(),
             engagementRes.json(),
-            featureRes.json(),
             retentionRes.json(),
           ]);
 
         setSummary(summaryData);
-        setEngagementData(engagementData);
-        setFeatureData(featureData);
-        setRetentionData(retentionData);
+        setEngagementData(engagementTrendData);
+        setRetentionData(retentionCohortData);
       } catch (err) {
-        console.error("Error fetching analytics:", err);
-        setError("Failed to load analytics data");
+        console.error("Error loading analytics:", err);
+        setError("Failed to fetch analytics data.");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchAllAnalytics();
+    fetchAnalytics();
   }, []);
 
-  if (loading)
+  if (loading) {
     return (
       <div className="analytics-page">
         <h3>Loading analytics...</h3>
       </div>
     );
+  }
 
-  if (error)
+  if (error) {
     return (
       <div className="analytics-page">
         <h3 style={{ color: "red" }}>{error}</h3>
       </div>
     );
+  }
 
   return (
     <div className="analytics-page">
+      {/* HEADER WITHOUT DATE/STORE FILTERS */}
       <div className="analytics-header">
         <h2>Engagement & Retention Dashboard</h2>
-        <div className="filters">
-          <button className="filter-btn">Date Range ▼</button>
-          <button className="filter-btn">Store ▼</button>
-        </div>
       </div>
 
-      {/* --- TOP SUMMARY METRICS --- */}
+      {/* SUMMARY CARDS */}
       <div className="analytics-summary">
         <div className="metric-card">
           <h4>Active Users</h4>
@@ -107,7 +96,7 @@ function AnalyticsPage() {
         <div className="metric-card">
           <h4>Total Appointments</h4>
           <p className="metric-value">{summary.totalAppointments}</p>
-          <small>Last 7 days</small>
+          <small>All Time</small>
         </div>
 
         <div className="metric-card">
@@ -122,7 +111,7 @@ function AnalyticsPage() {
         </div>
       </div>
 
-      {/* --- CHART SECTION 1 --- */}
+      {/* CHART ROW 1 - ENGAGEMENT */}
       <div className="chart-section">
         <div className="chart-card">
           <h4>Engagement Over Time</h4>
@@ -141,34 +130,12 @@ function AnalyticsPage() {
             </LineChart>
           </ResponsiveContainer>
         </div>
-
-        <div className="chart-card">
-          <h4>Feature Usage</h4>
-          <ResponsiveContainer width="100%" height={220}>
-            <PieChart>
-              <Pie
-                data={featureData}
-                dataKey="value"
-                nameKey="name"
-                cx="50%"
-                cy="50%"
-                outerRadius={70}
-                label
-              >
-                {featureData.map((entry, i) => (
-                  <Cell key={i} fill={COLORS[i % COLORS.length]} />
-                ))}
-              </Pie>
-              <Tooltip />
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
       </div>
 
-      {/* --- CHART SECTION 2 --- */}
+      {/* CHART ROW 2 - RETENTION */}
       <div className="chart-section">
         <div className="chart-card">
-          <h4>Cohort Retention</h4>
+          <h4>Cohort Retention (Monthly)</h4>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={retentionData}>
               <CartesianGrid strokeDasharray="3 3" />
