@@ -156,41 +156,42 @@ function DashboardMetricsTab({ salon, user }) {
 
       {/* TOP KPI ROW – full width */}
       {monthlyTotal && (
-        <section style={{ marginTop: "1.25rem" }}>
-          <div className="calendar-stats-row">
+        <section
+            className="card-section kpi-section"
+            style={{ marginTop: "1.25rem" }}
+        >
+            <div className="calendar-stats-row calendar-stats-row--metrics">
             <div className="calendar-stat-card">
-              <div className="calendar-stat-label">
-                Total Revenue (This Month)
-              </div>
-              <div className="calendar-stat-value">
+                <div className="calendar-stat-label">Total Revenue (This Month)</div>
+                <div className="calendar-stat-value">
                 ${monthlyTotal.total_revenue.toFixed(2)}
-              </div>
+                </div>
             </div>
             <div className="calendar-stat-card">
-              <div className="calendar-stat-label">Salon Earnings</div>
-              <div className="calendar-stat-value">
+                <div className="calendar-stat-label">Salon Earnings</div>
+                <div className="calendar-stat-value">
                 ${monthlyTotal.salon_total_earnings.toFixed(2)}
-              </div>
+                </div>
             </div>
             <div className="calendar-stat-card">
-              <div className="calendar-stat-label">
+                <div className="calendar-stat-label">
                 Stylist Earnings (Services)
-              </div>
-              <div className="calendar-stat-value">
+                </div>
+                <div className="calendar-stat-value">
                 ${monthlyTotal.employee_earnings.toFixed(2)}
-              </div>
+                </div>
             </div>
             <div className="calendar-stat-card">
-              <div className="calendar-stat-label">
+                <div className="calendar-stat-label">
                 Appointments (This Month)
-              </div>
-              <div className="calendar-stat-value">
+                </div>
+                <div className="calendar-stat-value">
                 {monthlyTotal.appointments_completed}
-              </div>
+                </div>
             </div>
-          </div>
+            </div>
         </section>
-      )}
+        )}
 
       {/* MAIN GRID: left = breakdown card, right = chart card */}
       <section
@@ -290,52 +291,46 @@ function DashboardMetricsTab({ salon, user }) {
       </section>
 
       {/* BOTTOM: Current Pay Period Snapshot – full width card */}
-      {currentPeriod && (
+        {currentPeriod && (
         <section className="card-section" style={{ marginTop: "16px" }}>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              gap: "1rem",
-            }}
-          >
+            <div className="current-period__header">
             <div>
-              <h3 className="card-section__title">Current Pay Period (Salon)</h3>
-              <p className="card-section__subtitle">
+                <h3 className="card-section__title">Current Pay Period (Salon)</h3>
+                <p className="card-section__subtitle">
                 <Calendar size={16} className="card-section__subtitle-icon" />
                 {currentPeriod.pay_period.period_label}
-              </p>
+                </p>
             </div>
 
             <div className="current-period__banner">
-              <p className="current-period__banner-text">
+                <p className="current-period__banner-text">
                 <strong className="current-period__banner-label">
-                  Pay Period:
+                    Pay Period:
                 </strong>{" "}
                 {currentPeriod.pay_period.start_date} to{" "}
                 {currentPeriod.pay_period.end_date}
-              </p>
+                </p>
             </div>
-          </div>
+            </div>
 
-          <div className="current-period__grid">
+
+            <div className="current-period__grid">
             {/* Service Revenue */}
             <div className="current-period__card">
-              <div className="current-period__content">
+                <div className="current-period__content">
                 <div className="current-period__icon-wrap current-period__icon-wrap--soft">
-                  <DollarSign size={24} className="current-period__icon" />
+                    <DollarSign size={24} className="current-period__icon" />
                 </div>
                 <div>
-                  <p className="current-period__label">Service Revenue</p>
-                  <p className="current-period__value">
+                    <p className="current-period__label">Service Revenue</p>
+                    <p className="current-period__value">
                     ${currentPeriod.total_service_revenue.toFixed(2)}
-                  </p>
-                  <p className="current-period__meta">
+                    </p>
+                    <p className="current-period__meta">
                     From {currentPeriod.appointments_completed} appointments
-                  </p>
+                    </p>
                 </div>
-              </div>
+                </div>
             </div>
 
             {/* Product Revenue */}
