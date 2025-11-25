@@ -30,30 +30,51 @@ function CustomerSettings() {
   const [editingField, setEditingField] = useState(null);
   const [editingValue, setEditingValue] = useState("");
 
-  // Load initial from user-type response for now (no real endpoint yet)
+  // Load from backend endpoint (with fallback to user object)
   useEffect(() => {
     setSaveMessage("");
     setLoadError(null);
 
-    if (!user) return;
+    if (!user || !effectiveCustomerId) return;
 
-    // In the future, you can replace this block with a real GET:
-    // GET /api/customers/details/<effectiveCustomerId>
-    setIsLoading(true);
-    try {
-      setCustomerDetails({
-        first_name: user.first_name || "",
-        last_name: user.last_name || "",
-        email: user.email || "",
-        phone_number: user.phone_number || "",
-        address: user.address || "",
-      });
-    } catch (err) {
-      console.error("Error loading customer settings:", err);
-      setLoadError("Unable to load your account details.");
-    } finally {
-      setIsLoading(false);
-    }
+    const fetchCustomerDetails = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/customer/details/${effectiveCustomerId}`
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch customer details");
+        }
+
+        const data = await response.json();
+
+        setCustomerDetails({
+          first_name: data.first_name ?? user.first_name ?? "",
+          last_name: data.last_name ?? user.last_name ?? "",
+          email: data.email ?? user.email ?? "",
+          phone_number: data.phone_number ?? user.phone_number ?? "",
+          address: data.address ?? user.address ?? "",
+        });
+      } catch (err) {
+        console.error("Error loading customer settings:", err);
+        setLoadError("Unable to load your account details. Showing basic info.");
+
+        // Fallback to user object
+        setCustomerDetails({
+          first_name: user.first_name || "",
+          last_name: user.last_name || "",
+          email: user.email || "",
+          phone_number: user.phone_number || "",
+          address: user.address || "",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchCustomerDetails();
   }, [user, effectiveCustomerId]);
 
   const handleEdit = (fieldKey) => {
@@ -78,21 +99,45 @@ function CustomerSettings() {
   };
 
   const handleSaveChanges = async () => {
-    // later: call your real customer update endpoint here
-    // e.g. PUT /api/customers/details/<effectiveCustomerId>
+    // now: call your real customer update endpoint here
+    // PUT /api/customers/details/<effectiveCustomerId>
+
+    if (!effectiveCustomerId) {
+      setLoadError("We couldn't find your account ID.");
+      return;
+    }
 
     try {
       setSaving(true);
       setSaveMessage("");
       setLoadError(null);
 
-      console.log("Mock save of customer settings:", {
-        customer_id: effectiveCustomerId,
-        ...customerDetails,
-      });
+      const payload = {
+        first_name: customerDetails.first_name,
+        last_name: customerDetails.last_name,
+        // email is sent as-is, but user cannot edit it in UI
+        email: customerDetails.email,
+        phone_number: customerDetails.phone_number,
+        address: customerDetails.address,
+      };
 
-      // TEMP: pretend save is successful
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/customer/details/${effectiveCustomerId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to save customer settings");
+      }
+
+      const data = await response.json();
+      console.log("Customer settings saved:", data);
       setSaveMessage("Your changes have been saved.");
     } catch (err) {
       console.error("Error saving customer settings:", err);
@@ -155,6 +200,22 @@ function CustomerSettings() {
     );
   };
 
+  // Read-only row (for email)
+  const renderReadOnlyRow = (label, fieldKey, placeholder) => {
+    return (
+      <div className="settings-field-block">
+        <div className="settings-label-row">
+          <span className="settings-label">{label}</span>
+        </div>
+        <p className="settings-value-text">
+          {customerDetails[fieldKey] || (
+            <span className="settings-placeholder">{placeholder}</span>
+          )}
+        </p>
+      </div>
+    );
+  };
+
   if (!user) {
     return (
       <div className="customer-settings-page">
@@ -203,27 +264,16 @@ function CustomerSettings() {
         {/* Basic Info */}
         <div className="settings-section">
           <h2 className="settings-section-title">Basic Info</h2>
-          {renderEditableRow(
-            "First Name",
-            "first_name",
-            "e.g. Amina"
-          )}
-          {renderEditableRow(
-            "Last Name",
-            "last_name",
-            "e.g. Khan"
-          )}
+          {renderEditableRow("First Name", "first_name", "e.g. Amina")}
+          {renderEditableRow("Last Name", "last_name", "e.g. Khan")}
         </div>
 
         {/* Contact Info */}
         <div className="settings-section">
           <h2 className="settings-section-title">Contact</h2>
-          {renderEditableRow(
-            "Email",
-            "email",
-            "you@example.com",
-            "email"
-          )}
+          {/* EMAIL: VIEW ONLY, NO EDITING */}
+          {renderReadOnlyRow("Email", "email", "you@example.com")}
+          {/* Phone can be edited */}
           {renderEditableRow(
             "Phone Number",
             "phone_number",
