@@ -396,17 +396,21 @@ function SalonPaymentsPage() {
             </thead>
             <tbody>
               {transactions.map((tx) => (
-                <tr key={tx.payment_id}>
-                  <td>{new Date(tx.date).toLocaleString()}</td>
+                <tr key={tx.transaction_id || tx.order_id}>
+                  <td>
+                    {tx.date ? new Date(tx.date).toLocaleString() : "-"}
+                  </td>
                   <td>{tx.customer_name}</td>
-                  <td>{tx.items.join(", ")}</td>
+                  <td>{tx.items && tx.items.length ? tx.items.join(", ") : "-"}</td>
                   <td>{tx.stylist}</td>
                   <td>${tx.amount.toFixed(2)}</td>
-                  <td>{tx.payment_method}</td>
+                  {/* payment_method will be "N/A" for now */}
+                  <td>{tx.payment_method || "N/A"}</td>
                   <td>{tx.status}</td>
                   <td>{tx.refund_reason || "-"}</td>
                 </tr>
               ))}
+
               {transactions.length === 0 && (
                 <tr>
                   <td colSpan={8} style={{ textAlign: "center" }}>
