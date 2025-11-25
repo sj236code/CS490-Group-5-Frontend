@@ -6661,6 +6661,8 @@ label {
   border: 1px solid #D9E9CF;
   font-size: 0.85rem;
   color: #4B5945;
+}
+  
 /* Customer Settings */
 .customer-settings-page {
   min-height: calc(100vh - 100px);
