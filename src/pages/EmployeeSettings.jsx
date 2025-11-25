@@ -1,4 +1,4 @@
-// src/components/customer_dashboard/CustomerSettings.jsx
+// src/components/employee_dashboard/EmployeeSettings.jsx
 import { useState, useEffect } from "react";
 import { Pencil, Loader2 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -7,18 +7,22 @@ function EmployeeSettings() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Expecting: navigate("/customerSettings", { state: { user, customerId }})
-  const { user, customerId } = location.state || {};
+  // Expecting something like:
+  // navigate("/employeeSettings", { state: { user, employeeId }})
+  const { user, customerId, employeeId } = location.state || {};
 
-  const effectiveCustomerId =
-    customerId ?? user?.profile_id ?? user?.id ?? user?.user_id ?? null;
+  const effectiveEmployeeId =
+    employeeId ?? customerId ?? user?.profile_id ?? user?.id ?? user?.user_id ?? null;
 
-  const [customerDetails, setCustomerDetails] = useState({
+  const [employeeDetails, setEmployeeDetails] = useState({
     first_name: "",
     last_name: "",
     email: "",
     phone_number: "",
     address: "",
+    employment_status: "",
+    employee_type: "",
+    salon_id: "",
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -30,40 +34,67 @@ function EmployeeSettings() {
   const [editingField, setEditingField] = useState(null);
   const [editingValue, setEditingValue] = useState("");
 
-  // Load initial from user-type response for now (no real endpoint yet)
-  useEffect(() => {
+  const loadEmployeeDetails = async () => {
     setSaveMessage("");
     setLoadError(null);
-
-    if (!user) return;
-
-    // GET /api/customers/details/<effectiveCustomerId>
     setIsLoading(true);
+
+    const url = `${import.meta.env.VITE_API_URL}/api/employee/details/${effectiveEmployeeId}`;
+
     try {
-      setCustomerDetails({
-        first_name: user.first_name || "",
-        last_name: user.last_name || "",
-        email: user.email || "",
-        phone_number: user.phone_number || "",
-        address: user.address || "",
+      const response = await fetch(url);
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch employee details");
+      }
+
+      const json = await response.json();
+      // Backend returns { status, data: {...} }
+      const data = json.data || json;
+
+      setEmployeeDetails({
+        first_name: data.first_name ?? user.first_name ?? "",
+        last_name: data.last_name ?? user.last_name ?? "",
+        email: data.email ?? user.email ?? "",
+        phone_number: data.phone_number ?? user.phone_number ?? "",
+        address: data.address ?? user.address ?? "",
+        employment_status: data.employment_status ?? "",
+        employee_type: data.employee_type ?? "",
+        salon_id: data.salon_id ?? "",
       });
     } catch (err) {
-      console.error("Error loading customer settings:", err);
-      setLoadError("Unable to load your account details.");
+      console.error("Error loading employee settings:", err);
+      setLoadError("Unable to load your account details. Showing basic info.");
+      setEmployeeDetails({
+        first_name: user?.first_name || "",
+        last_name: user?.last_name || "",
+        email: user?.email || "",
+        phone_number: user?.phone_number || "",
+        address: user?.address || "",
+        employment_status: "",
+        employee_type: "",
+        salon_id: "",
+      });
     } finally {
       setIsLoading(false);
     }
-  }, [user, effectiveCustomerId]);
+  };
+
+  useEffect(() => {
+    if (user && effectiveEmployeeId) {
+      loadEmployeeDetails();
+    }
+  }, [user, effectiveEmployeeId]);
 
   const handleEdit = (fieldKey) => {
     setEditingField(fieldKey);
-    setEditingValue(customerDetails[fieldKey] || "");
+    setEditingValue(employeeDetails[fieldKey] || "");
     setSaveMessage("");
   };
 
   const handleConfirmEdit = () => {
     if (!editingField) return;
-    setCustomerDetails((prev) => ({
+    setEmployeeDetails((prev) => ({
       ...prev,
       [editingField]: editingValue,
     }));
@@ -77,23 +108,65 @@ function EmployeeSettings() {
   };
 
   const handleSaveChanges = async () => {
-    // e.g. PUT /api/customers/details/<effectiveCustomerId>
+    if (!effectiveEmployeeId) {
+      setLoadError("We couldn't find your account ID.");
+      return;
+    }
 
     try {
       setSaving(true);
       setSaveMessage("");
       setLoadError(null);
 
-      console.log("Mock save of customer settings:", {
-        customer_id: effectiveCustomerId,
-        ...customerDetails,
-      });
+      const payload = {
+        first_name: employeeDetails.first_name,
+        last_name: employeeDetails.last_name,
+        // email is sent as-is, but user cannot edit it in UI
+        email: employeeDetails.email,
+        phone_number: employeeDetails.phone_number,
+        address: employeeDetails.address,
+        employment_status: employeeDetails.employment_status,
+        employee_type: employeeDetails.employee_type,
+        salon_id: employeeDetails.salon_id,
+      };
 
-      // TEMP: pretend save is successful
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/employee/details/${effectiveEmployeeId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to save employee settings");
+      }
+
+      const json = await response.json();
+      const data = json.data || json;
+      console.log("Employee settings saved:", json);
+
+      // Immediately reflect backend's source-of-truth
+      setEmployeeDetails((prev) => ({
+        ...prev,
+        first_name: data.first_name ?? prev.first_name,
+        last_name: data.last_name ?? prev.last_name,
+        email: data.email ?? prev.email,
+        phone_number: data.phone_number ?? prev.phone_number,
+        address: data.address ?? prev.address,
+        employment_status: data.employment_status ?? prev.employment_status,
+        employee_type: data.employee_type ?? prev.employee_type,
+        salon_id: data.salon_id ?? prev.salon_id,
+      }));
+
       setSaveMessage("Your changes have been saved.");
+      // If you ever want to re-pull from server instead:
+      // await loadEmployeeDetails();
     } catch (err) {
-      console.error("Error saving customer settings:", err);
+      console.error("Error saving employee settings:", err);
       setLoadError("There was a problem saving your changes.");
     } finally {
       setSaving(false);
@@ -144,11 +217,27 @@ function EmployeeSettings() {
           </div>
         ) : (
           <p className="settings-value-text">
-            {customerDetails[fieldKey] || (
+            {employeeDetails[fieldKey] || (
               <span className="settings-placeholder">Not set</span>
             )}
           </p>
         )}
+      </div>
+    );
+  };
+
+  // Read-only row (for email)
+  const renderReadOnlyRow = (label, fieldKey, placeholder) => {
+    return (
+      <div className="settings-field-block">
+        <div className="settings-label-row">
+          <span className="settings-label">{label}</span>
+        </div>
+        <p className="settings-value-text">
+          {employeeDetails[fieldKey] || (
+            <span className="settings-placeholder">{placeholder}</span>
+          )}
+        </p>
       </div>
     );
   };
@@ -182,7 +271,7 @@ function EmployeeSettings() {
           <div>
             <h1 className="customer-settings-title">Account Settings</h1>
             <p className="customer-settings-subtitle">
-              Manage the details for your Jade customer account.
+              Manage the details for your Jade employee account.
             </p>
           </div>
           {isLoading && (
@@ -201,27 +290,26 @@ function EmployeeSettings() {
         {/* Basic Info */}
         <div className="settings-section">
           <h2 className="settings-section-title">Basic Info</h2>
+          {renderEditableRow("First Name", "first_name", "e.g. Amina")}
+          {renderEditableRow("Last Name", "last_name", "e.g. Khan")}
           {renderEditableRow(
-            "First Name",
-            "first_name",
-            "e.g. Amina"
+            "Employment Status",
+            "employment_status",
+            "e.g. active"
           )}
           {renderEditableRow(
-            "Last Name",
-            "last_name",
-            "e.g. Khan"
+            "Employee Type",
+            "employee_type",
+            "e.g. stylist"
           )}
         </div>
 
         {/* Contact Info */}
         <div className="settings-section">
           <h2 className="settings-section-title">Contact</h2>
-          {renderEditableRow(
-            "Email",
-            "email",
-            "you@example.com",
-            "email"
-          )}
+          {/* EMAIL: VIEW ONLY, NO EDITING */}
+          {renderReadOnlyRow("Email", "email", "you@example.com")}
+          {/* Phone can be edited */}
           {renderEditableRow(
             "Phone Number",
             "phone_number",
@@ -237,6 +325,12 @@ function EmployeeSettings() {
             "address",
             "123 Main St, Newark, NJ 07102"
           )}
+        </div>
+
+        {/* Salon Info */}
+        <div className="settings-section">
+          <h2 className="settings-section-title">Salon</h2>
+          {renderEditableRow("Salon ID", "salon_id", "e.g. 12", "number")}
         </div>
 
         {/* Footer */}
