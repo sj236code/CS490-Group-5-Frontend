@@ -4,6 +4,7 @@ import { Star } from 'lucide-react';
 import DashboardManageTab from '../components/salon_dashboard/DashboardManageTab';
 import DashboardLoyaltyTab from '../components/salon_dashboard/DashboardLoyaltyTab';
 import DashboardCalendarTab from '../components/salon_dashboard/DashboardCalendarTab';
+import DashboardMetricsTab from '../components/salon_dashboard/DashboardMetricsTab';ss
 
 function SalonDashboard() {
     const location = useLocation();
