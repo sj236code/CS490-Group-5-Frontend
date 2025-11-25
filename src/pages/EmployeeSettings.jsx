@@ -125,6 +125,7 @@ function EmployeeSettings() {
         email: employeeDetails.email,
         phone_number: employeeDetails.phone_number,
         address: employeeDetails.address,
+        // These are restricted in UI but still sent as current values
         employment_status: employeeDetails.employment_status,
         employee_type: employeeDetails.employee_type,
         salon_id: employeeDetails.salon_id,
@@ -163,8 +164,6 @@ function EmployeeSettings() {
       }));
 
       setSaveMessage("Your changes have been saved.");
-      // If you ever want to re-pull from server instead:
-      // await loadEmployeeDetails();
     } catch (err) {
       console.error("Error saving employee settings:", err);
       setLoadError("There was a problem saving your changes.");
@@ -226,7 +225,7 @@ function EmployeeSettings() {
     );
   };
 
-  // Read-only row (for email)
+  // Read-only row (for email + restricted fields)
   const renderReadOnlyRow = (label, fieldKey, placeholder) => {
     return (
       <div className="settings-field-block">
@@ -292,12 +291,17 @@ function EmployeeSettings() {
           <h2 className="settings-section-title">Basic Info</h2>
           {renderEditableRow("First Name", "first_name", "e.g. Amina")}
           {renderEditableRow("Last Name", "last_name", "e.g. Khan")}
-          {renderEditableRow(
+        </div>
+
+        {/* Employment Info (READ-ONLY) */}
+        <div className="settings-section">
+          <h2 className="settings-section-title">Employment</h2>
+          {renderReadOnlyRow(
             "Employment Status",
             "employment_status",
             "e.g. active"
           )}
-          {renderEditableRow(
+          {renderReadOnlyRow(
             "Employee Type",
             "employee_type",
             "e.g. stylist"
@@ -327,10 +331,10 @@ function EmployeeSettings() {
           )}
         </div>
 
-        {/* Salon Info */}
+        {/* Salon Info (READ-ONLY) */}
         <div className="settings-section">
           <h2 className="settings-section-title">Salon</h2>
-          {renderEditableRow("Salon ID", "salon_id", "e.g. 12", "number")}
+          {renderReadOnlyRow("Salon ID", "salon_id", "e.g. 12")}
         </div>
 
         {/* Footer */}
