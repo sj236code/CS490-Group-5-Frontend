@@ -1,4 +1,4 @@
-// src/components/customer_dashboard/CustomerSettings.jsx
+// src/components/admin_dashboard/AdminSettings.jsx
 import { useState, useEffect } from "react";
 import { Pencil, Loader2 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -7,15 +7,19 @@ function AdminSettings() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Expecting: navigate("/customerSettings", { state: { user, customerId }})
-  const { user } = location.state || {};
+  // Expecting: navigate("/adminSettings", { state: { user, adminId }})
+  const { user, adminId } = location.state || {};
 
-  const [customerDetails, setCustomerDetails] = useState({
+  const effectiveAdminId =
+    adminId ?? user?.profile_id ?? user?.id ?? user?.user_id ?? null;
+
+  const [adminDetails, setAdminDetails] = useState({
     first_name: "",
     last_name: "",
     email: "",
     phone_number: "",
     address: "",
+    status: "",
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -27,40 +31,62 @@ function AdminSettings() {
   const [editingField, setEditingField] = useState(null);
   const [editingValue, setEditingValue] = useState("");
 
-  // Load initial from user-type response for now (no real endpoint yet)
-  useEffect(() => {
+  const loadAdminDetails = async () => {
     setSaveMessage("");
     setLoadError(null);
-
-    if (!user) return;
-
-    // GET /api/customers/details/<effectiveCustomerId>
     setIsLoading(true);
+
+    const url = `${import.meta.env.VITE_API_URL}/api/admin/details/${effectiveAdminId}`;
+
     try {
-      setCustomerDetails({
+      const response = await fetch(url);
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch admin details");
+      }
+
+      const json = await response.json();
+      const data = json.data || json;
+
+      setAdminDetails({
+        first_name: data.first_name ?? user.first_name ?? "",
+        last_name: data.last_name ?? user.last_name ?? "",
+        email: data.email ?? user.email ?? "",
+        phone_number: data.phone_number ?? user.phone_number ?? "",
+        address: data.address ?? user.address ?? "",
+        status: data.status ?? "",
+      });
+    } catch (err) {
+      console.error("Error loading admin settings:", err);
+      setLoadError("Unable to load your account details. Showing basic info.");
+      setAdminDetails({
         first_name: user.first_name || "",
         last_name: user.last_name || "",
         email: user.email || "",
         phone_number: user.phone_number || "",
         address: user.address || "",
+        status: "",
       });
-    } catch (err) {
-      console.error("Error loading customer settings:", err);
-      setLoadError("Unable to load your account details.");
     } finally {
       setIsLoading(false);
     }
-  }, [user]);
+  };
+
+  useEffect(() => {
+    if (user && effectiveAdminId) {
+      loadAdminDetails();
+    }
+  }, [user, effectiveAdminId]);
 
   const handleEdit = (fieldKey) => {
     setEditingField(fieldKey);
-    setEditingValue(customerDetails[fieldKey] || "");
+    setEditingValue(adminDetails[fieldKey] || "");
     setSaveMessage("");
   };
 
   const handleConfirmEdit = () => {
     if (!editingField) return;
-    setCustomerDetails((prev) => ({
+    setAdminDetails((prev) => ({
       ...prev,
       [editingField]: editingValue,
     }));
@@ -74,18 +100,62 @@ function AdminSettings() {
   };
 
   const handleSaveChanges = async () => {
-    // e.g. PUT /api/customers/details/<effectiveCustomerId>
+    if (!effectiveAdminId) {
+      setLoadError("We couldn't find your account ID.");
+      return;
+    }
 
     try {
       setSaving(true);
       setSaveMessage("");
       setLoadError(null);
 
-      // TEMP: pretend save is successful
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      const payload = {
+        first_name: adminDetails.first_name,
+        last_name: adminDetails.last_name,
+        // email is sent as-is, but admin cannot edit it in UI
+        email: adminDetails.email,
+        phone_number: adminDetails.phone_number,
+        address: adminDetails.address,
+        status: adminDetails.status,
+      };
+
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/admin/details/${effectiveAdminId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to save admin settings");
+      }
+
+      const json = await response.json();
+      const data = json.data || json;
+      console.log("Admin settings saved:", json);
+
+      // Immediately reflect whatever the backend says is the latest truth
+      setAdminDetails((prev) => ({
+        ...prev,
+        first_name: data.first_name ?? prev.first_name,
+        last_name: data.last_name ?? prev.last_name,
+        // email not returned from PUT, so we keep prev.email
+        email: data.email ?? prev.email,
+        phone_number: data.phone_number ?? prev.phone_number,
+        address: data.address ?? prev.address,
+        status: data.status ?? prev.status,
+      }));
+
       setSaveMessage("Your changes have been saved.");
+      // If you ever want to re-pull from server:
+      // await loadAdminDetails();
     } catch (err) {
-      console.error("Error saving customer settings:", err);
+      console.error("Error saving admin settings:", err);
       setLoadError("There was a problem saving your changes.");
     } finally {
       setSaving(false);
@@ -136,11 +206,27 @@ function AdminSettings() {
           </div>
         ) : (
           <p className="settings-value-text">
-            {customerDetails[fieldKey] || (
+            {adminDetails[fieldKey] || (
               <span className="settings-placeholder">Not set</span>
             )}
           </p>
         )}
+      </div>
+    );
+  };
+
+  // Read-only row (for email)
+  const renderReadOnlyRow = (label, fieldKey, placeholder) => {
+    return (
+      <div className="settings-field-block">
+        <div className="settings-label-row">
+          <span className="settings-label">{label}</span>
+        </div>
+        <p className="settings-value-text">
+          {adminDetails[fieldKey] || (
+            <span className="settings-placeholder">{placeholder}</span>
+          )}
+        </p>
       </div>
     );
   };
@@ -174,7 +260,7 @@ function AdminSettings() {
           <div>
             <h1 className="customer-settings-title">Account Settings</h1>
             <p className="customer-settings-subtitle">
-              Manage the details for your Jade customer account.
+              Manage the details for your Jade admin account.
             </p>
           </div>
           {isLoading && (
@@ -193,27 +279,17 @@ function AdminSettings() {
         {/* Basic Info */}
         <div className="settings-section">
           <h2 className="settings-section-title">Basic Info</h2>
-          {renderEditableRow(
-            "First Name",
-            "first_name",
-            "e.g. Amina"
-          )}
-          {renderEditableRow(
-            "Last Name",
-            "last_name",
-            "e.g. Khan"
-          )}
+          {renderEditableRow("First Name", "first_name", "e.g. Amina")}
+          {renderEditableRow("Last Name", "last_name", "e.g. Khan")}
+          {renderEditableRow("Status", "status", "e.g. active")}
         </div>
 
         {/* Contact Info */}
         <div className="settings-section">
           <h2 className="settings-section-title">Contact</h2>
-          {renderEditableRow(
-            "Email",
-            "email",
-            "you@example.com",
-            "email"
-          )}
+          {/* EMAIL: VIEW ONLY, NO EDITING */}
+          {renderReadOnlyRow("Email", "email", "you@example.com")}
+          {/* Phone can be edited */}
           {renderEditableRow(
             "Phone Number",
             "phone_number",
