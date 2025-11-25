@@ -30,51 +30,50 @@ function CustomerSettings() {
   const [editingField, setEditingField] = useState(null);
   const [editingValue, setEditingValue] = useState("");
 
-  // Load from backend endpoint (with fallback to user object)
-  useEffect(() => {
+  const loadCustomerDetails = async () => {
     setSaveMessage("");
     setLoadError(null);
+    setIsLoading(true);
 
-    if (!user || !effectiveCustomerId) return;
+    const url = `${import.meta.env.VITE_API_URL}/api/customer/details/${effectiveCustomerId}`;
 
-    const fetchCustomerDetails = async () => {
-      setIsLoading(true);
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/api/customer/details/${effectiveCustomerId}`
-        );
+    try {
+      const response = await fetch(url);
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch customer details");
-        }
-
-        const data = await response.json();
-
-        setCustomerDetails({
-          first_name: data.first_name ?? user.first_name ?? "",
-          last_name: data.last_name ?? user.last_name ?? "",
-          email: data.email ?? user.email ?? "",
-          phone_number: data.phone_number ?? user.phone_number ?? "",
-          address: data.address ?? user.address ?? "",
-        });
-      } catch (err) {
-        console.error("Error loading customer settings:", err);
-        setLoadError("Unable to load your account details. Showing basic info.");
-
-        // Fallback to user object
-        setCustomerDetails({
-          first_name: user.first_name || "",
-          last_name: user.last_name || "",
-          email: user.email || "",
-          phone_number: user.phone_number || "",
-          address: user.address || "",
-        });
-      } finally {
-        setIsLoading(false);
+      if (!response.ok) {
+        throw new Error("Failed to fetch customer details");
       }
-    };
 
-    fetchCustomerDetails();
+      const json = await response.json();
+      // If backend wraps in { status, message, data: {...} }
+      const data = json.data || json;
+
+      setCustomerDetails({
+        first_name: data.first_name ?? user.first_name ?? "",
+        last_name: data.last_name ?? user.last_name ?? "",
+        email: data.email ?? user.email ?? "",
+        phone_number: data.phone_number ?? user.phone_number ?? "",
+        address: data.address ?? user.address ?? "",
+      });
+    } catch (err) {
+      console.error("Error:", err);
+      setLoadError("Unable to load your account details. Showing basic info.");
+      setCustomerDetails({
+        first_name: user.first_name || "",
+        last_name: user.last_name || "",
+        email: user.email || "",
+        phone_number: user.phone_number || "",
+        address: user.address || "",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (user && effectiveCustomerId) {
+      loadCustomerDetails();
+    }
   }, [user, effectiveCustomerId]);
 
   const handleEdit = (fieldKey) => {
@@ -99,9 +98,6 @@ function CustomerSettings() {
   };
 
   const handleSaveChanges = async () => {
-    // now: call your real customer update endpoint here
-    // PUT /api/customers/details/<effectiveCustomerId>
-
     if (!effectiveCustomerId) {
       setLoadError("We couldn't find your account ID.");
       return;
@@ -136,9 +132,23 @@ function CustomerSettings() {
         throw new Error("Failed to save customer settings");
       }
 
-      const data = await response.json();
-      console.log("Customer settings saved:", data);
+      const json = await response.json();
+      const data = json.data || json;
+      console.log("Customer settings saved:", json);
+
+      // Immediately reflect whatever the backend says is the latest truth
+      setCustomerDetails((prev) => ({
+        ...prev,
+        first_name: data.first_name ?? prev.first_name,
+        last_name: data.last_name ?? prev.last_name,
+        email: data.email ?? prev.email,
+        phone_number: data.phone_number ?? prev.phone_number,
+        address: data.address ?? prev.address,
+      }));
+
       setSaveMessage("Your changes have been saved.");
+      // Optional: if you still want to refetch from server, you can:
+      // await loadCustomerDetails();
     } catch (err) {
       console.error("Error saving customer settings:", err);
       setLoadError("There was a problem saving your changes.");
