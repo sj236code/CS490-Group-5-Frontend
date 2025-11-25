@@ -1,13 +1,17 @@
 import { useState, useEffect, useRef } from "react";
 import { User } from "lucide-react";
+import {useNavigate} from "react-router-dom";
 
-function UserProf({ user, onLogout }) {
+function UserProf({ user, userType, ownerSalonId, onLogout }) {
     const [open, setOpen] = useState(false);
     const wrapperRef = useRef(null);
+    const navigate = useNavigate();
 
     if (!user) return null;
 
     const displayName = `${user?.first_name || ""} ${user?.last_name || ""}`.trim();
+
+    const effectiveSalonId = ownerSalonId ?? user?.profile_id ?? user?.id ?? null;
 
     const toggleOpen = () => {
         setOpen((prev) => !prev);
@@ -22,6 +26,42 @@ function UserProf({ user, onLogout }) {
         setOpen(false); // closes the dropdown after logout
     };
 
+      const handleSettingsClick = () => {
+        // OWNER → same salon settings as SalonOwnerNavBar
+        if (userType === "OWNER") {
+            navigate("/salonSettings", {
+                state: {
+                    salonId: effectiveSalonId,
+                    user,
+                },
+            });
+        }
+        else if (userType === "CUSTOMER") {
+            navigate("/customerSettings", {
+                state: {
+                    user,
+                    customerId: user?.profile_id ?? user?.id,
+                },
+            });
+        } 
+        else if (userType === "EMPLOYEE") {
+            navigate("/employeeSettings", {
+                state: {
+                    user,
+                    employeeId: user?.profile_id ?? user?.id,
+                },
+            });
+        } 
+        else if (userType === "ADMIN") {
+            navigate("/adminSettings", {
+                state: {
+                    user,
+                },
+            });
+        } 
+        else{}
+        setOpen(false);
+    };
 
     // Close dropdown on outside click
     useEffect(() => {
@@ -46,7 +86,20 @@ function UserProf({ user, onLogout }) {
         {/* Dropdown */}
         {open && (
             <div className="userprof-dropdown">
-            <button onClick={handleLogoutClick}>Logout</button>
+            <button
+                type="button"
+                className="userprof-dropdown-item"
+                onClick={handleSettingsClick}
+            >
+                Settings
+            </button>
+            <button
+                type="button"
+                className="userprof-dropdown-item"
+                onClick={handleLogoutClick}
+            >
+                Logout
+            </button>
             </div>
         )}
         </div>

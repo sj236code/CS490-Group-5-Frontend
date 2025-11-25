@@ -185,9 +185,14 @@ function Header({userType, userId, onPickRole, onCycleRole, onLogout }){
             {/* Right: Login + Cart */}
             <div className="header-right">
                 {userId && userProfile ? (
-                    <UserProfile user={userProfile} onLogout={onLogout}/>
+                    <UserProfile
+                        user={userProfile}
+                        userType={userType}
+                        ownerSalonId={ownerSalonId}
+                        onLogout={onLogout}
+                    />
                 ) : (
-                    <LoginButton onClick={navigateToLogin} style={{cursor: "pointer"}}/>
+                    <LoginButton onClick={navigateToLogin} style={{ cursor: "pointer" }} />
                 )}
 
                 {/*<LoginButton onClick={navigateToLogin} style={{ cursor: "pointer" }} />*/}
