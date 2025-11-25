@@ -4296,3 +4296,21 @@ label {
   90% { opacity: 1; }
   100% { opacity: 0; transform: translateY(-10px); }
 }
+
+
+/* Add spacing between charts */
+.analytics-summary-chart-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px; /* <--- THIS CREATES THE SPACE BETWEEN GRAPHS */
+  margin-top: 20px;
+  margin-bottom: 40px;
+}
+
+/* Extra spacing inside each chart box */
+.chart-card {
+  background: #EFF4E8;
+  padding: 20px;
+  border-radius: 10px;
+  border: 1px solid #d1dbc5;
+}

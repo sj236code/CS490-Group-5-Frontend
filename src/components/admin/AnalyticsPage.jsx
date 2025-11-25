@@ -12,9 +12,10 @@ import {
 } from "recharts";
 import "../../App.css";
 
+
 function AnalyticsPage() {
   const [summary, setSummary] = useState(null);
-  const [engagementData, setEngagementData] = useState([]);
+  const [returningData, setReturningData] = useState([]);
   const [retentionData, setRetentionData] = useState([]);
 
   const [loading, setLoading] = useState(true);
@@ -25,25 +26,26 @@ function AnalyticsPage() {
       const base = import.meta.env.VITE_API_URL;
 
       try {
-        const [summaryRes, engagementRes, retentionRes] = await Promise.all([
+        const [summaryRes, returningRes, retentionRes] = await Promise.all([
           fetch(`${base}/api/admin/analytics/summary`),
-          fetch(`${base}/api/admin/analytics/engagement-trend`),
+          fetch(`${base}/api/admin/analytics/returning-users-trend`),
           fetch(`${base}/api/admin/analytics/retention-cohort`),
         ]);
 
-        if (!summaryRes.ok || !engagementRes.ok || !retentionRes.ok) {
+        if (!summaryRes.ok || !returningRes.ok || !retentionRes.ok) {
           throw new Error("One or more analytics endpoints failed.");
         }
 
-        const [summaryData, engagementTrendData, retentionCohortData] =
+        const [summaryData, returningTrendData, retentionCohortData] =
           await Promise.all([
             summaryRes.json(),
-            engagementRes.json(),
+            returningRes.json(),
             retentionRes.json(),
           ]);
 
         setSummary(summaryData);
-        setEngagementData(engagementTrendData);
+        // backend returns { trend: [...] }
+        setReturningData(returningTrendData.trend || []);
         setRetentionData(retentionCohortData);
       } catch (err) {
         console.error("Error loading analytics:", err);
@@ -74,7 +76,7 @@ function AnalyticsPage() {
 
   return (
     <div className="analytics-page">
-      {/* HEADER WITHOUT DATE/STORE FILTERS */}
+      {/* HEADER */}
       <div className="analytics-header">
         <h2>Engagement & Retention Dashboard</h2>
       </div>
@@ -111,28 +113,59 @@ function AnalyticsPage() {
         </div>
       </div>
 
-      {/* CHART ROW 1 - ENGAGEMENT */}
-      <div className="chart-section">
-        <div className="chart-card">
-          <h4>Engagement Over Time</h4>
-          <ResponsiveContainer width="100%" height={220}>
-            <LineChart data={engagementData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="day" />
-              <YAxis />
-              <Tooltip />
-              <Line
-                type="monotone"
-                dataKey="users"
-                stroke="#4B5945"
-                strokeWidth={2}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
+      {/* CHART ROW 1 - RETURNING USERS */}
+<div className="chart-section">
+  <div className="chart-card">
+    <h4>Returning Users (Last 30 Days)</h4>
 
-      {/* CHART ROW 2 - RETENTION */}
+    <ResponsiveContainer width="100%" height={220}>
+      <LineChart data={returningData}>
+        <CartesianGrid strokeDasharray="3 3" />
+
+        <XAxis
+          dataKey="day"
+          interval={1} // show every other label (no duplicates)
+          tickFormatter={(value) => {
+            const d = new Date(value);
+            const month = d.toLocaleString("en-US", { month: "short" });
+            const day = d.getDate();
+            return `${month} ${day}`;
+          }}
+        />
+
+        <YAxis
+          allowDecimals={false} // never fractional
+          tickCount={6}
+        />
+
+        <Tooltip />
+
+        <Line
+          type="monotone"
+          dataKey="returning_users"
+          stroke="#4B5945"
+          strokeWidth={2}
+          dot={{ r: 5 }}
+        />
+      </LineChart>
+    </ResponsiveContainer>
+
+    {/* YEAR LABEL UNDER THE CHART */}
+    <div style={{
+      textAlign: "center",
+      marginTop: "-5px",
+      fontSize: "14px",
+      color: "#4B5945",
+      fontWeight: 500
+    }}>
+      2025
+    </div>
+
+  </div>
+</div>
+
+
+      {/* CHART ROW 2 - COHORT RETENTION */}
       <div className="chart-section">
         <div className="chart-card">
           <h4>Cohort Retention (Monthly)</h4>
