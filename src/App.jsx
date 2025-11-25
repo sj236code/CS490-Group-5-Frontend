@@ -29,6 +29,9 @@ import EmployeePaymentPortal from "./pages/EmployeePaymentPortal.jsx";
 import UserGallery from "./pages/UserGallery.jsx";
 import SalonSettings from "./pages/SalonSettings.jsx";
 import SalonPayments from "./pages/SalonPayments.jsx";
+import CustomerSettings from "./pages/CustomerSettings.jsx";
+import EmployeeSettings from "./pages/EmployeeSettings.jsx";
+import AdminSettings from "./pages/AdminSettings.jsx";
 
 // Firebase
 import PaymentConfirmation from './pages/checkout&payment/PaymentConfirmation.jsx';
@@ -198,17 +201,20 @@ function App() {
 
         {/* Admin Nav Bar Routes */}
         <Route path="/adminDashboard" element={<AdminDashboard />} />
+        <Route path="/adminSettings" element={<AdminSettings />} />
 
         {/* Customer Nav Bar Routes */}
         <Route path="/customerLoyalty" element={<CustomerLoyalty />} />
         <Route path="/myWallet" element={<MyWallet />} />
         <Route path="/my-appointments" element={<MyAppointments />} />
         <Route path="/userGallery" element={<UserGallery />} />
+        <Route path="/customerSettings" element={<CustomerSettings />} />
 
         {/* Employee Nav Bar Routes */}
         <Route path="/employee-appointments" element={<EmployeeAppointments />} />
         <Route path="/employee-availability" element={<EmployeeAvailability />} />
         <Route path="/employee-payment-portal" element={<EmployeePaymentPortal />} />
+        <Route path="/employeeSettings" element={<EmployeeSettings />} />
 
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/faq" element={<FAQPage />} />
