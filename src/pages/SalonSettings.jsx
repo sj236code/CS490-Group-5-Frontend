@@ -31,13 +31,9 @@ function SalonSettings({ salon }) {
   const [editingField, setEditingField] = useState(null);
   const [editingValue, setEditingValue] = useState("");
 
-  useEffect(() => {
-    if (!salonId) return;
-    loadSalonDetails();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [salonId]);
-
   const loadSalonDetails = async () => {
+    if (!salonId) return;
+
     try {
       setIsLoading(true);
       setLoadError(null);
@@ -51,19 +47,24 @@ function SalonSettings({ salon }) {
         throw new Error(`Failed to load salon details (${res.status})`);
       }
 
-      const data = await res.json();
-      console.log("SalonSettings details:", data);
+      const json = await res.json();
+      const data = json.data || json;
+      console.log("SalonSettings details:", json);
 
-      setSalonDetails({
+      setSalonDetails((prev) => ({
+        ...prev,
         name: data.name || "",
-        types: data.types && Array.isArray(data.types)
-          ? data.types.join(", ")
-          : "",
+        // `types` isn't part of this endpoint; keep existing or blank
+        types:
+          prev.types ||
+          (data.types && Array.isArray(data.types)
+            ? data.types.join(", ")
+            : ""),
         address: data.address || "",
         city: data.city || "",
         phone: data.phone || "",
         about: data.about || "",
-      });
+      }));
     } catch (err) {
       console.error("Unable to load salon details:", err);
       setLoadError("Unable to load salon details. Please try again.");
@@ -71,6 +72,12 @@ function SalonSettings({ salon }) {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (salonId) {
+      loadSalonDetails();
+    }
+  }, [salonId]);
 
   const handleEdit = (fieldKey) => {
     setEditingField(fieldKey);
@@ -101,7 +108,16 @@ function SalonSettings({ salon }) {
       setSaveMessage("");
       setLoadError(null);
 
-      // Adjust this endpoint/method to match whatever you implement on the backend
+      // Only send fields supported by the endpoint
+      const payload = {
+        name: salonDetails.name,
+        address: salonDetails.address,
+        city: salonDetails.city,
+        phone: salonDetails.phone,
+        about: salonDetails.about,
+        // latitude/longitude are optional & omitted from UI for now
+      };
+
       const res = await fetch(
         `${import.meta.env.VITE_API_URL}/api/salons/details/${salonId}`,
         {
@@ -109,7 +125,7 @@ function SalonSettings({ salon }) {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(salonDetails),
+          body: JSON.stringify(payload),
         }
       );
 
@@ -117,9 +133,24 @@ function SalonSettings({ salon }) {
         throw new Error(`Failed to save changes (${res.status})`);
       }
 
-      const data = await res.json();
-      console.log("SalonSettings saved:", data);
+      const json = await res.json();
+      const data = json.data || json;
+      console.log("SalonSettings saved:", json);
+
+      // Immediately reflect backend’s source-of-truth
+      setSalonDetails((prev) => ({
+        ...prev,
+        name: data.name ?? prev.name,
+        address: data.address ?? prev.address,
+        city: data.city ?? prev.city,
+        phone: data.phone ?? prev.phone,
+        about: data.about ?? prev.about,
+        // keep `types` as-is; not part of this endpoint
+      }));
+
       setSaveMessage("Changes saved successfully.");
+      // If you ever want a full reload from server:
+      // await loadSalonDetails();
     } catch (err) {
       console.error("Error saving salon details:", err);
       setLoadError("There was a problem saving your changes.");
@@ -172,7 +203,9 @@ function SalonSettings({ salon }) {
           </div>
         ) : (
           <p className="settings-value-text">
-            {salonDetails[fieldKey] || <span className="settings-placeholder">Not set</span>}
+            {salonDetails[fieldKey] || (
+              <span className="settings-placeholder">Not set</span>
+            )}
           </p>
         )}
       </div>
@@ -240,8 +273,8 @@ function SalonSettings({ salon }) {
         <div className="salon-settings-card">
           <h1 className="salon-settings-title">Settings</h1>
           <p className="settings-error">
-            No salon selected. Try going back to your dashboard and opening settings
-            again.
+            No salon selected. Try going back to your dashboard and opening
+            settings again.
           </p>
           <div className="salon-settings-footer">
             <button className="settings-back-btn" onClick={() => navigate(-1)}>
