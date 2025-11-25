@@ -7117,3 +7117,21 @@ label {
   border-radius: 10px;
   border: 1px solid #d1dbc5;
 }
+
+/* Salon Dashboard Metrics Tab */
+
+.metrics-tab.payment-container {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.metrics-main-grid .card-section {
+  height: 100%;
+}
+
+.card-section {
+  background-color: #f9faf6;
+  border-radius: 16px;
+  padding: 16px 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+}

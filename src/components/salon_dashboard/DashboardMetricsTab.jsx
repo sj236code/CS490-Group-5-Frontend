@@ -5,8 +5,16 @@ import {
   Calendar,
   TrendingUp,
   Info,
-  PieChart,
+  PieChart as PieChartIcon,
 } from "lucide-react";
+import {
+  PieChart as RePieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+} from "recharts";
 
 function DashboardMetricsTab({ salon, user }) {
   // Match Calendar tab pattern
@@ -104,6 +112,23 @@ function DashboardMetricsTab({ salon, user }) {
     );
   }
 
+  // --- Chart data (from existing endpoints) ---
+  const revenueSplitData =
+    monthlyTotal && monthlyTotal.total_service_revenue != null
+      ? [
+          {
+            name: "Service Revenue",
+            value: monthlyTotal.total_service_revenue,
+          },
+          {
+            name: "Product Revenue",
+            value: monthlyTotal.total_product_revenue,
+          },
+        ]
+      : [];
+
+  const REVENUE_COLORS = ["#4B5945", "#96A78D"]; // dark + light jade
+
   return (
     <div className="metrics-tab payment-container">
       {/* Dashboard header */}
@@ -111,7 +136,8 @@ function DashboardMetricsTab({ salon, user }) {
         <div>
           <h2>Salon Metrics Dashboard</h2>
           <p className="jade-header-subtitle">
-            Quick overview of revenue, earnings, and appointments for your salon.
+            Quick overview of revenue, earnings, and appointments for your
+            salon.
           </p>
         </div>
       </header>
@@ -128,12 +154,14 @@ function DashboardMetricsTab({ salon, user }) {
         </p>
       </div>
 
-      {/* KPI Row — dashboard-style summary using calendar stat cards */}
+      {/* TOP KPI ROW – full width */}
       {monthlyTotal && (
         <section style={{ marginTop: "1.25rem" }}>
           <div className="calendar-stats-row">
             <div className="calendar-stat-card">
-              <div className="calendar-stat-label">Total Revenue (This Month)</div>
+              <div className="calendar-stat-label">
+                Total Revenue (This Month)
+              </div>
               <div className="calendar-stat-value">
                 ${monthlyTotal.total_revenue.toFixed(2)}
               </div>
@@ -145,13 +173,17 @@ function DashboardMetricsTab({ salon, user }) {
               </div>
             </div>
             <div className="calendar-stat-card">
-              <div className="calendar-stat-label">Stylist Earnings (Services)</div>
+              <div className="calendar-stat-label">
+                Stylist Earnings (Services)
+              </div>
               <div className="calendar-stat-value">
                 ${monthlyTotal.employee_earnings.toFixed(2)}
               </div>
             </div>
             <div className="calendar-stat-card">
-              <div className="calendar-stat-label">Appointments (This Month)</div>
+              <div className="calendar-stat-label">
+                Appointments (This Month)
+              </div>
               <div className="calendar-stat-value">
                 {monthlyTotal.appointments_completed}
               </div>
@@ -160,57 +192,106 @@ function DashboardMetricsTab({ salon, user }) {
         </section>
       )}
 
-      {/* Monthly Revenue Breakdown */}
-      {monthlyTotal && (
-        <section className="card-section">
-          <div className="monthly-total__header">
-            <PieChart className="monthly-total__icon" size={24} />
-            <h3 className="monthly-total__title">
-              {monthlyTotal.month} Revenue Breakdown
-            </h3>
+      {/* MAIN GRID: left = breakdown card, right = chart card */}
+      <section
+        className="metrics-main-grid"
+        style={{
+          display: "grid",
+          gridTemplateColumns: "2fr 1.5fr",
+          gap: "16px",
+          marginTop: "16px",
+        }}
+      >
+        {/* LEFT: Monthly Revenue Breakdown */}
+        {monthlyTotal && (
+          <div className="card-section">
+            <div
+              className="monthly-total__header"
+              style={{ marginBottom: "0.5rem" }}
+            >
+              <PieChartIcon className="monthly-total__icon" size={24} />
+              <h3 className="monthly-total__title">
+                {monthlyTotal.month} Revenue Breakdown
+              </h3>
+            </div>
+            <p className="monthly-total__note">
+              Includes completed and booked appointments for this month, plus
+              product sales.
+            </p>
+            <div className="monthly-total__grid">
+              <div className="stat-card">
+                <p className="stat-card__label">Service Revenue</p>
+                <p className="stat-card__value">
+                  ${monthlyTotal.total_service_revenue.toFixed(2)}
+                </p>
+              </div>
+              <div className="stat-card">
+                <p className="stat-card__label">Product Revenue</p>
+                <p className="stat-card__value">
+                  ${monthlyTotal.total_product_revenue.toFixed(2)}
+                </p>
+              </div>
+              <div className="stat-card stat-card--highlight">
+                <p className="stat-card__label">Total Revenue</p>
+                <p className="stat-card__value">
+                  ${monthlyTotal.total_revenue.toFixed(2)}
+                </p>
+              </div>
+              <div className="stat-card">
+                <p className="stat-card__label">
+                  Salon Earnings (Services + Products)
+                </p>
+                <p className="stat-card__value">
+                  ${monthlyTotal.salon_total_earnings.toFixed(2)}
+                </p>
+                <p className="stat-card__meta">
+                  Stylists earned $
+                  {monthlyTotal.employee_earnings.toFixed(2)} from services
+                </p>
+              </div>
+            </div>
           </div>
-          <p className="monthly-total__note">
-            Includes completed and booked appointments for this month, plus
-            product sales.
-          </p>
-          <div className="monthly-total__grid">
-            <div className="stat-card">
-              <p className="stat-card__label">Service Revenue</p>
-              <p className="stat-card__value">
-                ${monthlyTotal.total_service_revenue.toFixed(2)}
-              </p>
-            </div>
-            <div className="stat-card">
-              <p className="stat-card__label">Product Revenue</p>
-              <p className="stat-card__value">
-                ${monthlyTotal.total_product_revenue.toFixed(2)}
-              </p>
-            </div>
-            <div className="stat-card stat-card--highlight">
-              <p className="stat-card__label">Total Revenue</p>
-              <p className="stat-card__value">
-                ${monthlyTotal.total_revenue.toFixed(2)}
-              </p>
-            </div>
-            <div className="stat-card">
-              <p className="stat-card__label">
-                Salon Earnings (Services + Products)
-              </p>
-              <p className="stat-card__value">
-                ${monthlyTotal.salon_total_earnings.toFixed(2)}
-              </p>
-              <p className="stat-card__meta">
-                Stylists earned ${monthlyTotal.employee_earnings.toFixed(2)} from
-                services
-              </p>
-            </div>
-          </div>
-        </section>
-      )}
+        )}
 
-      {/* Current Pay Period Snapshot */}
+        {/* RIGHT: Pie chart – Service vs Product */}
+        {monthlyTotal && revenueSplitData.length > 0 && (
+          <div className="card-section">
+            <h3 className="card-section__title">Service vs Product Revenue</h3>
+            <p className="card-section__subtitle card-section__subtitle--muted">
+              Visual split of this month&apos;s revenue.
+            </p>
+            <div style={{ width: "100%", height: 260 }}>
+              <ResponsiveContainer>
+                <RePieChart>
+                  <Pie
+                    data={revenueSplitData}
+                    dataKey="value"
+                    nameKey="name"
+                    outerRadius={90}
+                    innerRadius={50}
+                    paddingAngle={3}
+                  >
+                    {revenueSplitData.map((entry, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={REVENUE_COLORS[index % REVENUE_COLORS.length]}
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    formatter={(value) => `$${Number(value).toFixed(2)}`}
+                  />
+                  <Legend />
+                </RePieChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        )}
+      </section>
+
+      {/* BOTTOM: Current Pay Period Snapshot – full width card */}
       {currentPeriod && (
-        <section className="card-section">
+        <section className="card-section" style={{ marginTop: "16px" }}>
           <div
             style={{
               display: "flex",
