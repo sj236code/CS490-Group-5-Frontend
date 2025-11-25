@@ -1,3 +1,4 @@
+// src/components/salon_owner/SalonPaymentsPage.jsx
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import {
@@ -41,7 +42,9 @@ function SalonPaymentsPage() {
       setError(null);
 
       // 1. Current biweekly period (for whole salon)
-      const currentResponse = await fetch(`${import.meta.env.VITE_API_URL}/api/salon_payroll/${salonId}/current-period`);
+      const currentResponse = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/salon_payroll/${salonId}/current-period`
+      );
 
       if (currentResponse.status === 404) {
         setError("Salon not found in payroll system");
@@ -57,7 +60,9 @@ function SalonPaymentsPage() {
       setCurrentPeriod(currentData);
 
       // 2. History
-      const historyResponse = await fetch(`${import.meta.env.VITE_API_URL}/api/salon_payroll/${salonId}/history`);
+      const historyResponse = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/salon_payroll/${salonId}/history`
+      );
 
       if (!historyResponse.ok) {
         throw new Error("Failed to fetch payroll history");
@@ -66,7 +71,9 @@ function SalonPaymentsPage() {
       setPayrollHistory(historyData.history || []);
 
       // 3. Monthly totals
-      const monthlyResponse = await fetch(`${import.meta.env.VITE_API_URL}/api/salon_payroll/${salonId}/monthly-total`);
+      const monthlyResponse = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/salon_payroll/${salonId}/monthly-total`
+      );
 
       if (monthlyResponse.ok) {
         const monthlyData = await monthlyResponse.json();
@@ -74,7 +81,9 @@ function SalonPaymentsPage() {
       }
 
       // 4. Transaction list (existing receipts endpoint)
-      const txResponse = await fetch(`${import.meta.env.VITE_API_URL}/api/receipts/salon/${salonId}/transactions`);
+      const txResponse = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/receipts/salon/${salonId}/transactions`
+      );
 
       if (txResponse.ok) {
         const txData = await txResponse.json();
@@ -82,8 +91,7 @@ function SalonPaymentsPage() {
       }
 
       setLoading(false);
-    } 
-    catch (err) {
+    } catch (err) {
       console.error("Error fetching salon payroll:", err);
       setError(err.message);
       setLoading(false);
@@ -111,9 +119,7 @@ function SalonPaymentsPage() {
         </header>
         <div className="payment-message payment-message--error">
           <p className="payment-error-text">Error: {error}</p>
-          <p className="payment-error-id">
-            Salon ID: {salonId || "Not found"}
-          </p>
+          <p className="payment-error-id">Salon ID: {salonId || "Not found"}</p>
           <button className="payment-retry-button" onClick={fetchSalonPayroll}>
             Retry
           </button>
@@ -148,8 +154,8 @@ function SalonPaymentsPage() {
           <strong className="commission-info__title">
             MyJade Commission Structure:
           </strong>{" "}
-          Stylists earn 70% of service revenue. Your salon retains 30% for
-          operations and overhead.
+          Stylists earn 70% of <strong>service</strong> revenue. Your salon
+          retains 30% of services and 100% of <strong>product</strong> revenue.
         </p>
       </div>
 
@@ -163,25 +169,36 @@ function SalonPaymentsPage() {
             </h2>
           </div>
           <p className="monthly-total__note">
-            Includes completed appointments for this month.
+            Includes completed and booked appointments for this month, plus
+            product sales.
           </p>
           <div className="monthly-total__grid">
             <div className="stat-card">
-              <p className="stat-card__label">Total Service Revenue</p>
+              <p className="stat-card__label">Service Revenue</p>
               <p className="stat-card__value">
                 ${monthlyTotal.total_service_revenue.toFixed(2)}
               </p>
             </div>
             <div className="stat-card">
-              <p className="stat-card__label">Employee Commission (70%)</p>
+              <p className="stat-card__label">Product Revenue</p>
               <p className="stat-card__value">
-                ${monthlyTotal.employee_earnings.toFixed(2)}
+                ${monthlyTotal.total_product_revenue.toFixed(2)}
               </p>
             </div>
             <div className="stat-card stat-card--highlight">
-              <p className="stat-card__label">Your Salon Share (30%)</p>
+              <p className="stat-card__label">Total Revenue</p>
               <p className="stat-card__value">
-                ${monthlyTotal.salon_share.toFixed(2)}
+                ${monthlyTotal.total_revenue.toFixed(2)}
+              </p>
+            </div>
+            <div className="stat-card">
+              <p className="stat-card__label">Salon Earnings (Services + Products)</p>
+              <p className="stat-card__value">
+                ${monthlyTotal.salon_total_earnings.toFixed(2)}
+              </p>
+              <p className="stat-card__meta">
+                Stylists earned ${monthlyTotal.employee_earnings.toFixed(2)} from
+                services
               </p>
             </div>
             <div className="stat-card">
@@ -204,6 +221,7 @@ function SalonPaymentsPage() {
           </p>
 
           <div className="current-period__grid">
+            {/* Service Revenue */}
             <div className="current-period__card">
               <div className="current-period__content">
                 <div className="current-period__icon-wrap current-period__icon-wrap--soft">
@@ -221,23 +239,25 @@ function SalonPaymentsPage() {
               </div>
             </div>
 
+            {/* Product Revenue */}
             <div className="current-period__card">
               <div className="current-period__content">
                 <div className="current-period__icon-wrap current-period__icon-wrap--soft">
-                  <Clock size={24} className="current-period__icon" />
+                  <DollarSign size={24} className="current-period__icon" />
                 </div>
                 <div>
-                  <p className="current-period__label">Total Hours Worked</p>
+                  <p className="current-period__label">Product Revenue</p>
                   <p className="current-period__value">
-                    {currentPeriod.hours_worked.toFixed(2)} hrs
+                    ${currentPeriod.total_product_revenue.toFixed(2)}
                   </p>
                   <p className="current-period__meta">
-                    Across all stylists in this period
+                    From product sales this period
                   </p>
                 </div>
               </div>
             </div>
 
+            {/* Salon Earnings */}
             <div className="current-period__card current-period__card--highlight">
               <div className="current-period__content">
                 <div className="current-period__icon-wrap current-period__icon-wrap--solid">
@@ -248,13 +268,19 @@ function SalonPaymentsPage() {
                 </div>
                 <div>
                   <p className="current-period__label current-period__label--strong">
-                    Salon Earnings (30%)
+                    Salon Earnings (Services + Products)
                   </p>
                   <p className="current-period__value">
-                    ${currentPeriod.salon_share.toFixed(2)}
+                    ${currentPeriod.salon_total_earnings.toFixed(2)}
                   </p>
                   <p className="current-period__meta current-period__meta--strong">
-                    Stylists: ${currentPeriod.employee_earnings.toFixed(2)} (70%)
+                    Services (30%): ${currentPeriod.salon_share_services.toFixed(2)}{" "}
+                    · Products (100%): $
+                    {currentPeriod.salon_share_products.toFixed(2)}
+                  </p>
+                  <p className="current-period__meta">
+                    Stylists (70% services): $
+                    {currentPeriod.employee_earnings.toFixed(2)}
                   </p>
                 </div>
               </div>
@@ -290,9 +316,7 @@ function SalonPaymentsPage() {
                 }`}
               >
                 <div>
-                  <p className="history-item__period">
-                    {period.period_label}
-                  </p>
+                  <p className="history-item__period">{period.period_label}</p>
                   <p className="history-item__dates">
                     {period.period_start} to {period.period_end}
                   </p>
@@ -320,7 +344,17 @@ function SalonPaymentsPage() {
                       className="history-item__metric-icon"
                     />
                     <span className="history-item__metric-text">
-                      ${period.total_service_revenue.toFixed(2)} revenue
+                      ${period.total_revenue.toFixed(2)} total revenue
+                    </span>
+                  </div>
+                  <div className="history-item__metric">
+                    <DollarSign
+                      size={16}
+                      className="history-item__metric-icon"
+                    />
+                    <span className="history-item__metric-text">
+                      ${period.total_service_revenue.toFixed(2)} services · $
+                      {period.total_product_revenue.toFixed(2)} products
                     </span>
                   </div>
                 </div>
@@ -330,7 +364,7 @@ function SalonPaymentsPage() {
                     Salon Earnings
                   </p>
                   <p className="history-item__earnings-value">
-                    ${period.salon_share.toFixed(2)}
+                    ${period.salon_total_earnings.toFixed(2)}
                   </p>
                 </div>
               </div>

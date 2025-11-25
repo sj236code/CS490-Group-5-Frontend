@@ -71,12 +71,13 @@ function Header({userType, userId, onPickRole, onCycleRole, onLogout }){
 
             if (!res.ok) {
             console.error('Failed to fetch user profile:', data);
-            setUserProfile(null);
-            setOwnerSalonId(null);
-            return;
+                setUserProfile(null);
+                setOwnerSalonId(null);
+                return;
             }
 
             console.log('User profile:', data);
+            console.log('HEADER CALLED');
             setUserProfile(data);
 
             // 2) if OWNER, fetch the salon id using new endpoint
@@ -85,7 +86,7 @@ function Header({userType, userId, onPickRole, onCycleRole, onLogout }){
 
             try {
                 const res2 = await fetch(
-                `${import.meta.env.VITE_API_URL}/api/salons/get_salon/${ownerId}`
+                    `${import.meta.env.VITE_API_URL}/api/salons/get_salon/${ownerId}`
                 );
                 const data2 = await res2.json();
 
