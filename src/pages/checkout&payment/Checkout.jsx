@@ -16,7 +16,7 @@ function Checkout() {
 
     const [paymentMethod, setPaymentMethod] = useState("card");
     const [tip, setTip] = useState();
-    const [employeeName] = useState("Alex Rivera");
+    const [employeeName] = useState("");
     const [savedMethods, setSavedMethods] = useState([]);
     const [selectedCardId, setSelectedCardId] = useState("");
 
@@ -224,12 +224,52 @@ function Checkout() {
         return `${brand} ending in ${method.last4 || "xxxx"}${defaultTag}`;
     };
 
+    const createAppointmentsForServices = async () => {
+        const serviceItems = cartItems.filter(
+            (item) => item.item_type === "service" && item.start_at
+        );
+
+        if (!serviceItems.length) {
+            console.log("No service items in cart; skipping appointment creation.");
+            return;
+        }
+
+        try {
+            await Promise.all(
+                serviceItems.map((item, index) => {
+                    const salonIdForThisService = item.salon_id ?? item.service_salon_id ?? item.salon?.id ?? null;
+                    const serviceIdForThisService = item.service_id ?? item.service?.id ?? item.serviceID ?? null;
+                    const employeeIdForThisService = item.stylist_id ?? item.employee_id ?? item.employeeId ?? null;
+                    const payload = {
+                        customer_id,
+                        salon_id: salonIdForThisService,
+                        service_id: serviceIdForThisService,
+                        employee_id: employeeIdForThisService, 
+                        start_at: item.start_at,
+                        notes: item.notes || null,
+                        status: "Booked",
+                    };
+
+                    console.log(`Creating appointment #${index + 1}`, payload);
+
+                    return axios.post(`${import.meta.env.VITE_API_URL}/api/appointments/add`, payload);
+                })
+            );
+
+            console.log("All service appointments created successfully.");
+        } 
+        catch (err) {
+            console.error("Error creating one or more appointments:", err);
+        }
+    };
+    
     const confirmPayment = async () => {
         if (!customer_id) {
             alert("Error: Customer ID is missing. Please return to your cart and check out again.");
             return;
         }
 
+        // 3. Card validation
         if (paymentMethod === "card") {
             if (selectedCardId === "") {
                 const { name, number, expiry, cvv, zip } = cardDetails;
@@ -344,8 +384,12 @@ function Checkout() {
 
             if (response.status === 201) {
                 console.log("order created successfully", response.data);
+
+                await createAppointmentsForServices();
+
                 navigate("/payment-confirmation", { state: { bookingData } });
-            } else {
+            } 
+            else {
                 alert("Unexpected response from server.");
             }
         } catch (error) {

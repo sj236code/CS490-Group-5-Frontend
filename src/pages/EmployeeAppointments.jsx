@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
 import { MapPin, Calendar, User } from "lucide-react";
+import { useLocation } from "react-router-dom";
+import EmployeeEditAppt from "../components/layout/EmployeeEditAppt";
 import "../App.css";
 
 const EmployeeAppointments = () => {
+  const API_BASE = import.meta.env.VITE_API_URL;
+
   const location = useLocation();
   const userFromState = location.state?.user;
-  const userIdFromState = location.state?.userId;
-
-  const employeeId = userFromState?.profile_id ?? userIdFromState ?? null;
+  const employeeId = userFromState?.profile_id ?? null;
 
   console.log("Employee id:", employeeId);
-  console.log("Location state:", location.state);
+  console.log("User (employee): ", location.state?.user);
 
   const [upcomingAppointments, setUpcomingAppointments] = useState([]);
   const [previousAppointments, setPreviousAppointments] = useState([]);
@@ -35,31 +36,55 @@ const EmployeeAppointments = () => {
     return `${datePart} at ${timePart}`;
   };
 
-  // Map backend appointment → shape used in UI + modal
-  const mapAppointment = (apt) => ({
-    id: apt.appointment_id,
-    serviceName: apt.service_name || "Service",
-    location: apt.salon_name || "Salon",
-    dateTime: formatApptDateTime(apt.start_at),
+  const handleEditClick = (appt) => {
+    setSelectedAppt(appt);
+    setShowEditModal(true);
+  };
 
-    // From the employee's perspective:
-    staffName: "You",
-    customerName: apt.customer_name || "Customer",
+  const handleCancelClick = async (appt) => {
+    if (!employeeId) return;
 
-    // extra fields for editing
-    startAt: apt.start_at,
-    endAt: apt.end_at,
-    status: apt.status,
-    notes: apt.notes,
-  });
+    try {
+      const res = await fetch(
+        `${API_BASE}/api/employeesapp/${employeeId}/appointments/${appt.id}/cancel`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({}), 
+          // body: JSON.stringify({ reason: "Cancelled via schedule" }),
+        }
+      );
 
-  // Load upcoming appointments
+      const raw = await res.text();
+      let data = null;
+      try {
+        data = raw ? JSON.parse(raw) : null;
+      } catch {
+        // non-JSON (e.g. HTML error page) – keep raw for logging
+      }
+
+      if (!res.ok) {
+        console.error("Failed to cancel appointment:", data || raw);
+        return;
+      }
+
+      // success -> remove from upcoming list in UI
+      setUpcomingAppointments((prev) =>
+        prev.filter((a) => a.id !== appt.id)
+      );
+    } 
+    catch (err) {
+      console.error("Error cancelling appointment:", err);
+    }
+  };
+
+  // Load upcoming appointments for this employee
   useEffect(() => {
     if (!employeeId) return;
 
     const fetchUpcomingAppointments = async () => {
       try {
-        const url = `${import.meta.env.VITE_API_URL}/api/employeesapp/${employeeId}/appointments/upcoming`;
+        const url = `${API_BASE}/api/employeesapp/${employeeId}/appointments/upcoming`;
         const res = await fetch(url);
 
         if (res.status === 404) {
@@ -77,24 +102,36 @@ const EmployeeAppointments = () => {
         const data = await res.json();
         console.log("Employee upcoming appointments from backend:", data);
 
-        const mapped = data.map(mapAppointment);
+        const mapped = (data || []).map((apt) => ({
+          id: apt.appointment_id,
+          serviceName: apt.service_name || "Service",
+          location: apt.salon_name || "Salon",
+          dateTime: formatApptDateTime(apt.start_at),
+          customerName: apt.customer_name || "Customer",
+          status: apt.status,
+          notes: apt.notes || "",
+          rawStart: apt.start_at,
+          rawEnd: apt.end_at,
+        }));
+
         setUpcomingAppointments(mapped);
-      } catch (err) {
+      } 
+      catch (err) {
         console.error("Error fetching upcoming employee appointments:", err);
         setUpcomingAppointments([]);
       }
     };
 
     fetchUpcomingAppointments();
-  }, [employeeId]);
+  }, [employeeId, API_BASE]);
 
-  // Load previous appointments
+  // Load previous appointments for this employee
   useEffect(() => {
     if (!employeeId) return;
 
     const fetchPreviousAppointments = async () => {
       try {
-        const url = `${import.meta.env.VITE_API_URL}/api/employeesapp/${employeeId}/appointments/previous`;
+        const url = `${API_BASE}/api/employeesapp/${employeeId}/appointments/previous`;
         const res = await fetch(url);
 
         if (res.status === 404) {
@@ -112,7 +149,18 @@ const EmployeeAppointments = () => {
         const data = await res.json();
         console.log("Employee previous appointments from backend:", data);
 
-        const mapped = data.map(mapAppointment);
+        const mapped = (data || []).map((apt) => ({
+          id: apt.appointment_id,
+          serviceName: apt.service_name || "Service",
+          location: apt.salon_name || "Salon",
+          dateTime: formatApptDateTime(apt.start_at),
+          customerName: apt.customer_name || "Customer",
+          status: apt.status,
+          notes: apt.notes || "",
+          rawStart: apt.start_at,
+          rawEnd: apt.end_at,
+        }));
+
         setPreviousAppointments(mapped);
       } catch (err) {
         console.error("Error fetching previous employee appointments:", err);
@@ -121,61 +169,43 @@ const EmployeeAppointments = () => {
     };
 
     fetchPreviousAppointments();
-  }, [employeeId]);
+  }, [employeeId, API_BASE]);
 
-  // --- Handlers ---
+  // Small status pill component
+  const StatusBadge = ({ status }) => {
+    if (!status) return null;
 
-  const handleEditClick = (appt) => {
-    setSelectedAppt(appt);
-    setShowEditModal(true);
-  };
+    const normalized = status.toUpperCase();
 
-  const handleSave = () => {
-    setShowEditModal(false);
-    setShowSuccess(true);
-    setTimeout(() => setShowSuccess(false), 2000);
-  };
-
-  const handleCancelClick = async (apptId) => {
-    if (!employeeId) return;
-
-    try {
-      const url = `${import.meta.env.VITE_API_URL}/api/employeesapp/${employeeId}/appointments/${apptId}/cancel`;
-      const res = await fetch(url, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          reason: "Cancelled by employee via dashboard",
-        }),
-      });
-
-      if (!res.ok) {
-        console.error("Failed to cancel appointment for employee");
-        return;
-      }
-
-      // Remove from upcoming list in UI
-      setUpcomingAppointments((prev) =>
-        prev.filter((appt) => appt.id !== apptId)
-      );
-    } catch (err) {
-      console.error("Error cancelling employee appointment:", err);
+    let variantClass = "status-badge-booked";
+    switch (normalized) {
+      case "CONFIRMED":
+        variantClass = "status-badge-confirmed";
+        break;
+      case "CHECKED_IN":
+        variantClass = "status-badge-checked-in";
+        break;
+      case "IN_PROGRESS":
+        variantClass = "status-badge-in-progress";
+        break;
+      case "COMPLETED":
+        variantClass = "status-badge-completed";
+        break;
+      case "NO_SHOW":
+        variantClass = "status-badge-no-show";
+        break;
+      case "CANCELLED":
+      case "CANCELLED_BY_EMPLOYEE":
+        variantClass = "status-badge-cancelled";
+        break;
+      default:
+        variantClass = "status-badge-booked";
     }
-  };
 
-  const handleDeleteFromModal = async (apptId) => {
-    await handleCancelClick(apptId);
-    setShowEditModal(false);
-  };
-
-  const handleSendMessageClick = async (appt) => {
-    if (!employeeId) return;
-
-    const body = window.prompt(
-      `Message to ${appt.customerName}:`,
-      ""
+    return (
+      <span className={`status-badge ${variantClass}`}>
+        {normalized.replace(/_/g, " ")}
+      </span>
     );
   };
 
@@ -183,12 +213,15 @@ const EmployeeAppointments = () => {
     <div className="appointments-container">
       {/* Header */}
       <header className="jade-header">
-        <h1>My Appointments</h1>
+        <h1>My Schedule</h1>
       </header>
 
       {/* Upcoming Section */}
       <section>
         <h2 className="section-title">Upcoming</h2>
+        {upcomingAppointments.length === 0 && (
+          <p className="book-appt-hint">No upcoming appointments.</p>
+        )}
         {upcomingAppointments.map((appt) => (
           <div key={appt.id} className="appointment-card">
             <div className="appt-info">
@@ -203,24 +236,35 @@ const EmployeeAppointments = () => {
               </p>
               <p>
                 <User size={16} style={{ marginRight: "6px" }} />
-                with {appt.staffName}
+                {appt.customerName}
               </p>
-              <p className="appt-customer">
-                Customer: {appt.customerName}
-              </p>
+              {appt.notes && (
+                <p className="appt-notes">
+                  <strong>Notes:</strong> {appt.notes}
+                </p>
+              )}
+              {appt.status && (
+                <div className="appt-status-wrapper">
+                  <StatusBadge status={appt.status} />
+                </div>
+              )}
             </div>
 
             <div className="appt-buttons">
-              <button className="btn-send">Send Message</button>
+              <button className="btn-send" type="button" disabled>
+                Send Message
+              </button>
               <button
                 className="btn-edit"
+                type="button"
                 onClick={() => handleEditClick(appt)}
               >
                 Edit
               </button>
               <button
                 className="btn-cancel"
-                onClick={() => handleCancelClick(appt.id)}
+                type="button"
+                onClick={() => handleCancelClick(appt)}
               >
                 Cancel
               </button>
@@ -232,6 +276,9 @@ const EmployeeAppointments = () => {
       {/* Previous Section */}
       <section>
         <h2 className="section-title">Previous</h2>
+        {previousAppointments.length === 0 && (
+          <p className="book-appt-hint">No previous appointments.</p>
+        )}
         {previousAppointments.map((appt) => (
           <div key={appt.id} className="appointment-card">
             <div className="appt-info">
@@ -246,20 +293,23 @@ const EmployeeAppointments = () => {
               </p>
               <p>
                 <User size={16} style={{ marginRight: "6px" }} />
-                with {appt.staffName}
+                {appt.customerName}
               </p>
-              <p className="appt-customer">
-                Customer: {appt.customerName}
-              </p>
+              {appt.notes && (
+                <p className="appt-notes">
+                  <strong>Notes:</strong> {appt.notes}
+                </p>
+              )}
+              {appt.status && (
+                <div className="appt-status-wrapper">
+                  <StatusBadge status={appt.status} />
+                </div>
+              )}
             </div>
 
             <div className="appt-buttons">
-              <button className="btn-send">Send Message</button>
-              <button
-                className="btn-edit"
-                onClick={() => handleEditClick(appt)}
-              >
-                Edit
+              <button className="btn-send" type="button" disabled>
+                Send Message
               </button>
             </div>
           </div>
@@ -268,61 +318,44 @@ const EmployeeAppointments = () => {
 
       {/* Edit Modal */}
       {showEditModal && selectedAppt && (
-        <div className="modal-overlay">
-          <div className="modal-box">
-            <h3 className="modal-title">Edit Appointment</h3>
+        <EmployeeEditAppt
+          isOpen={showEditModal}
+          onClose={() => setShowEditModal(false)}
+          employeeId={employeeId}
+          appointment={selectedAppt}
+          onUpdated={(updated) => {
+            // Update upcoming list so UI reflects changes
+            setUpcomingAppointments((prev) =>
+              prev.map((appt) =>
+                appt.id === updated.id
+                  ? {
+                      ...appt,
+                      status: updated.status,
+                      notes: updated.notes ?? "",
+                    }
+                  : appt
+              )
+            );
 
-            <label>Service</label>
-            <select
-              className="service-select"
-              defaultValue={selectedAppt.serviceName}
-            >
-              <option>Classic Fade</option>
-              <option>Beard Trim</option>
-              <option>Hair Color</option>
-            </select>
+            setSelectedAppt((prev) =>
+              prev && prev.id === updated.id
+                ? { ...prev, status: updated.status, notes: updated.notes ?? "" }
+                : prev
+            );
 
-            <label>Select Experts</label>
-            <div className="expert-container">
-              {[1, 2, 3, 4].map((n) => (
-                <div key={n} className="expert-card">
-                  <img
-                    src={`https://i.pravatar.cc/100?img=${n}`}
-                    alt="Expert"
-                  />
-                  <p>Name Last Name</p>
-                </div>
-              ))}
-            </div>
-
-            <label>Date & Time</label>
-            <div className="calendar-container">
-              {["7:30am", "8:00am", "8:30am", "9:00am", "9:30am", "10:00am"].map(
-                (time) => (
-                  <button key={time} className="time-btn">
-                    {time}
-                  </button>
-                )
-              )}
-            </div>
-
-            <div className="modal-buttons">
-              <button className="btn-delete">Delete Appt</button>
-              <button className="btn-save" onClick={handleSave}>
-                Save Changes
-              </button>
-            </div>
-          </div>
-        </div>
+            setShowSuccess(true);
+            setTimeout(() => setShowSuccess(false), 2000);
+          }}
+        />
       )}
 
       {/* Success Popup */}
       {showSuccess && (
         <div className="modal-overlay">
           <div className="success-box">
-            <h3>Thank You!</h3>
-            <p className="booking-updated">Booking Updated!</p>
-            <p>Your appointment has been successfully updated.</p>
+            <h3>Saved</h3>
+            <p className="booking-updated">Appointment Updated</p>
+            <p>Your changes have been successfully saved.</p>
           </div>
         </div>
       )}
