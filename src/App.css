@@ -7117,3 +7117,115 @@ label {
   border-radius: 10px;
   border: 1px solid #d1dbc5;
 }
+
+/* Salon Dashboard Metrics Tab */
+
+.metrics-tab.payment-container {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.metrics-main-grid .card-section {
+  height: 100%;
+}
+
+.card-section {
+  background-color: #f9faf6;
+  border-radius: 16px;
+  padding: 16px 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+}
+
+/* Make the metrics container a nice width */
+.metrics-tab.payment-container {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* KPI row – 4 equal cards, no overlap */
+.calendar-stats-row.calendar-stats-row--metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.calendar-stat-card {
+  width: 100%;
+}
+
+/* Use grid for all these metric card groups to avoid overlap/wrapping issues */
+.monthly-total__grid,
+.current-period__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.stat-card,
+.current-period__card {
+  width: 100%;
+}
+
+/* Make sure the pay-period header doesn’t squish/overlap */
+.current-period__banner {
+  white-space: nowrap;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 900px) {
+  .metrics-main-grid {
+    grid-template-columns: 1fr !important;
+  
+    .current-period__banner {
+      white-space: normal;
+      margin-top: 8px;
+    }
+  }
+}
+
+/* Header row for "Current Pay Period" */
+.current-period__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  flex-wrap: wrap; 
+}
+
+/* Keep banner text tidy */
+.current-period__banner {
+  white-space: nowrap;
+  font-size: 0.85rem;
+  margin-left: auto;
+}
+
+@media (max-width: 900px) {
+  .current-period__banner {
+    white-space: normal;
+    width: 100%;
+    margin-left: 0;
+    margin-top: 4px;
+  }
+}
+
+/* Make the two-column metrics section equal height */
+/* Space between the 2-column grid and the bottom card */
+.metrics-main-grid {
+  display: grid;
+  grid-template-columns: 2fr 1.5fr;
+  gap: 16px;
+  align-items: stretch;
+  margin-bottom: 24px; 
+}
+
+.metrics-main-grid > .card-section {
+  height: 100%;
+}
+
+/* Bottom "Current Pay Period" card: make it its own row */
+.metrics-current-period {
+  margin-top: 0;
+  clear: both; 
+  position: relative;
+  z-index: 0;
+}
