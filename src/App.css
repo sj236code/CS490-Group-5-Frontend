@@ -6297,6 +6297,372 @@ label {
   color: "#444";
 }
 
+/* Salon Owner Payments-- recent transactions */
+/* ===== Layout & Page Shell ===== */
+
+.payment-container {
+  max-width: 960px;
+  margin: 32px auto;
+  padding: 24px;
+  background: #f7faf5;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #4B5945;
+}
+
+.jade-header h1 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #2f3b28;
+  margin-bottom: 20px;
+}
+
+/* ===== Commission Banner ===== */
+
+.commission-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  background: #D9E9CF;             /* light jade */
+  border: 1px solid #A7C4A0;       /* medium green */
+  margin-bottom: 20px;
+}
+
+.commission-info__icon {
+  flex-shrink: 0;
+  color: #4B5945;
+}
+
+.commission-info__text {
+  font-size: 0.9rem;
+  color: #4B5945;
+}
+
+.commission-info__title {
+  font-weight: 600;
+}
+
+/* ============= MONTHLY OVERVIEW ============= */
+
+.monthly-total {
+  background: #e7f3e0;
+  border-radius: 18px;
+  padding: 1.5rem 2rem;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.03);
+}
+
+.monthly-total__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 1.25rem;
+  align-items: stretch;
+}
+
+.stat-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 1.1rem 1.3rem;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(75, 89, 69, 0.08);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 110px;
+}
+
+.stat-card--highlight {
+  background: #d9e9cf;
+  border-color: rgba(75, 89, 69, 0.25);
+}
+
+.stat-card__label {
+  font-size: 0.9rem;
+  color: #4b5945;
+  margin-bottom: 0.4rem;
+}
+
+.stat-card__value {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #1f2e18;
+}
+
+/* ============= CURRENT PAY PERIOD ============= */
+
+.current-period__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+  align-items: stretch;
+}
+
+.current-period__card {
+  background: #f7fbf5;
+  border-radius: 16px;
+  padding: 1.3rem 1.5rem;
+  border: 1px solid rgba(75, 89, 69, 0.08);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
+}
+
+.current-period__card--highlight {
+  background: #d9e9cf;
+  border-color: rgba(75, 89, 69, 0.25);
+}
+
+.current-period__content {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  height: 100%;
+}
+
+.current-period__icon-wrap {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e1efda;
+  flex-shrink: 0;
+}
+
+.current-period__icon-wrap--solid {
+  background: #4b5945;
+}
+
+.current-period__icon {
+  width: 20px;
+  height: 20px;
+  color: #4b5945;
+}
+
+.current-period__icon--inverse {
+  color: #ffffff;
+}
+
+.current-period__label {
+  font-size: 0.9rem;
+  color: #4b5945;
+  margin-bottom: 0.35rem;
+}
+
+.current-period__label--strong {
+  font-weight: 600;
+}
+
+.current-period__value {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #1f2e18;
+  margin-bottom: 0.2rem;
+}
+
+.current-period__meta {
+  font-size: 0.8rem;
+  color: #6b7a62;
+}
+
+.current-period__meta--strong {
+  font-weight: 500;
+}
+
+/* pay period banner stays full-width below the grid */
+.current-period__banner {
+  margin-top: 1rem;
+  background: #f0f5ea;
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  border: 1px solid rgba(75, 89, 69, 0.12);
+}
+
+.current-period__banner-text {
+  font-size: 0.85rem;
+  color: #4b5945;
+}
+
+.current-period__banner-label {
+  font-weight: 600;
+}
+
+/* ===== History List ===== */
+
+.history-list {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #E2EED7;
+  background: #ffffff;
+  gap: 10px;
+}
+
+.history-item--recent {
+  border-color: #A7C4A0;
+  background: #EEF6E6;
+}
+
+.history-item__period {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #2f3b28;
+}
+
+.history-item__dates {
+  font-size: 0.8rem;
+  color: #6F8F72;
+}
+
+.history-item__metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.history-item__metric {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8rem;
+  color: #4B5945;
+}
+
+.history-item__metric-icon {
+  color: #6F8F72;
+}
+
+.history-item__earnings {
+  text-align: right;
+}
+
+.history-item__earnings-label {
+  font-size: 0.8rem;
+  color: #6F8F72;
+}
+
+.history-item__earnings-value {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #2f3b28;
+}
+
+/* ===== Transactions Table ===== */
+
+.transactions-table-wrapper {
+  margin-top: 12px;
+  border-radius: 12px;
+  border: 1px solid #E2EED7;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.transactions-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.transactions-table thead {
+  background: #EEF6E6;
+}
+
+.transactions-table th,
+.transactions-table td {
+  padding: 8px 10px;
+  text-align: left;
+}
+
+.transactions-table th {
+  font-weight: 600;
+  color: #4B5945;
+  border-bottom: 1px solid #D9E9CF;
+}
+
+.transactions-table tbody tr:nth-child(even) {
+  background: #f7faf5;
+}
+
+.transactions-table tbody tr:hover {
+  background: #EEF6E6;
+}
+
+/* ===== Messages (loading / error / empty) ===== */
+
+.payment-message {
+  margin-top: 16px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: #EEF6E6;
+  border: 1px solid #D9E9CF;
+  color: #4B5945;
+  font-size: 0.9rem;
+}
+
+.payment-message--error {
+  background: #f4e5e5;
+  border-color: #e0b2b2;
+  color: #7b2f2f;
+}
+
+.payment-message--loading {
+  opacity: 0.9;
+}
+
+.payment-error-text {
+  margin-bottom: 4px;
+}
+
+.payment-error-id {
+  font-size: 0.85rem;
+}
+
+.payment-retry-button {
+  margin-top: 8px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid #4B5945;
+  background: #4B5945;
+  color: #ffffff;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.payment-retry-button:hover {
+  background: #3d4736;
+}
+
+/* ===== Footer-ish note under current period ===== */
+
+.current-period-footer,
+.payment-note {
+  font-size: 0.8rem;
+  color: #6F8F72;
+}
+
+/* Pay period strip at bottom of current period card */
+
+.pay-period-strip {
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: #EEF6E6;
+  border: 1px solid #D9E9CF;
+  font-size: 0.85rem;
+  color: #4B5945;
+}
+  
 /* Customer Settings */
 .customer-settings-page {
   min-height: calc(100vh - 100px);
@@ -6574,4 +6940,292 @@ label {
     width: 100%;
     justify-content: center;
   }
+}
+
+/* WRAPPER */
+.admin-wrapper {
+  width: 100%;
+  padding: 20px 40px;
+}
+
+/* PAGE HEADER */
+.sa-section-header {
+  margin-bottom: 20px;
+}
+
+.sa-main-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: #2f3e29;
+  text-align: center;
+}
+
+/* GRID LAYOUT */
+.sa-top-row {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 25px;
+}
+
+/* BOX STYLE (green pastel background) */
+.sa-box {
+  background: #e9f2e4;
+  border: 1px solid #b8c7b0;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+/* Full width chart container */
+.sa-full {
+  margin-top: 15px;
+}
+
+/* TITLES */
+.sa-box-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2f3e29;
+  margin-bottom: 10px;
+}
+
+/* LISTS */
+.sa-list {
+  list-style: none;
+  padding-left: 10px;
+}
+
+.sa-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 0;
+  font-size: 15px;
+  border-bottom: 1px dotted #c3d0be;
+}
+
+.sa-row:last-child {
+  border-bottom: none;
+}
+
+/* APPROVE / REJECT BUTTONS */
+.sa-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.sa-green-btn,
+.sa-red-btn {
+  border: none;
+  padding: 5px 8px;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.sa-green-btn {
+  background: #cce8cc;
+  color: #2f5f2f;
+}
+
+.sa-red-btn {
+  background: #f3d2d2;
+  color: #8b1a1a;
+}
+
+/* AVG TIME BOX */
+.sa-time-value {
+  font-size: 30px;
+  font-weight: bold;
+  color: #2f3e29;
+  margin-top: 10px;
+}
+
+/* CHART AREA */
+.sa-chart-area {
+  width: 100%;
+  height: 300px;
+  margin-top: 10px;
+}
+
+/* Fix alignment for Top Salons */
+.sa-top-row-fixed {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 0;
+  font-size: 15px;
+  color: #2f3e29;
+}
+
+.sa-rank {
+  font-weight: 600;
+  width: 20px;         /* keeps 1. 2. 3. aligned */
+  text-align: left;
+}
+
+.sa-name {
+  flex-grow: 1;        /* keeps name left-aligned */
+}
+
+.sa-bookings {
+  font-weight: 500;
+  color: #4b5945;
+}
+/* Toast Notification Styles */
+.sa-toast {
+  position: fixed;
+  top: 20px;
+  right: 25px;
+  background: #4B5945;
+  color: white;
+  padding: 12px 22px;
+  border-radius: 8px;
+  font-size: 16px;
+  z-index: 9999;
+  box-shadow: 0px 4px 10px rgba(0,0,0,0.2);
+  opacity: 0;
+  animation: fadeInOut 2.5s ease forwards;
+}
+
+.sa-toast.error {
+  background: #c0392b;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateY(-10px); }
+  10% { opacity: 1; transform: translateY(0); }
+  90% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-10px); }
+}
+
+
+/* Add spacing between charts */
+.analytics-summary-chart-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px; /* <--- THIS CREATES THE SPACE BETWEEN GRAPHS */
+  margin-top: 20px;
+  margin-bottom: 40px;
+}
+
+/* Extra spacing inside each chart box */
+.chart-card {
+  background: #EFF4E8;
+  padding: 20px;
+  border-radius: 10px;
+  border: 1px solid #d1dbc5;
+}
+
+/* Salon Dashboard Metrics Tab */
+
+.metrics-tab.payment-container {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.metrics-main-grid .card-section {
+  height: 100%;
+}
+
+.card-section {
+  background-color: #f9faf6;
+  border-radius: 16px;
+  padding: 16px 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+}
+
+/* Make the metrics container a nice width */
+.metrics-tab.payment-container {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* KPI row – 4 equal cards, no overlap */
+.calendar-stats-row.calendar-stats-row--metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.calendar-stat-card {
+  width: 100%;
+}
+
+/* Use grid for all these metric card groups to avoid overlap/wrapping issues */
+.monthly-total__grid,
+.current-period__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.stat-card,
+.current-period__card {
+  width: 100%;
+}
+
+/* Make sure the pay-period header doesn’t squish/overlap */
+.current-period__banner {
+  white-space: nowrap;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 900px) {
+  .metrics-main-grid {
+    grid-template-columns: 1fr !important;
+  
+    .current-period__banner {
+      white-space: normal;
+      margin-top: 8px;
+    }
+  }
+}
+
+/* Header row for "Current Pay Period" */
+.current-period__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  flex-wrap: wrap; 
+}
+
+/* Keep banner text tidy */
+.current-period__banner {
+  white-space: nowrap;
+  font-size: 0.85rem;
+  margin-left: auto;
+}
+
+@media (max-width: 900px) {
+  .current-period__banner {
+    white-space: normal;
+    width: 100%;
+    margin-left: 0;
+    margin-top: 4px;
+  }
+}
+
+/* Make the two-column metrics section equal height */
+/* Space between the 2-column grid and the bottom card */
+.metrics-main-grid {
+  display: grid;
+  grid-template-columns: 2fr 1.5fr;
+  gap: 16px;
+  align-items: stretch;
+  margin-bottom: 24px; 
+}
+
+.metrics-main-grid > .card-section {
+  height: 100%;
+}
+
+/* Bottom "Current Pay Period" card: make it its own row */
+.metrics-current-period {
+  margin-top: 0;
+  clear: both; 
+  position: relative;
+  z-index: 0;
 }

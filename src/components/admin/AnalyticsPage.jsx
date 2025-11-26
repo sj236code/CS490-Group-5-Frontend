@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   LineChart,
   Line,
@@ -8,132 +8,169 @@ import {
   Tooltip,
   BarChart,
   Bar,
-  PieChart,
-  Pie,
-  Cell,
   ResponsiveContainer,
 } from "recharts";
 import "../../App.css";
 
-// ---------- MOCK DATA ----------
-const summary = {
-  activeUsers: "1,234",
-  avgSession: "5m 32s",
-  featureEngagement: 72,
-  retentionRate: 65,
-};
-
-const engagementOverTime = [
-  { day: "Mon", users: 900 },
-  { day: "Tue", users: 970 },
-  { day: "Wed", users: 1020 },
-  { day: "Thu", users: 1100 },
-  { day: "Fri", users: 1180 },
-  { day: "Sat", users: 1230 },
-  { day: "Sun", users: 1280 },
-];
-
-const featureUsage = [
-  { name: "Booking", value: 35 },
-  { name: "Reviews", value: 25 },
-  { name: "Gallery", value: 20 },
-  { name: "Rewards", value: 20 },
-];
-
-const retentionCohort = [
-  { month: "Jan", rate: 50 },
-  { month: "Feb", rate: 58 },
-  { month: "Mar", rate: 63 },
-  { month: "Apr", rate: 68 },
-  { month: "May", rate: 72 },
-];
-
-const COLORS = ["#4B5945", "#66785F", "#A3B18A", "#D9E9CF"];
 
 function AnalyticsPage() {
+  const [summary, setSummary] = useState(null);
+  const [returningData, setReturningData] = useState([]);
+  const [retentionData, setRetentionData] = useState([]);
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchAnalytics = async () => {
+      const base = import.meta.env.VITE_API_URL;
+
+      try {
+        const [summaryRes, returningRes, retentionRes] = await Promise.all([
+          fetch(`${base}/api/admin/analytics/summary`),
+          fetch(`${base}/api/admin/analytics/returning-users-trend`),
+          fetch(`${base}/api/admin/analytics/retention-cohort`),
+        ]);
+
+        if (!summaryRes.ok || !returningRes.ok || !retentionRes.ok) {
+          throw new Error("One or more analytics endpoints failed.");
+        }
+
+        const [summaryData, returningTrendData, retentionCohortData] =
+          await Promise.all([
+            summaryRes.json(),
+            returningRes.json(),
+            retentionRes.json(),
+          ]);
+
+        setSummary(summaryData);
+        // backend returns { trend: [...] }
+        setReturningData(returningTrendData.trend || []);
+        setRetentionData(retentionCohortData);
+      } catch (err) {
+        console.error("Error loading analytics:", err);
+        setError("Failed to fetch analytics data.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAnalytics();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="analytics-page">
+        <h3>Loading analytics...</h3>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="analytics-page">
+        <h3 style={{ color: "red" }}>{error}</h3>
+      </div>
+    );
+  }
+
   return (
     <div className="analytics-page">
+      {/* HEADER */}
       <div className="analytics-header">
         <h2>Engagement & Retention Dashboard</h2>
-        <div className="filters">
-          <button className="filter-btn">Date Range ▼</button>
-          <button className="filter-btn">Store ▼</button>
-        </div>
       </div>
 
-      {/* --- TOP METRICS --- */}
+      {/* SUMMARY CARDS */}
       <div className="analytics-summary">
         <div className="metric-card">
-          <h4>Active Users (DAU/MAU)</h4>
+          <h4>Active Users</h4>
           <p className="metric-value">{summary.activeUsers}</p>
           <small>Trend increasing</small>
         </div>
+
         <div className="metric-card">
-          <h4>Avg. Session Duration</h4>
-          <p className="metric-value">{summary.avgSession}</p>
-          <small>Last 7 days</small>
+          <h4>Total Salons</h4>
+          <p className="metric-value">{summary.totalSalons}</p>
+          <small>Nationwide</small>
         </div>
+
         <div className="metric-card">
-          <h4>Feature Engagement</h4>
-          <p className="metric-value">{summary.featureEngagement}%</p>
-          <div className="progress-bar">
-            <div
-              className="progress-fill"
-              style={{ width: `${summary.featureEngagement}%` }}
-            />
-          </div>
+          <h4>Total Appointments</h4>
+          <p className="metric-value">{summary.totalAppointments}</p>
+          <small>All Time</small>
         </div>
+
         <div className="metric-card">
           <h4>Retention Rate</h4>
           <p className="metric-value">{summary.retentionRate}%</p>
-          <small>Consistent Growth</small>
+          <div className="progress-bar">
+            <div
+              className="progress-fill"
+              style={{ width: `${summary.retentionRate}%` }}
+            />
+          </div>
         </div>
       </div>
 
-      {/* --- CHARTS SECTION --- */}
+      {/* CHART ROW 1 - RETURNING USERS */}
+<div className="chart-section">
+  <div className="chart-card">
+    <h4>Returning Users (Last 30 Days)</h4>
+
+    <ResponsiveContainer width="100%" height={220}>
+      <LineChart data={returningData}>
+        <CartesianGrid strokeDasharray="3 3" />
+
+        <XAxis
+          dataKey="day"
+          interval={1} // show every other label (no duplicates)
+          tickFormatter={(value) => {
+            const d = new Date(value);
+            const month = d.toLocaleString("en-US", { month: "short" });
+            const day = d.getDate();
+            return `${month} ${day}`;
+          }}
+        />
+
+        <YAxis
+          allowDecimals={false} // never fractional
+          tickCount={6}
+        />
+
+        <Tooltip />
+
+        <Line
+          type="monotone"
+          dataKey="returning_users"
+          stroke="#4B5945"
+          strokeWidth={2}
+          dot={{ r: 5 }}
+        />
+      </LineChart>
+    </ResponsiveContainer>
+
+    {/* YEAR LABEL UNDER THE CHART */}
+    <div style={{
+      textAlign: "center",
+      marginTop: "-5px",
+      fontSize: "14px",
+      color: "#4B5945",
+      fontWeight: 500
+    }}>
+      2025
+    </div>
+
+  </div>
+</div>
+
+
+      {/* CHART ROW 2 - COHORT RETENTION */}
       <div className="chart-section">
         <div className="chart-card">
-          <h4>Engagement Over Time</h4>
+          <h4>Cohort Retention (Monthly)</h4>
           <ResponsiveContainer width="100%" height={220}>
-            <LineChart data={engagementOverTime}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="day" />
-              <YAxis />
-              <Tooltip />
-              <Line type="monotone" dataKey="users" stroke="#4B5945" strokeWidth={2} />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-
-        <div className="chart-card">
-          <h4>Feature Usage</h4>
-          <ResponsiveContainer width="100%" height={220}>
-            <PieChart>
-              <Pie
-                data={featureUsage}
-                dataKey="value"
-                nameKey="name"
-                cx="50%"
-                cy="50%"
-                outerRadius={70}
-                label
-              >
-                {featureUsage.map((entry, i) => (
-                  <Cell key={i} fill={COLORS[i % COLORS.length]} />
-                ))}
-              </Pie>
-              <Tooltip />
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
-
-      {/* --- SECOND ROW --- */}
-      <div className="chart-section">
-        <div className="chart-card">
-          <h4>Cohort Retention</h4>
-          <ResponsiveContainer width="100%" height={220}>
-            <BarChart data={retentionCohort}>
+            <BarChart data={retentionData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="month" />
               <YAxis />
@@ -141,25 +178,6 @@ function AnalyticsPage() {
               <Bar dataKey="rate" fill="#66785F" radius={[5, 5, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
-        </div>
-
-        <div className="chart-card">
-          <h4>Store-Level Engagement</h4>
-          <table className="store-table">
-            <thead>
-              <tr>
-                <th>Store</th>
-                <th>Avg. Session Duration</th>
-                <th>Active Users</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td>Salon A</td><td>5m 20s</td><td>250</td></tr>
-              <tr><td>Salon B</td><td>4m 48s</td><td>210</td></tr>
-              <tr><td>Salon C</td><td>6m 05s</td><td>270</td></tr>
-              <tr><td>Salon D</td><td>5m 59s</td><td>190</td></tr>
-            </tbody>
-          </table>
         </div>
       </div>
     </div>
