@@ -51,7 +51,6 @@ const EmployeeAppointments = () => {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({}), 
-          // body: JSON.stringify({ reason: "Cancelled via schedule" }),
         }
       );
 
@@ -60,7 +59,7 @@ const EmployeeAppointments = () => {
       try {
         data = raw ? JSON.parse(raw) : null;
       } catch {
-        // non-JSON (e.g. HTML error page) – keep raw for logging
+
       }
 
       if (!res.ok) {
@@ -68,7 +67,6 @@ const EmployeeAppointments = () => {
         return;
       }
 
-      // success -> remove from upcoming list in UI
       setUpcomingAppointments((prev) =>
         prev.filter((a) => a.id !== appt.id)
       );
@@ -78,7 +76,6 @@ const EmployeeAppointments = () => {
     }
   };
 
-  // Load upcoming appointments for this employee
   useEffect(() => {
     if (!employeeId) return;
 
@@ -125,7 +122,6 @@ const EmployeeAppointments = () => {
     fetchUpcomingAppointments();
   }, [employeeId, API_BASE]);
 
-  // Load previous appointments for this employee
   useEffect(() => {
     if (!employeeId) return;
 
@@ -171,7 +167,6 @@ const EmployeeAppointments = () => {
     fetchPreviousAppointments();
   }, [employeeId, API_BASE]);
 
-  // Small status pill component
   const StatusBadge = ({ status }) => {
     if (!status) return null;
 
@@ -211,12 +206,10 @@ const EmployeeAppointments = () => {
 
   return (
     <div className="appointments-container">
-      {/* Header */}
       <header className="jade-header">
         <h1>My Schedule</h1>
       </header>
 
-      {/* Upcoming Section */}
       <section>
         <h2 className="section-title">Upcoming</h2>
         {upcomingAppointments.length === 0 && (
@@ -259,7 +252,7 @@ const EmployeeAppointments = () => {
                 type="button"
                 onClick={() => handleEditClick(appt)}
               >
-                Edit
+                Details 
               </button>
               <button
                 className="btn-cancel"
@@ -273,7 +266,6 @@ const EmployeeAppointments = () => {
         ))}
       </section>
 
-      {/* Previous Section */}
       <section>
         <h2 className="section-title">Previous</h2>
         {previousAppointments.length === 0 && (
@@ -316,7 +308,6 @@ const EmployeeAppointments = () => {
         ))}
       </section>
 
-      {/* Edit Modal */}
       {showEditModal && selectedAppt && (
         <EmployeeEditAppt
           isOpen={showEditModal}
@@ -324,7 +315,6 @@ const EmployeeAppointments = () => {
           employeeId={employeeId}
           appointment={selectedAppt}
           onUpdated={(updated) => {
-            // Update upcoming list so UI reflects changes
             setUpcomingAppointments((prev) =>
               prev.map((appt) =>
                 appt.id === updated.id
@@ -349,7 +339,6 @@ const EmployeeAppointments = () => {
         />
       )}
 
-      {/* Success Popup */}
       {showSuccess && (
         <div className="modal-overlay">
           <div className="success-box">
