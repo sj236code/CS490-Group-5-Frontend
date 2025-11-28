@@ -2,7 +2,7 @@ import { Search, MapPin } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-function LandingSearchBar() {
+function LandingSearchBar({userType, user}) {
 
     const [wordEntered, setWordEntered] = useState(""); // User Search Query
     const [selectedCity, setSelectedCity] = useState(null); // Default City 
@@ -11,6 +11,8 @@ function LandingSearchBar() {
     const [searchResults, setSearchResults] = useState([]) // Stores filtered search results
     const [cities, setCities] = useState([]); // Cities of Valid Salons
     const [userLocation, setUserLocation] = useState([]); // User Location
+
+    console.log("LANDINGSEARCH: CUSTOMER ID: ", user?.profile_id ?? '-');
 
     const navigate = useNavigate();
 
@@ -97,7 +99,9 @@ function LandingSearchBar() {
                 results: searchResults,
                 cities: cities,
                 query: wordEntered,
-                city: searchLocation
+                city: searchLocation,
+                userType,
+                user
             }
         });
     };

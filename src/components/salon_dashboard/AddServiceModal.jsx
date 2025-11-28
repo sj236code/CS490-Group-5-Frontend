@@ -8,7 +8,7 @@ function AddServiceModal({ isOpen, onClose, salonId, onServiceAdded }) {
     duration: "",
   });
 
-  const [images, setImages] = useState([]);
+  const [imageFile, setImageFile] = useState(null);
 
   // Text input changes
   const handleChange = (e) => {
@@ -21,8 +21,9 @@ function AddServiceModal({ isOpen, onClose, salonId, onServiceAdded }) {
 
   // Image Upload
   const handleImageUpload = (e) => {
-    const files = Array.from(e.target.files || []);
-    setImages((prev) => [...prev, ...files]);
+    const files = e.target.files;
+    if(!files || !files.length) return;
+    setImageFile(files[0]);
   };
 
   const submitService = async (e) => {
@@ -53,9 +54,13 @@ function AddServiceModal({ isOpen, onClose, salonId, onServiceAdded }) {
       formDataToSend.append("is_active", "true");
 
       // Optional: send images if backend supports it
-      images.forEach((file) => {
-        formDataToSend.append("images", file);
-      });
+      if(imageFile){
+        formDataToSend.append("icon_file", imageFile);
+      }
+
+      for (const [key, value] of formDataToSend.entries()){
+        console.log("FormData entry: ", key, value);
+      }
 
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/api/salon_register/add_service`,
@@ -80,7 +85,7 @@ function AddServiceModal({ isOpen, onClose, salonId, onServiceAdded }) {
         price: "",
         duration: "",
       });
-      setImages([]);
+      setImageFile(null);
 
       // Refresh services in parent
       onServiceAdded?.();
@@ -93,7 +98,7 @@ function AddServiceModal({ isOpen, onClose, salonId, onServiceAdded }) {
   };
 
   const handleBack = () => {
-    setImages([]);
+    setImageFile(null);
     onClose();
   };
 
@@ -155,10 +160,9 @@ function AddServiceModal({ isOpen, onClose, salonId, onServiceAdded }) {
 
             <label className="add-service-upload-btn">
               <Upload size={16} />
-              Upload Images
+              {imageFile ? "Change Image" : "Upload Image"}
               <input
                 type="file"
-                multiple
                 accept="image/*"
                 onChange={handleImageUpload}
                 style={{ display: "none" }}
@@ -166,17 +170,15 @@ function AddServiceModal({ isOpen, onClose, salonId, onServiceAdded }) {
             </label>
           </div>
 
+          {imageFile && (
+            <p className="add-service-upload-hint">
+              Selected: <strong>{imageFile.name}</strong>
+            </p>
+          )}
+
           <div className="add-service-actions">
-            <button
-              type="button"
-              onClick={handleBack}
-              className="add-service-back-btn"
-            >
-              Back
-            </button>
-            <button type="submit" className="add-service-submit-btn">
-              Add Service
-            </button>
+            <button type="button" onClick={handleBack} className="add-service-back-btn">Back</button>
+            <button type="submit" className="add-service-submit-btn">Add Service</button>
           </div>
         </form>
       </div>
