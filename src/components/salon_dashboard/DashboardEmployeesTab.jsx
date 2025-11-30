@@ -113,7 +113,7 @@ function DashboardEmployeesTab({ salon }) {
 
     const getStatusOrder = (status) => {
         // Order: PENDING -> APPROVED -> REJECTED
-        if (status === "PENDING") return 0;
+        if (status === "inactive") return 0;
         if (status === "APPROVED") return 1;
         if (status === "REJECTED") return 2;
         return 3;
@@ -147,237 +147,114 @@ function DashboardEmployeesTab({ salon }) {
 
     return (
         <div className="employee-manage-container">
-        {/* Header / Controls */}
-        <div
-            style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            marginBottom: "1rem",
-            }}
-        >
-            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <Users size={24} />
-            <h2 className="shop-service-title">Employees List</h2>
-            </div>
-
-            <div
-            style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "0.75rem",
-                flexWrap: "wrap",
-            }}
-            >
-            {/* Status Filter */}
-            <div className="employee-filter-group">
-                <label
-                htmlFor="statusFilter"
-                style={{ fontSize: "0.85rem", marginRight: "0.25rem" }}
-                >
-                Status:
-                </label>
-                <select
-                id="statusFilter"
-                value={statusFilter}
-                onChange={handleStatusFilterChange}
-                className="employee-select"
-                >
-                <option value="ALL">All</option>
-                <option value="Inactive">Pending</option>
-                <option value="APPROVED">Approved</option>
-                <option value="REJECTED">Rejected</option>
-                </select>
-            </div>
-
-            {/* Sort By */}
-            <div className="employee-filter-group">
-                <label
-                htmlFor="sortBy"
-                style={{ fontSize: "0.85rem", marginRight: "0.25rem" }}
-                >
-                Sort by:
-                </label>
-                <select
-                id="sortBy"
-                value={sortBy}
-                onChange={handleSortByChange}
-                className="employee-select"
-                >
-                <option value="STATUS">Status</option>
-                <option value="NAME">Name (A–Z)</option>
-                </select>
-            </div>
-
-            {/* Sort Direction */}
-            <button
-                type="button"
-                onClick={toggleSortDirection}
-                className="employee-sort-btn"
-                style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "0.25rem",
-                padding: "0.35rem 0.6rem",
-                }}
-            >
-                <ArrowUpDown size={16} />
-                <span style={{ fontSize: "0.85rem" }}>
-                {sortDirection === "ASC" ? "Asc" : "Desc"}
-                </span>
-            </button>
-            </div>
-        </div>
-
-        {/* Loading / Error States */}
-        {isLoading && <p>Loading employees...</p>}
-        {error && (
-            <p style={{ color: "red", marginBottom: "0.5rem" }}>
-            {error}
-            </p>
-        )}
-
-        {/* Empty State */}
-        {!isLoading && sortedEmployees.length === 0 && (
-            <p>No employees found for this salon.</p>
-        )}
-
-        {/* Employee List */}
-        <div className="employee-list">
-            {sortedEmployees.map((emp) => {
-            const fullName = `${emp.first_name || ""} ${
-                emp.last_name || ""
-            }`.trim();
-
-            const isPending = emp.employment_status === "inactive";
-
-            return (
-                <div key={emp.id} className="employee-card">
-                <div
-                    className="employee-card-header"
-                    style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    marginBottom: "0.25rem",
-                    }}
-                >
-                    <div>
-                    <div className="employee-name">
-                        {fullName || `Employee #${emp.id}`}
-                    </div>
-                    <div
-                        className="employee-meta"
-                        style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "0.5rem",
-                        fontSize: "0.8rem",
-                        marginTop: "0.1rem",
-                        }}
-                    >
-                        <span
-                        className={`employee-status employee-status-${(
-                            emp.employment_status || ""
-                        ).toLowerCase()}`}
-                        >
-                        {emp.employment_status}
-                        </span>
-                        {emp.employee_type && (
-                        <span className="employee-role-badge">
-                            {emp.employee_type}
-                        </span>
-                        )}
-                    </div>
-                    </div>
-
-                    {/* Approve / Reject Buttons for Pending Employees */}
-                    {isPending && (
-                    <div
-                        className="employee-actions"
-                        style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "0.4rem",
-                        }}
-                    >
-                        <button
-                        type="button"
-                        onClick={() =>
-                            handleUpdateStatus(emp.id, "APPROVED")
-                        }
-                        className="employee-approve-btn"
-                        title="Approve"
-                        >
-                        <Check size={18} />
-                        </button>
-                        <button
-                        type="button"
-                        onClick={() =>
-                            handleUpdateStatus(emp.id, "REJECTED")
-                        }
-                        className="employee-reject-btn"
-                        title="Reject"
-                        >
-                        <X size={18} />
-                        </button>
-                    </div>
-                    )}
+            {/* Header / Controls */}
+            <div className="employee-header-row">
+                <div className="employee-header-left">
+                    <Users size={24} className="employee-header-icon" />
                 </div>
 
-                {/* Contact / Details row */}
-                <div
-                    className="employee-card-body"
-                    style={{
-                    display: "flex",
-                    flexWrap: "wrap",
-                    gap: "0.5rem",
-                    fontSize: "0.8rem",
-                    }}
-                >
-                    {emp.email && (
-                    <div
-                        style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "0.25rem",
-                        }}
-                    >
-                        <Mail size={14} />
-                        <span>{emp.email}</span>
-                    </div>
-                    )}
-
-                    {emp.phone_number && (
-                    <div
-                        style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "0.25rem",
-                        }}
-                    >
-                        <Phone size={14} />
-                        <span>{emp.phone_number}</span>
-                    </div>
-                    )}
-
-                    {emp.address && (
-                    <div
-                        style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "0.25rem",
-                        }}
-                    >
-                        <MapPin size={14} />
-                        <span>{emp.address}</span>
-                    </div>
-                    )}
+                <div className="employee-header-center">
+                    <h2 className="employee-header-title">Employees List</h2>
                 </div>
+
+                <div className="employee-header-right">
+                    {/* Status Filter */}
+                    <div className="employee-filter-group">
+                        <label htmlFor="statusFilter">Status:</label>
+                        <select id="statusFilter" value={statusFilter} onChange={handleStatusFilterChange} className="employee-select" >
+                            <option value="ALL">All</option>
+                            <option value="inactive">Pending</option>
+                            <option value="APPROVED">Approved</option>
+                            <option value="REJECTED">Rejected</option>
+                        </select>
+                    </div>
+
+                    {/* Sort By Filter */}
+                    <div className="employee-filter-group">
+                        <label htmlFor="sortBy">Sort by:</label>
+                        <select id="sortBy" value={sortBy} onChange={handleSortByChange} className="employee-select">
+                            <option value="STATUS">Status</option>
+                            <option value="NAME">Name (A–Z)</option>
+                        </select>
+                    </div>
+
+                    {/* Sort Direction */}
+                    <button type="button" onClick={toggleSortDirection} className="employee-sort-btn" >
+                        <ArrowUpDown size={16} />
+                        <span>{sortDirection === "ASC" ? "Asc" : "Desc"}</span>
+                    </button>
                 </div>
-            );
-            })}
-        </div>
+            </div>
+
+            {/* Loading / Error States */}
+            {isLoading && <p>Loading employees...</p>}
+            {error && (<p className="employee-error-text"> {error} </p>)}
+
+            {/* Empty State */}
+            {!isLoading && sortedEmployees.length === 0 && ( <p>No employees found for this salon.</p>)}
+
+            {/* Employee List */}
+            <div className="employee-list">
+                {sortedEmployees.map((emp) => {
+                    const fullName = `${emp.first_name || ""} ${emp.last_name || ""}`.trim();
+
+                    const isPending = emp.employment_status === "inactive";
+
+                    return (
+                        <div key={emp.id} className="employee-card">
+                            <div className="employee-card-header">
+                                <div>
+                                    <div className="employee-name">
+                                    {fullName || `Employee #${emp.id}`}
+                                    </div>
+                                    <div className="employee-meta">
+                                        <span className={`employee-status employee-status-${( emp.employment_status || "" ).toLowerCase()}`}>
+                                            {emp.employment_status}
+                                        </span>
+                                        {emp.employee_type && ( <span className="employee-role-badge"> {emp.employee_type} </span> )}
+                                    </div>
+                                </div>
+
+                                {/* Approve / Reject Buttons for Pending Employees */}
+                                {isPending && (
+                                    <div className="employee-actions">
+                                        <button type="button" onClick={() => handleUpdateStatus(emp.id, "APPROVED") } className="employee-approve-btn" title="Approve">
+                                            <Check size={18} />
+                                        </button>
+                                        <button type="button" onClick={() => handleUpdateStatus(emp.id, "REJECTED")} className="employee-reject-btn"title="Reject">
+                                            <X size={18} />
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Contact / Details row */}
+                            <div className="employee-card-body">
+                                {emp.email && (
+                                    <div className="employee-contact-item">
+                                    <Mail size={14} />
+                                    <span>{emp.email}</span>
+                                    </div>
+                                )}
+
+                                {emp.phone_number && (
+                                    <div className="employee-contact-item">
+                                    <Phone size={14} />
+                                    <span>{emp.phone_number}</span>
+                                    </div>
+                                )}
+
+                                {emp.address && (
+                                    <div className="employee-contact-item">
+                                    <MapPin size={14} />
+                                    <span>{emp.address}</span>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
         </div>
     );
 }

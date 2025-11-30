@@ -6194,7 +6194,7 @@ label {
   background-color: #c7cff9;
 }
 
-/* === Right sidebar: employee availability === */
+/* Right sidebar: employee availability */
 
 .calendar-availability {
   background: #fff;
@@ -7230,20 +7230,52 @@ label {
   z-index: 0;
 }
 
-/* ===== Employee Management Tab ===== */
+/* Employees Tab Layout */
 
 .employee-manage-container {
   background-color: #f5fbf3;
   border-radius: 16px;
   padding: 16px 20px;
   border: 1px solid #d4e9d0;
+  max-width: 1100px;
+  margin: 0 auto;
 }
 
-/* Top filter controls */
+.employee-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.employee-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.employee-header-icon {
+  flex-shrink: 0;
+}
+
+.employee-header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: nowrap;
+}
+
 .employee-filter-group {
   display: inline-flex;
   align-items: center;
   gap: 4px;
+}
+
+.employee-filter-label {
+  font-size: 0.85rem;
+  margin-right: 0.25rem;
+  color: #4b5945;
 }
 
 .employee-select {
@@ -7267,6 +7299,10 @@ label {
   background-color: #e4f3df;
   font-size: 0.85rem;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.35rem 0.6rem;
   transition: background-color 0.2s ease, transform 0.1s ease,
     box-shadow 0.2s ease;
 }
@@ -7277,7 +7313,10 @@ label {
   transform: translateY(-1px);
 }
 
-/* Employee list layout */
+.employee-sort-label {
+  font-size: 0.85rem;
+}
+
 .employee-list {
   display: flex;
   flex-direction: column;
@@ -7285,7 +7324,6 @@ label {
   margin-top: 8px;
 }
 
-/* Individual employee card */
 .employee-card {
   background-color: #ffffff;
   border-radius: 14px;
@@ -7297,7 +7335,13 @@ label {
   gap: 6px;
 }
 
-/* Name + status + buttons header */
+.employee-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+
 .employee-name {
   font-weight: 600;
   font-size: 0.95rem;
@@ -7305,10 +7349,14 @@ label {
 }
 
 .employee-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  margin-top: 0.1rem;
   color: #4e7852;
 }
 
-/* Status pill base */
 .employee-status {
   padding: 2px 8px;
   border-radius: 999px;
@@ -7318,7 +7366,6 @@ label {
   letter-spacing: 0.03em;
 }
 
-/* Status-specific colors */
 .employee-status-pending {
   background-color: #fff7e0;
   color: #8c6a1f;
@@ -7337,7 +7384,6 @@ label {
   border: 1px solid #f3a7a7;
 }
 
-/* Employee role badge */
 .employee-role-badge {
   padding: 2px 8px;
   border-radius: 999px;
@@ -7347,7 +7393,6 @@ label {
   border: 1px solid #b3d2ae;
 }
 
-/* Approve / Reject buttons */
 .employee-actions {
   display: flex;
   align-items: center;
@@ -7368,7 +7413,6 @@ label {
     box-shadow 0.18s ease;
 }
 
-/* Approve = green */
 .employee-approve-btn {
   background-color: #d8f1d7;
 }
@@ -7383,7 +7427,6 @@ label {
   box-shadow: 0 2px 6px rgba(34, 100, 40, 0.25);
 }
 
-/* Reject = soft red but still fits palette */
 .employee-reject-btn {
   background-color: #fde4e4;
 }
@@ -7398,23 +7441,56 @@ label {
   box-shadow: 0 2px 6px rgba(132, 51, 47, 0.25);
 }
 
-/* Card body (contact row) */
 .employee-card-body {
   border-top: 1px dashed #d4e2d1;
   padding-top: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-size: 0.8rem;
 }
 
-.employee-card-body > div {
+.employee-contact-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
   color: #3f5f41;
 }
 
-/* Small responsive tweaks */
 @media (max-width: 768px) {
   .employee-manage-container {
     padding: 12px 12px;
   }
 
-  .employee-card {
-    padding: 8px 10px;
+  .employee-header-row {
+    flex-direction: column;
+    align-items: flex-start;
   }
+
+  .employee-header-right {
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+.employee-header-center {
+  flex: 1;
+  text-align: center;
+}
+
+.employee-header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.employee-header-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #4b5945;
+  margin: 0;
+  white-space: nowrap;
 }
