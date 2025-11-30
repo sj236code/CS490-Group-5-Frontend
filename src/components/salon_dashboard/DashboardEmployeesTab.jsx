@@ -8,6 +8,7 @@ import {
   Phone,
   MapPin,
 } from "lucide-react";
+import EditEmployeeStatus from "./EditEmployeeStatus";
 
 function DashboardEmployeesTab({ salon }) {
     const [employees, setEmployees] = useState([]);
@@ -17,6 +18,9 @@ function DashboardEmployeesTab({ salon }) {
     const [statusFilter, setStatusFilter] = useState("ALL"); // ALL | PENDING | APPROVED | REJECTED
     const [sortBy, setSortBy] = useState("STATUS"); // STATUS | NAME
     const [sortDirection, setSortDirection] = useState("ASC"); // ASC | DESC
+
+    const [selectedEmployee, setSelectedEmployee] = useState(null);
+    const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
 
     // Fetch employees when salon changes
     useEffect(() => {
@@ -141,6 +145,26 @@ function DashboardEmployeesTab({ salon }) {
         return sortDirection === "ASC" ? compare : -compare;
     });
 
+    const openStatusModal = (employee) => {
+        setSelectedEmployee(employee);
+        setIsStatusModalOpen(true);
+    };
+
+    const closeStatusModal = () => {
+        setSelectedEmployee(null);
+        setIsStatusModalOpen(false);
+    };
+
+    const handleStatusUpdatedLocally = (employeeId, newStatus) => {
+        setEmployees((prev) =>
+            prev.map((emp) =>
+            emp.id === employeeId
+                ? { ...emp, employment_status: newStatus }
+                : emp
+            )
+        );
+    };
+
     if (!salon?.id) {
         return <p>No salon selected.</p>;
     }
@@ -193,6 +217,14 @@ function DashboardEmployeesTab({ salon }) {
             {/* Empty State */}
             {!isLoading && sortedEmployees.length === 0 && ( <p>No employees found for this salon.</p>)}
 
+            {isStatusModalOpen && selectedEmployee && (
+                <EditEmployeeStatus
+                    employee={selectedEmployee}
+                    onClose={closeStatusModal}
+                    onStatusUpdated={handleStatusUpdatedLocally}
+                />
+            )}
+
             {/* Employee List */}
             <div className="employee-list">
                 {sortedEmployees.map((emp) => {
@@ -204,9 +236,9 @@ function DashboardEmployeesTab({ salon }) {
                         <div key={emp.id} className="employee-card">
                             <div className="employee-card-header">
                                 <div>
-                                    <div className="employee-name">
-                                    {fullName || `Employee #${emp.id}`}
-                                    </div>
+                                    <button type="button" className="employee-name-button" onClick={() => openStatusModal(emp)}>
+                                        {fullName || `Employee #${emp.id}`}
+                                    </button>
                                     <div className="employee-meta">
                                         <span className={`employee-status employee-status-${( emp.employment_status || "" ).toLowerCase()}`}>
                                             {emp.employment_status}

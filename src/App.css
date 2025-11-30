@@ -7494,3 +7494,88 @@ label {
   margin: 0;
   white-space: nowrap;
 }
+
+.employee-name-button {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #234125;
+  cursor: pointer;
+  text-align: left;
+}
+
+.employee-name-button:hover {
+  text-decoration: underline;
+}
+
+/* Modal specifics built on top of existing .error-modal styles */
+
+.employee-status-modal {
+  max-width: 480px;
+}
+
+.employee-status-modal-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  color: #33422c;
+}
+
+.employee-status-modal-subtitle {
+  font-size: 0.9rem;
+  color: #66785f;
+  margin-bottom: 1rem;
+}
+
+.employee-status-modal-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 0.75rem;
+}
+
+.employee-status-modal-label {
+  font-size: 0.9rem;
+  color: #4b5945;
+  font-weight: 500;
+}
+
+.employee-status-modal-pill {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background-color: #eef6e6;
+  color: #4b5945;
+  font-size: 0.8rem;
+}
+
+.employee-status-select {
+  flex: 1;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid #b6d6b0;
+  background-color: #ffffff;
+  font-size: 0.9rem;
+  outline: none;
+}
+
+.employee-status-select:focus {
+  border-color: #6ba96a;
+  box-shadow: 0 0 0 2px rgba(107, 169, 106, 0.18);
+}
+
+.employee-status-modal-error {
+  font-size: 0.85rem;
+  color: #b91c1c;
+  margin-bottom: 0.75rem;
+}
+
+.employee-status-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 0.5rem;
+}
