@@ -158,7 +158,7 @@ function DashboardEmployeesTab({ salon }) {
         >
             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <Users size={24} />
-            <h2 className="shop-service-title">Employees</h2>
+            <h2 className="shop-service-title">Employees List</h2>
             </div>
 
             <div
