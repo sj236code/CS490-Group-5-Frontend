@@ -1,4 +1,4 @@
-  {
+{
   "name": "cs490-group-5-frontend",
   "private": true,
   "version": "0.0.0",
@@ -26,7 +26,9 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",
+    "@playwright/test": "^1.57.0",
     "@tailwindcss/postcss": "^4.1.15",
+    "@types/node": "^24.10.1",
     "@types/react": "^19.1.16",
     "@types/react-dom": "^19.1.9",
     "@vitejs/plugin-react": "^5.0.4",
