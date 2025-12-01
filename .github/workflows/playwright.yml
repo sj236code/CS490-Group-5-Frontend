@@ -1,0 +1,44 @@
+# PR from any branch -> into main, dev, or sandbox: playwright runs on the PR
+# Direct push to main, dev, or sandbox: playwright runs on that push too
+# Builds frontend to prevent merging code that passes tests but fails production build
+
+name: Playwright E2E Tests
+
+on:
+  push:
+    branches: [main, dev, sandbox]
+  pull_request:
+    branches: [main, dev, sandbox]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    env:
+      VITE_API_URL: https://jade-dev.up.railway.app
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Build frontend
+        run: npm run build
+
+      - name: Install Playwright
+        run: npx playwright install --with-deps
+
+      - name: Run Playwright
+        run: npx playwright test
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report
