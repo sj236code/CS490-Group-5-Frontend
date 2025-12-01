@@ -3,18 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, Upload, X } from 'lucide-react';
 import './Salon_registration.css';
 
-// Hardcoded salon type tags
-const SALON_TAG_OPTIONS = [
-    'Hair Styling',
-    'Hair Cut',
-    'Nails',
-    'Waxing',
-    'Spa',
-    'Massage',
-    'Makeup',
-    'Skincare'
-];
-
 function RegisterSalon() {
     const [currentStep, setCurrentStep] = useState(1);
     const [loading, setLoading] = useState(false);
@@ -35,7 +23,6 @@ function RegisterSalon() {
         // Step 2: Salon Details
         salonName: '',
         salonType: '',
-        salonTags: [],
         address1: '',
         address2: '',
         city: '',
@@ -86,25 +73,6 @@ function RegisterSalon() {
         setError('');
     };
 
-    const handleTagToggle = (tag) => {
-        setFormData(prev => {
-            const currentTags = prev.salonTags;
-            const isSelected = currentTags.includes(tag);
-            
-            if (isSelected) {
-                return {
-                    ...prev,
-                    salonTags: currentTags.filter(t => t !== tag)
-                };
-            } else {
-                return {
-                    ...prev,
-                    salonTags: [...currentTags, tag]
-                };
-            }
-        });
-    };
-
     const handleHoursChange = (day, field, value) => {
         setFormData(prev => ({
             ...prev,
@@ -137,12 +105,14 @@ function RegisterSalon() {
         const file = event.target.files?.[0];
         if (!file) return;
 
+        // Validate file type
         const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
         if (!validTypes.includes(file.type)) {
             setError('Please upload a JPG or PNG file for service images');
             return;
         }
 
+        // Validate file size (5MB max)
         if (file.size > 5 * 1024 * 1024) {
             setError('Image size must be less than 5MB');
             return;
@@ -190,12 +160,14 @@ function RegisterSalon() {
         const file = event.target.files?.[0];
         if (!file) return;
 
+        // Validate file type
         const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
         if (!validTypes.includes(file.type)) {
             setError('Please upload a JPG, PNG, or PDF file');
             return;
         }
 
+        // Validate file size (5MB max)
         if (file.size > 5 * 1024 * 1024) {
             setError('File size must be less than 5MB');
             return;
@@ -263,10 +235,6 @@ function RegisterSalon() {
                     setError('Please fill in all required fields');
                     return false;
                 }
-                if (formData.salonTags.length === 0) {
-                    setError('Please select at least one salon category');
-                    return false;
-                }
                 break;
             case 4:
                 const hasValidService = formData.services.some(s => s.name && s.price);
@@ -297,20 +265,23 @@ function RegisterSalon() {
         setLoading(true);
         
         try {
+            // Check if we have any files to upload
             const hasFiles = formData.businessLicense || formData.services.some(s => s.image);
             
             if (hasFiles) {
+                // Use FormData if we have files
                 const formDataToSend = new FormData();
                 
+                // Add owner info
                 formDataToSend.append('owner_first_name', formData.firstName);
                 formDataToSend.append('owner_last_name', formData.lastName);
                 formDataToSend.append('owner_email', formData.email);
                 formDataToSend.append('owner_phone', formData.phone);
                 formDataToSend.append('owner_password', formData.password);
                 
+                // Add salon info
                 formDataToSend.append('salon_name', formData.salonName);
                 formDataToSend.append('salon_type', formData.salonType);
-                formDataToSend.append('salon_tags', JSON.stringify(formData.salonTags));
                 formDataToSend.append('salon_address1', formData.address1);
                 formDataToSend.append('salon_address2', formData.address2);
                 formDataToSend.append('salon_city', formData.city);
@@ -318,8 +289,10 @@ function RegisterSalon() {
                 formDataToSend.append('salon_zip', formData.zip);
                 formDataToSend.append('salon_phone', formData.salonPhone);
                 
+                // Add hours as JSON string
                 formDataToSend.append('hours', JSON.stringify(formData.hours));
                 
+                // Add services (without images in JSON)
                 const servicesWithoutImages = formData.services
                     .filter(s => s.name && s.price)
                     .map(s => ({
@@ -331,12 +304,14 @@ function RegisterSalon() {
                 
                 formDataToSend.append('services', JSON.stringify(servicesWithoutImages));
                 
+                // Add service images with index reference
                 formData.services.forEach((service, index) => {
                     if (service.image && service.name && service.price) {
                         formDataToSend.append(`service_image_${index}`, service.image);
                     }
                 });
                 
+                // Add payment methods as JSON string
                 formDataToSend.append('payment_methods', JSON.stringify({
                     card: formData.paymentCard,
                     cash: formData.paymentCash,
@@ -347,13 +322,16 @@ function RegisterSalon() {
                     other_details: formData.paymentOtherDetails
                 }));
                 
+                // Add verification
                 formDataToSend.append('terms_agreed', formData.termsAgreed.toString());
                 formDataToSend.append('business_confirmed', formData.businessConfirmed.toString());
                 
+                // Add business license file if present
                 if (formData.businessLicense) {
                     formDataToSend.append('business_license', formData.businessLicense);
                 }
 
+                // API Call with FormData
                 const response = await fetch(`${import.meta.env.VITE_API_URL}/api/salon_register/register`, {
                     method: 'POST',
                     body: formDataToSend
@@ -368,6 +346,7 @@ function RegisterSalon() {
                     setError(data.message || data.error || 'Unable to register salon. Please try again.');
                 }
             } else {
+                // Use JSON if no files (original approach)
                 const requestData = {
                     owner: {
                         name: `${formData.firstName} ${formData.lastName}`,
@@ -378,7 +357,6 @@ function RegisterSalon() {
                     salon: {
                         name: formData.salonName,
                         type: formData.salonType,
-                        tags: formData.salonTags,
                         address: formData.address1,
                         city: formData.city,
                         state: formData.state,
@@ -560,22 +538,6 @@ function RegisterSalon() {
                                     required
                                 />
                             </div>
-                            
-                            <p className="section-label">Select Salon Categories:</p>
-                            <div className="tags-container">
-                                {SALON_TAG_OPTIONS.map(tag => (
-                                    <button
-                                        key={tag}
-                                        type="button"
-                                        className={`tag-pill ${formData.salonTags.includes(tag) ? 'selected' : ''}`}
-                                        onClick={() => handleTagToggle(tag)}
-                                        disabled={loading}
-                                    >
-                                        {tag}
-                                    </button>
-                                ))}
-                            </div>
-                            
                             <div className="row">
                                 <input 
                                     type="text" 
@@ -652,117 +614,21 @@ function RegisterSalon() {
                                 {Object.keys(formData.hours).map(day => (
                                     <div key={day} className="hours-row">
                                         <span className="day-name">{day.charAt(0).toUpperCase() + day.slice(1).slice(0, 3)}.</span>
-                                        <select 
-                                            className="time-select"
+                                        <input 
+                                            type="time" 
+                                            className="time-input"
                                             value={formData.hours[day].open}
                                             onChange={(e) => handleHoursChange(day, 'open', e.target.value)}
                                             disabled={formData.hours[day].closed || loading}
-                                        >
-                                            <option value="00:00">12:00 AM</option>
-                                            <option value="00:30">12:30 AM</option>
-                                            <option value="01:00">1:00 AM</option>
-                                            <option value="01:30">1:30 AM</option>
-                                            <option value="02:00">2:00 AM</option>
-                                            <option value="02:30">2:30 AM</option>
-                                            <option value="03:00">3:00 AM</option>
-                                            <option value="03:30">3:30 AM</option>
-                                            <option value="04:00">4:00 AM</option>
-                                            <option value="04:30">4:30 AM</option>
-                                            <option value="05:00">5:00 AM</option>
-                                            <option value="05:30">5:30 AM</option>
-                                            <option value="06:00">6:00 AM</option>
-                                            <option value="06:30">6:30 AM</option>
-                                            <option value="07:00">7:00 AM</option>
-                                            <option value="07:30">7:30 AM</option>
-                                            <option value="08:00">8:00 AM</option>
-                                            <option value="08:30">8:30 AM</option>
-                                            <option value="09:00">9:00 AM</option>
-                                            <option value="09:30">9:30 AM</option>
-                                            <option value="10:00">10:00 AM</option>
-                                            <option value="10:30">10:30 AM</option>
-                                            <option value="11:00">11:00 AM</option>
-                                            <option value="11:30">11:30 AM</option>
-                                            <option value="12:00">12:00 PM</option>
-                                            <option value="12:30">12:30 PM</option>
-                                            <option value="13:00">1:00 PM</option>
-                                            <option value="13:30">1:30 PM</option>
-                                            <option value="14:00">2:00 PM</option>
-                                            <option value="14:30">2:30 PM</option>
-                                            <option value="15:00">3:00 PM</option>
-                                            <option value="15:30">3:30 PM</option>
-                                            <option value="16:00">4:00 PM</option>
-                                            <option value="16:30">4:30 PM</option>
-                                            <option value="17:00">5:00 PM</option>
-                                            <option value="17:30">5:30 PM</option>
-                                            <option value="18:00">6:00 PM</option>
-                                            <option value="18:30">6:30 PM</option>
-                                            <option value="19:00">7:00 PM</option>
-                                            <option value="19:30">7:30 PM</option>
-                                            <option value="20:00">8:00 PM</option>
-                                            <option value="20:30">8:30 PM</option>
-                                            <option value="21:00">9:00 PM</option>
-                                            <option value="21:30">9:30 PM</option>
-                                            <option value="22:00">10:00 PM</option>
-                                            <option value="22:30">10:30 PM</option>
-                                            <option value="23:00">11:00 PM</option>
-                                            <option value="23:30">11:30 PM</option>
-                                        </select>
+                                        />
                                         <span>to</span>
-                                        <select 
-                                            className="time-select"
+                                        <input 
+                                            type="time" 
+                                            className="time-input"
                                             value={formData.hours[day].close}
                                             onChange={(e) => handleHoursChange(day, 'close', e.target.value)}
                                             disabled={formData.hours[day].closed || loading}
-                                        >
-                                            <option value="00:00">12:00 AM</option>
-                                            <option value="00:30">12:30 AM</option>
-                                            <option value="01:00">1:00 AM</option>
-                                            <option value="01:30">1:30 AM</option>
-                                            <option value="02:00">2:00 AM</option>
-                                            <option value="02:30">2:30 AM</option>
-                                            <option value="03:00">3:00 AM</option>
-                                            <option value="03:30">3:30 AM</option>
-                                            <option value="04:00">4:00 AM</option>
-                                            <option value="04:30">4:30 AM</option>
-                                            <option value="05:00">5:00 AM</option>
-                                            <option value="05:30">5:30 AM</option>
-                                            <option value="06:00">6:00 AM</option>
-                                            <option value="06:30">6:30 AM</option>
-                                            <option value="07:00">7:00 AM</option>
-                                            <option value="07:30">7:30 AM</option>
-                                            <option value="08:00">8:00 AM</option>
-                                            <option value="08:30">8:30 AM</option>
-                                            <option value="09:00">9:00 AM</option>
-                                            <option value="09:30">9:30 AM</option>
-                                            <option value="10:00">10:00 AM</option>
-                                            <option value="10:30">10:30 AM</option>
-                                            <option value="11:00">11:00 AM</option>
-                                            <option value="11:30">11:30 AM</option>
-                                            <option value="12:00">12:00 PM</option>
-                                            <option value="12:30">12:30 PM</option>
-                                            <option value="13:00">1:00 PM</option>
-                                            <option value="13:30">1:30 PM</option>
-                                            <option value="14:00">2:00 PM</option>
-                                            <option value="14:30">2:30 PM</option>
-                                            <option value="15:00">3:00 PM</option>
-                                            <option value="15:30">3:30 PM</option>
-                                            <option value="16:00">4:00 PM</option>
-                                            <option value="16:30">4:30 PM</option>
-                                            <option value="17:00">5:00 PM</option>
-                                            <option value="17:30">5:30 PM</option>
-                                            <option value="18:00">6:00 PM</option>
-                                            <option value="18:30">6:30 PM</option>
-                                            <option value="19:00">7:00 PM</option>
-                                            <option value="19:30">7:30 PM</option>
-                                            <option value="20:00">8:00 PM</option>
-                                            <option value="20:30">8:30 PM</option>
-                                            <option value="21:00">9:00 PM</option>
-                                            <option value="21:30">9:30 PM</option>
-                                            <option value="22:00">10:00 PM</option>
-                                            <option value="22:30">10:30 PM</option>
-                                            <option value="23:00">11:00 PM</option>
-                                            <option value="23:30">11:30 PM</option>
-                                        </select>
+                                        />
                                         <label className="closed-label">
                                             <input 
                                                 type="checkbox"

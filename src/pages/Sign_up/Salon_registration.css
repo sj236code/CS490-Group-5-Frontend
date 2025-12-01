@@ -145,40 +145,6 @@
     margin: 0 0 10px 0;
 }
 
-/* Tag Pills Styling */
-.tags-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-.tag-pill {
-    padding: 10px 20px;
-    border: 2px solid #BEBEBE;
-    border-radius: 20px;
-    background-color: #F0F0F0;
-    cursor: pointer;
-    font-size: 14px;
-    color: #000000;
-}
-
-.tag-pill:hover {
-    background-color: #E5E5E5;
-    border-color: #999999;
-}
-
-.tag-pill.selected {
-    background-color: #66785F;
-    color: #FFFFFF;
-    border-color: #66785F;
-}
-
-.tag-pill:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
-}
-
 .hours-list {
     display: flex;
     flex-direction: column;
@@ -205,22 +171,6 @@
     border: 1px solid #BEBEBE;
     border-radius: 10px;
     padding: 8px 12px;
-}
-
-.time-select {
-    width: 140px;
-    font-size: 16px;
-    color: #000000;
-    background: #F0F0F0;
-    border: 1px solid #BEBEBE;
-    border-radius: 10px;
-    padding: 8px 12px;
-    cursor: pointer;
-}
-
-.time-select:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
 }
 
 .closed-label {
