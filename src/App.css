@@ -6194,7 +6194,7 @@ label {
   background-color: #c7cff9;
 }
 
-/* === Right sidebar: employee availability === */
+/* Right sidebar: employee availability */
 
 .calendar-availability {
   background: #fff;
@@ -7228,4 +7228,354 @@ label {
   clear: both; 
   position: relative;
   z-index: 0;
+}
+
+/* Employees Tab Layout */
+
+.employee-manage-container {
+  background-color: #f5fbf3;
+  border-radius: 16px;
+  padding: 16px 20px;
+  border: 1px solid #d4e9d0;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.employee-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.employee-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.employee-header-icon {
+  flex-shrink: 0;
+}
+
+.employee-header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: nowrap;
+}
+
+.employee-filter-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.employee-filter-label {
+  font-size: 0.85rem;
+  margin-right: 0.25rem;
+  color: #4b5945;
+}
+
+.employee-select {
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid #b6d6b0;
+  background-color: #ffffff;
+  font-size: 0.85rem;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.employee-select:focus {
+  border-color: #6ba96a;
+  box-shadow: 0 0 0 2px rgba(107, 169, 106, 0.18);
+}
+
+.employee-sort-btn {
+  border-radius: 999px;
+  border: 1px solid #b6d6b0;
+  background-color: #e4f3df;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.35rem 0.6rem;
+  transition: background-color 0.2s ease, transform 0.1s ease,
+    box-shadow 0.2s ease;
+}
+
+.employee-sort-btn:hover {
+  background-color: #d2ebcb;
+  box-shadow: 0 2px 6px rgba(61, 112, 64, 0.18);
+  transform: translateY(-1px);
+}
+
+.employee-sort-label {
+  font-size: 0.85rem;
+}
+
+.employee-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.employee-card {
+  background-color: #ffffff;
+  border-radius: 14px;
+  padding: 10px 12px;
+  border: 1px solid #d7ead4;
+  box-shadow: 0 1px 4px rgba(28, 63, 32, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.employee-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+
+.employee-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #234125;
+}
+
+.employee-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  margin-top: 0.1rem;
+  color: #4e7852;
+}
+
+.employee-status {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.employee-status-pending {
+  background-color: #fff7e0;
+  color: #8c6a1f;
+  border: 1px solid #f1da9e;
+}
+
+.employee-status-approved {
+  background-color: #e4f4e3;
+  color: #2c6a30;
+  border: 1px solid #a6d4aa;
+}
+
+.employee-status-rejected {
+  background-color: #ffeaea;
+  color: #913434;
+  border: 1px solid #f3a7a7;
+}
+
+.employee-role-badge {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  background-color: #d6ebd3;
+  color: #285330;
+  border: 1px solid #b3d2ae;
+}
+
+.employee-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.employee-approve-btn,
+.employee-reject-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.18s ease, transform 0.1s ease,
+    box-shadow 0.18s ease;
+}
+
+.employee-approve-btn {
+  background-color: #d8f1d7;
+}
+
+.employee-approve-btn svg {
+  stroke: #2f7c36;
+}
+
+.employee-approve-btn:hover {
+  background-color: #c6e8c3;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(34, 100, 40, 0.25);
+}
+
+.employee-reject-btn {
+  background-color: #fde4e4;
+}
+
+.employee-reject-btn svg {
+  stroke: #a8433f;
+}
+
+.employee-reject-btn:hover {
+  background-color: #f9d2d2;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(132, 51, 47, 0.25);
+}
+
+.employee-card-body {
+  border-top: 1px dashed #d4e2d1;
+  padding-top: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+}
+
+.employee-contact-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: #3f5f41;
+}
+
+@media (max-width: 768px) {
+  .employee-manage-container {
+    padding: 12px 12px;
+  }
+
+  .employee-header-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .employee-header-right {
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+.employee-header-center {
+  flex: 1;
+  text-align: center;
+}
+
+.employee-header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.employee-header-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #4b5945;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.employee-name-button {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #234125;
+  cursor: pointer;
+  text-align: left;
+}
+
+.employee-name-button:hover {
+  text-decoration: underline;
+}
+
+/* Modal specifics built on top of existing .error-modal styles */
+
+.employee-status-modal {
+  max-width: 480px;
+}
+
+.employee-status-modal-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  color: #33422c;
+}
+
+.employee-status-modal-subtitle {
+  font-size: 0.9rem;
+  color: #66785f;
+  margin-bottom: 1rem;
+}
+
+.employee-status-modal-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 0.75rem;
+}
+
+.employee-status-modal-label {
+  font-size: 0.9rem;
+  color: #4b5945;
+  font-weight: 500;
+}
+
+.employee-status-modal-pill {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background-color: #eef6e6;
+  color: #4b5945;
+  font-size: 0.8rem;
+}
+
+.employee-status-select {
+  flex: 1;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid #b6d6b0;
+  background-color: #ffffff;
+  font-size: 0.9rem;
+  outline: none;
+}
+
+.employee-status-select:focus {
+  border-color: #6ba96a;
+  box-shadow: 0 0 0 2px rgba(107, 169, 106, 0.18);
+}
+
+.employee-status-modal-error {
+  font-size: 0.85rem;
+  color: #b91c1c;
+  margin-bottom: 0.75rem;
+}
+
+.employee-status-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 0.5rem;
 }
