@@ -1,63 +1,39 @@
 // @ts-check
-import { defineConfig, devices } from '@playwright/test';
+import { defineConfig } from '@playwright/test';
+
+const isCI = !!process.env.CI;
 
 export default defineConfig({
   testDir: './tests',
   fullyParallel: true,
-  forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  forbidOnly: isCI,
+  retries: isCI ? 2 : 0,
+  workers: isCI ? 1 : undefined,
   reporter: 'html',
 
-  // Shared settings for all tests
   use: {
-    // Frontend runs locally; frontend talks to Railway via env vars
     baseURL: 'http://localhost:5173',
-    headless: true,
+    headless: isCI,
     trace: 'on-first-retry',
   },
 
-  // Browsers to run against
   projects: [
-    {
-      name: 'chromium',
-      use: {
-        ...devices['Desktop Chrome'],
-        headless: false, // FORCE visible window
-        launchOptions: {
-          args: [
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-            '--disable-dev-shm-usage',
-            '--disable-gpu',
-          ],
-        },
-      },
-    },
-
     {
       name: 'firefox',
       use: {
-        ...devices['Desktop Firefox'],
-        headless: false,
-        viewport: null,
-        deviceScaleFactor: undefined,
+        browserName: 'firefox',
+        viewport: isCI ? { width: 1280, height: 720 } : null,
         launchOptions: {
-          slowMo: 200,
+          slowMo: isCI ? 0 : 250,  
         },
       },
     },
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-    },
   ],
 
-  // Start your React dev server before tests
   webServer: {
-    command: 'npm run dev',
+    command: 'npm run dev -- --port=5173',
     url: 'http://localhost:5173',
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: !isCI,
     timeout: 120 * 1000,
   },
 });
