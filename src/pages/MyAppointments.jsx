@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { MapPin, Calendar, User } from "lucide-react";
 import {useLocation} from "react-router-dom";
 import EditAppt from "../components/layout/EditAppt";
+import CustomerSendMessageModal from "../components/layout/CustomerSendMessageModal";
 import "../App.css";
 
 const MyAppointments = () => {
@@ -21,6 +22,11 @@ const MyAppointments = () => {
   const [showSuccess, setShowSuccess] = useState(false);
   const [selectedAppt, setSelectedAppt] = useState(null);
 
+  const [showMessageModal, setShowMessageModal] = useState(false);
+  const [messageAppt, setMessageAppt] = useState(null);
+
+  const [showCancelNotice, setShowCancelNotice] = useState(false);
+
   const handleEditClick = (appt) => {
     setSelectedAppt(appt);
     setShowEditModal(true);
@@ -32,34 +38,80 @@ const MyAppointments = () => {
     setTimeout(() => setShowSuccess(false), 2000);
   };
 
-  const handleCancelClick = async (apptId) => {
-    if (!customerId) return;
+  const handleSendMessageClick = (appt) => {
+    setMessageAppt(appt);
+    setShowMessageModal(true);
+  };
+
+const handleCancelClick = async (appt) => {
+  if (!customerId) return;
+
+  try {
+    // Cancel appointment in db
+    const res = await fetch(
+      `${import.meta.env.VITE_API_URL}/api/appointments/${customerId}/appointments/${appt.id}`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "CANCELLED" }),
+      }
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      console.error("Failed to cancel appointment:", data);
+      return;
+    }
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/appointments/${customerId}/appointments/${apptId}`,
+      const notifyRes = await fetch(`${import.meta.env.VITE_API_URL}/api/notifications/appointment/cancel`,
         {
-          method: "PUT",
+          method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ status: "CANCELLED" }),
+          body: JSON.stringify({
+            appointment_id: appt.id,
+            cancelled_by: "customer",
+            reason: "Appointment cancelled by customer via client portal.",
+          }),
         }
       );
 
-      const data = await res.json();
+      let notifyData = null;
+      try {
+        notifyData = await notifyRes.json();
+      } catch {}
 
-      if (!res.ok) {
-        console.error("Failed to cancel appointment:", data);
-        return;
+      if (!notifyRes.ok) {
+        console.error(
+          "Failed to send cancellation email:",
+          notifyData || "Unknown error"
+        );
       }
-
-      // remove from upcoming list in UI
-      setUpcomingAppointments((prev) =>
-        prev.filter((appt) => appt.id !== apptId)
-      );
     } 
-    catch (err) {
-      console.error("Error cancelling appointment:", err);
+    catch (notifyErr) {
+      console.error("Error calling cancellation email endpoint:", notifyErr);
     }
-  };
+
+    setUpcomingAppointments((prev) =>
+      prev.filter((a) => a.id !== appt.id)
+    );
+
+    setPreviousAppointments((prev) => [
+      {
+        ...appt,
+        status: "CANCELLED",
+      },
+      ...prev,
+    ]);
+
+    setShowCancelNotice(true);
+    setTimeout(() => setShowCancelNotice(false), 2000);
+  } 
+  catch (err) {
+    console.error("Error cancelling appointment:", err);
+  }
+};
 
   const formatApptDateTime = (isoString) => {
     if (!isoString) return "Date & time TBD";
@@ -169,6 +221,7 @@ const MyAppointments = () => {
             (apt.employee_first_name || "") +
             (apt.employee_last_name ? ` ${apt.employee_last_name}` : ""),
           customerName: "You",
+          status: apt.status,
         }));
 
         setPreviousAppointments(mapped);
@@ -180,6 +233,46 @@ const MyAppointments = () => {
 
     fetchPreviousAppointments();
   }, [customerId]);
+
+  const StatusBadge = ({ status }) => {
+    if (!status) return null;
+
+    const normalized = status.toUpperCase();
+
+    // Default values
+    let variantClass = "status-badge-booked";
+    let label = normalized;
+
+    switch (normalized) {
+      // Treat BOOKED in previous as "COMPLETED" / happened-- TEMP
+      case "BOOKED":
+        variantClass = "status-badge-completed";
+        label = "COMPLETED";
+        break;
+      case "CONFIRMED":
+        variantClass = "status-badge-confirmed";
+        break;
+      case "CHECKED_IN":
+        variantClass = "status-badge-checked-in";
+        break;
+      case "IN_PROGRESS":
+        variantClass = "status-badge-in-progress";
+        break;
+      case "COMPLETED":
+        variantClass = "status-badge-completed";
+        break;
+      case "CANCELLED":
+      default:
+        variantClass = "status-badge-booked";
+    }
+
+    return (
+      <span className={`status-badge ${variantClass}`}>
+        {label.replace(/_/g, " ")}
+      </span>
+    );
+  };
+
 
   return (
     <div className="appointments-container">
@@ -213,7 +306,9 @@ const MyAppointments = () => {
             </div>
 
             <div className="appt-buttons">
-              <button className="btn-send">Send Message</button>
+              <button className="btn-send" type="button" onClick={() => handleSendMessageClick(appt)}>
+                Send Message
+              </button>
               <button
                 className="btn-edit"
                 onClick={() => handleEditClick(appt)}
@@ -222,7 +317,7 @@ const MyAppointments = () => {
               </button>
               <button
                 className="btn-cancel"
-                onClick={() => handleCancelClick(appt.id)}
+                onClick={() => handleCancelClick(appt)}
               >
                 Cancel
               </button>
@@ -253,15 +348,16 @@ const MyAppointments = () => {
               <p className="appt-customer">
                 Customer: {appt.customerName}
               </p>
+              {appt.status && (
+                <div className="appt-status-wrapper">
+                  <StatusBadge status={appt.status} />
+                </div>
+              )}
             </div>
 
             <div className="appt-buttons">
-              <button className="btn-send">Send Message</button>
-              <button
-                className="btn-edit"
-                onClick={() => handleEditClick(appt)}
-              >
-                Edit
+              <button className="btn-send" type="button" onClick={() => handleSendMessageClick(appt)}>
+                Send Message
               </button>
             </div>
           </div>
@@ -311,6 +407,27 @@ const MyAppointments = () => {
             <h3>Thank You!</h3>
             <p className="booking-updated">Booking Updated!</p>
             <p>Your appointment has been successfully updated.</p>
+          </div>
+        </div>
+      )}
+
+      {showMessageModal && messageAppt && (
+        <CustomerSendMessageModal
+          isOpen={showMessageModal}
+          onClose={() => {
+            setShowMessageModal(false);
+            setMessageAppt(null);
+          }}
+          appointment={messageAppt}
+        />
+      )}
+
+      {showCancelNotice && (
+        <div className="modal-overlay">
+          <div className="success-box">
+            <h3>Cancellation Email Sent</h3>
+            <p className="booking-updated">Email sent to salon</p>
+            <p>The salon has been notified about your cancellation.</p>
           </div>
         </div>
       )}
