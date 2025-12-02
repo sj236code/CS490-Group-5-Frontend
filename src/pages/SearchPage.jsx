@@ -7,7 +7,7 @@ function SearchPage() {
     const location = useLocation();
     console.log("SEARCHPAGE location.state:", location.state);
     const navigate = useNavigate();
-    const { results, cities:passedCities, query, city, userType, user } = location.state || {}; // Passed from LandingSearchBar
+    const { results, cities:passedCities, query, city, userType, user, typeFilter:preAppliedType } = location.state || {}; // Passed from LandingSearchBar
 
     console.log("SEARCHPAGE- ", user?.profile_id ?? '-');
 
@@ -16,7 +16,7 @@ function SearchPage() {
     const [cities, setCities] = useState(passedCities || []);
 
     // Store Filter States
-    const [typeFilter, setTypeFilter] = useState('Any Type');
+    const [typeFilter, setTypeFilter] = useState(preAppliedType || 'Any Type');
     const [priceFilter, setPriceFilter] = useState('Any Price');
     const [ratingFilter, setRatingFilter] = useState('Any Rating');
     const [cityFilter, setCityFilter] = useState(city || '');
