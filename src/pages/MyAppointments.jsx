@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { MapPin, Calendar, User } from "lucide-react";
 import {useLocation} from "react-router-dom";
 import EditAppt from "../components/layout/EditAppt";
+import CustomerSendMessageModal from "../components/layout/CustomerSendMessageModal";
 import "../App.css";
 
 const MyAppointments = () => {
@@ -21,6 +22,9 @@ const MyAppointments = () => {
   const [showSuccess, setShowSuccess] = useState(false);
   const [selectedAppt, setSelectedAppt] = useState(null);
 
+  const [showMessageModal, setShowMessageModal] = useState(false);
+  const [messageAppt, setMessageAppt] = useState(null);
+
   const handleEditClick = (appt) => {
     setSelectedAppt(appt);
     setShowEditModal(true);
@@ -30,6 +34,11 @@ const MyAppointments = () => {
     setShowEditModal(false);
     setShowSuccess(true);
     setTimeout(() => setShowSuccess(false), 2000);
+  };
+
+  const handleSendMessageClick = (appt) => {
+    setMessageAppt(appt);
+    setShowMessageModal(true);
   };
 
   const handleCancelClick = async (apptId) => {
@@ -213,7 +222,9 @@ const MyAppointments = () => {
             </div>
 
             <div className="appt-buttons">
-              <button className="btn-send">Send Message</button>
+              <button className="btn-send" type="button" onClick={() => handleSendMessageClick(appt)}>
+                Send Message
+              </button>
               <button
                 className="btn-edit"
                 onClick={() => handleEditClick(appt)}
@@ -256,7 +267,9 @@ const MyAppointments = () => {
             </div>
 
             <div className="appt-buttons">
-              <button className="btn-send">Send Message</button>
+              <button className="btn-send" type="button" onClick={() => handleSendMessageClick(appt)}>
+                Send Message
+              </button>
               <button
                 className="btn-edit"
                 onClick={() => handleEditClick(appt)}
@@ -313,6 +326,17 @@ const MyAppointments = () => {
             <p>Your appointment has been successfully updated.</p>
           </div>
         </div>
+      )}
+
+      {showMessageModal && messageAppt && (
+        <CustomerSendMessageModal
+          isOpen={showMessageModal}
+          onClose={() => {
+            setShowMessageModal(false);
+            setMessageAppt(null);
+          }}
+          appointment={messageAppt}
+        />
       )}
     </div>
   );
