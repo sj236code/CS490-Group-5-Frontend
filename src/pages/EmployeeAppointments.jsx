@@ -49,6 +49,7 @@ const EmployeeAppointments = () => {
     if (!employeeId) return;
 
     try {
+      // Cancel app in db
       const res = await fetch(
         `${API_BASE}/api/employeesapp/${employeeId}/appointments/${appt.id}/cancel`,
         {
@@ -71,6 +72,37 @@ const EmployeeAppointments = () => {
         return;
       }
 
+      // Send cancellation email notif
+      try {
+        const notifyRes = await fetch(`${API_BASE}/api/notifications/appointment/cancel`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              appointment_id: appt.id,
+              cancelled_by: "employee",
+              reason: "Appointment cancelled by staff via employee portal.",
+            }),
+          }
+        );
+
+        let notifyData = null;
+        try {
+          notifyData = await notifyRes.json();
+        } catch {}
+
+        if (!notifyRes.ok) {
+          console.error(
+            "Failed to send cancellation email:",
+            notifyData || "Unknown error"
+          );
+        }
+      } 
+      catch (notifyErr) {
+        console.error("Error calling cancellation email endpoint:", notifyErr);
+      }
+
+      // Remove from upcoming appts
       setUpcomingAppointments((prev) =>
         prev.filter((a) => a.id !== appt.id)
       );
