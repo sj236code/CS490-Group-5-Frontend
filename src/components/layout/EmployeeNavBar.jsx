@@ -118,12 +118,6 @@ function EmployeeNavBar({ onClose, onLogout, userId, user }) {
                 >
                     Payment Portal
                 </button>
-                <button
-                    className="nb-text-link"
-                    onClick={() => navTo("/messages")}
-                >
-                    Messages
-                </button>
                 </>
             ) : isRejected ? (
                 <div className="nb-pending-message">
