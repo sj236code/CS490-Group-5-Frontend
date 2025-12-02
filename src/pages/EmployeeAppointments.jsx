@@ -25,6 +25,8 @@ const EmployeeAppointments = () => {
   const [showMessageModal, setShowMessageModal] = useState(false);
   const [messageAppt, setMessageAppt] = useState(null);
 
+  const [showCancelNotice, setShowCancelNotice] = useState(false);
+
   const formatApptDateTime = (isoString) => {
     if (!isoString) return "Date & time TBD";
     const d = new Date(isoString);
@@ -106,6 +108,9 @@ const EmployeeAppointments = () => {
       setUpcomingAppointments((prev) =>
         prev.filter((a) => a.id !== appt.id)
       );
+
+      setShowCancelNotice(true);
+      setTimeout(() => setShowCancelNotice(false), 2000);
     } 
     catch (err) {
       console.error("Error cancelling appointment:", err);
@@ -400,6 +405,16 @@ const EmployeeAppointments = () => {
           }}
           appointment={messageAppt}
         />
+      )}
+
+      {showCancelNotice && (
+        <div className="modal-overlay">
+          <div className="success-box">
+            <h3>Cancellation Email Sent</h3>
+            <p className="booking-updated">Email sent to customer</p>
+            <p>The customer has been notified about this cancellation.</p>
+          </div>
+        </div>
       )}
       
     </div>
