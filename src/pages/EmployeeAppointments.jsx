@@ -109,6 +109,15 @@ const EmployeeAppointments = () => {
         prev.filter((a) => a.id !== appt.id)
       );
 
+      // Immediately set to prev appts
+      setPreviousAppointments((prev) => [
+        {
+          ...appt,
+          status: "CANCELLED",
+        },
+        ...prev,
+      ]);
+
       setShowCancelNotice(true);
       setTimeout(() => setShowCancelNotice(false), 2000);
     } 
