@@ -1,4 +1,3 @@
-// src/components/salon_owner/SalonPaymentsPage.jsx
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import {
@@ -192,7 +191,9 @@ function SalonPaymentsPage() {
               </p>
             </div>
             <div className="stat-card">
-              <p className="stat-card__label">Salon Earnings (Services + Products)</p>
+              <p className="stat-card__label">
+                Salon Earnings (Services + Products)
+              </p>
               <p className="stat-card__value">
                 ${monthlyTotal.salon_total_earnings.toFixed(2)}
               </p>
@@ -274,9 +275,9 @@ function SalonPaymentsPage() {
                     ${currentPeriod.salon_total_earnings.toFixed(2)}
                   </p>
                   <p className="current-period__meta current-period__meta--strong">
-                    Services (30%): ${currentPeriod.salon_share_services.toFixed(2)}{" "}
-                    · Products (100%): $
-                    {currentPeriod.salon_share_products.toFixed(2)}
+                    Services (30%): $
+                    {currentPeriod.salon_share_services.toFixed(2)} · Products
+                    (100%): ${currentPeriod.salon_share_products.toFixed(2)}
                   </p>
                   <p className="current-period__meta">
                     Stylists (70% services): $
@@ -401,7 +402,11 @@ function SalonPaymentsPage() {
                     {tx.date ? new Date(tx.date).toLocaleString() : "-"}
                   </td>
                   <td>{tx.customer_name}</td>
-                  <td>{tx.items && tx.items.length ? tx.items.join(", ") : "-"}</td>
+                  <td>
+                    {tx.items && tx.items.length
+                      ? tx.items.join(", ")
+                      : "-"}
+                  </td>
                   <td>{tx.stylist}</td>
                   <td>${tx.amount.toFixed(2)}</td>
                   {/* payment_method will be "N/A" for now */}

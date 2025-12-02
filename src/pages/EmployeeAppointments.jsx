@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { MapPin, Calendar, User } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import EmployeeEditAppt from "../components/layout/EmployeeEditAppt";
+import EmployeeSendMessageModal from "../components/layout/EmployeeSendMessageModal";
 import "../App.css";
 
 const EmployeeAppointments = () => {
@@ -20,6 +21,11 @@ const EmployeeAppointments = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [selectedAppt, setSelectedAppt] = useState(null);
+
+  const [showMessageModal, setShowMessageModal] = useState(false);
+  const [messageAppt, setMessageAppt] = useState(null);
+
+  const [showCancelNotice, setShowCancelNotice] = useState(false);
 
   const formatApptDateTime = (isoString) => {
     if (!isoString) return "Date & time TBD";
@@ -45,6 +51,7 @@ const EmployeeAppointments = () => {
     if (!employeeId) return;
 
     try {
+      // Cancel app in db
       const res = await fetch(
         `${API_BASE}/api/employeesapp/${employeeId}/appointments/${appt.id}/cancel`,
         {
@@ -67,9 +74,52 @@ const EmployeeAppointments = () => {
         return;
       }
 
+      // Send cancellation email notif
+      try {
+        const notifyRes = await fetch(`${API_BASE}/api/notifications/appointment/cancel`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              appointment_id: appt.id,
+              cancelled_by: "employee",
+              reason: "Appointment cancelled by staff via employee portal.",
+            }),
+          }
+        );
+
+        let notifyData = null;
+        try {
+          notifyData = await notifyRes.json();
+        } catch {}
+
+        if (!notifyRes.ok) {
+          console.error(
+            "Failed to send cancellation email:",
+            notifyData || "Unknown error"
+          );
+        }
+      } 
+      catch (notifyErr) {
+        console.error("Error calling cancellation email endpoint:", notifyErr);
+      }
+
+      // Remove from upcoming appts
       setUpcomingAppointments((prev) =>
         prev.filter((a) => a.id !== appt.id)
       );
+
+      // Immediately set to prev appts
+      setPreviousAppointments((prev) => [
+        {
+          ...appt,
+          status: "CANCELLED",
+        },
+        ...prev,
+      ]);
+
+      setShowCancelNotice(true);
+      setTimeout(() => setShowCancelNotice(false), 2000);
     } 
     catch (err) {
       console.error("Error cancelling appointment:", err);
@@ -204,6 +254,12 @@ const EmployeeAppointments = () => {
     );
   };
 
+  const handleSendMessageClick = (appt) => {
+    setMessageAppt(appt);
+    setShowMessageModal(true);
+  };
+
+
   return (
     <div className="appointments-container">
       <header className="jade-header">
@@ -244,7 +300,7 @@ const EmployeeAppointments = () => {
             </div>
 
             <div className="appt-buttons">
-              <button className="btn-send" type="button" disabled>
+              <button className="btn-send" type="button" onClick={() => handleSendMessageClick(appt)}>
                 Send Message
               </button>
               <button
@@ -300,7 +356,7 @@ const EmployeeAppointments = () => {
             </div>
 
             <div className="appt-buttons">
-              <button className="btn-send" type="button" disabled>
+              <button className="btn-send" type="button" onClick={() => handleSendMessageClick(appt)}>
                 Send Message
               </button>
             </div>
@@ -348,6 +404,28 @@ const EmployeeAppointments = () => {
           </div>
         </div>
       )}
+
+      {showMessageModal && messageAppt && (
+        <EmployeeSendMessageModal
+          isOpen={showMessageModal}
+          onClose={() => {
+            setShowMessageModal(false);
+            setMessageAppt(null);
+          }}
+          appointment={messageAppt}
+        />
+      )}
+
+      {showCancelNotice && (
+        <div className="modal-overlay">
+          <div className="success-box">
+            <h3>Cancellation Email Sent</h3>
+            <p className="booking-updated">Email sent to customer</p>
+            <p>The customer has been notified about this cancellation.</p>
+          </div>
+        </div>
+      )}
+      
     </div>
   );
 };
