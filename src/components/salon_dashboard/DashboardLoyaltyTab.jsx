@@ -214,6 +214,59 @@ function DashboardLoyaltyTab({ salon }) {
     }
   };
 
+  const renderProgramSummaryContent = () => {
+    if (loadingProgram) {
+      return (
+        <p className="loyalty-text-line">
+          Loading loyalty program...
+        </p>
+      );
+    }
+
+    if (!programExists) {
+      return (
+        <div className="loyalty-empty-state">
+          <p className="loyalty-text-line">
+            No loyalty program set up yet.
+          </p>
+          <p className="loyalty-subtitle">
+            Configure how points are earned and redeemed in the form below, then activate the program.
+          </p>
+        </div>
+      );
+    }
+
+    if (!isActive) {
+      return (
+        <div className="loyalty-paused-state">
+          <p className="loyalty-text-line">
+            A loyalty program exists but is currently not active.
+          </p>
+          <p className="loyalty-subtitle">
+            Review your settings below and click “Activate Program” when you're ready.
+          </p>
+        </div>
+      );
+    }
+
+    return (
+      <>
+        <p className="loyalty-text-line">
+          Earn Rate:{" "}
+          {programSummary.pointsPerDollar || 0} pts per $1 spent
+        </p>
+        <p className="loyalty-text-line">
+          Reward:{" "}
+          {programSummary.pointsForReward || 0} pts for $
+          {programSummary.rewardValue || 0} off
+        </p>
+        <p className="loyalty-subtitle">
+          Reward type: {programSummary.rewardType || "FIXED_AMOUNT"}
+        </p>
+      </>
+    );
+  };
+
   return (
     <div className="loyalty-tab-container">
       <div className="loyalty-grid">
