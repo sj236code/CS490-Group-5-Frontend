@@ -12,19 +12,23 @@
   "dependencies": {
     "@vercel/analytics": "^1.5.0",
     "axios": "^1.13.2",
+    "date-fns": "^4.1.0",
     "firebase": "^12.4.0",
     "imagesloaded": "^5.0.0",
     "lightgallery": "^2.9.0",
     "lucide-react": "^0.546.0",
     "masonry-layout": "^4.2.2",
     "react": "^19.1.1",
+    "react-big-calendar": "^1.19.4",
     "react-dom": "^19.1.1",
     "react-router-dom": "^7.9.6",
     "recharts": "^3.4.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",
+    "@playwright/test": "^1.57.0",
     "@tailwindcss/postcss": "^4.1.15",
+    "@types/node": "^24.10.1",
     "@types/react": "^19.1.16",
     "@types/react-dom": "^19.1.9",
     "@vitejs/plugin-react": "^5.0.4",

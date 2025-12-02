@@ -1,313 +1,432 @@
-import { useEffect, useState } from "react";
-import { Download, Search, Calendar as CalendarIcon } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import {
+  DollarSign,
+  Clock,
+  Calendar,
+  TrendingUp,
+  Info,
+  PieChart,
+} from "lucide-react";
 
 function SalonPaymentsPage() {
-  // For now this is hard-coded
-  const salonId = 1;
+  const location = useLocation();
+  const userFromState = location.state?.user;
+  const salonIdFromState = location.state?.salonId;
 
+  // Owner user should have salon_id on their profile
+  const salonId = userFromState?.salon_id ?? salonIdFromState ?? null;
+
+  console.log("Salon Id: ", salonId);
+
+  const [currentPeriod, setCurrentPeriod] = useState(null);
+  const [payrollHistory, setPayrollHistory] = useState([]);
+  const [monthlyTotal, setMonthlyTotal] = useState(null);
   const [transactions, setTransactions] = useState([]);
-  const [searchText, setSearchText] = useState("");
-  const [statusFilter, setStatusFilter] = useState("ALL");
-  const [sortBy, setSortBy] = useState("date_desc");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Load all transactions for this salon
   useEffect(() => {
-    if (!salonId) return;
-
-    const fetchTransactions = async () => {
-      try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/receipts/salon/${salonId}/transactions`);
-        const data = await res.json();
-
-        if (res.ok && data.status === "success") {
-          setTransactions(data.transactions || []);
-        } 
-        else {
-          console.error("Failed to load transactions:", data);
-        }
-      } 
-      catch (err) {
-        console.error("Error loading transactions:", err);
-      }
-    };
-
-    fetchTransactions();
+    if (!salonId) {
+      setLoading(false);
+      setError("No salon ID found for this owner");
+      return;
+    }
+    fetchSalonPayroll();
   }, [salonId]);
 
-  // --- Helpers ---
+  const fetchSalonPayroll = async () => {
+    try {
+      setLoading(true);
+      setError(null);
 
-  const formatCurrency = (value) => {
-    return `$${(value || 0).toFixed(2)}`;
-  };
-
-  const formatDateTime = (iso) => {
-    const d = new Date(iso);
-    return {
-      date: d.toLocaleDateString(),
-      time: d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-    };
-  };
-
-  // Build summary numbers for the cards
-  const getSummary = () => {
-    if (!transactions.length) {
-      return {
-        totalRevenue: 0,
-        completedCount: 0,
-        completedAvg: 0,
-        pendingCount: 0,
-        failedOrRefundedCount: 0,
-        refundedAmount: 0,
-      };
-    }
-
-    let totalRevenue = 0;
-    let completedCount = 0;
-    let pendingCount = 0;
-    let failedOrRefundedCount = 0;
-    let refundedAmount = 0;
-
-    for (const t of transactions) {
-      const status = (t.status || "").toLowerCase();
-
-      if (status === "completed" || status === "successful") {
-        totalRevenue += t.amount || 0;
-        completedCount += 1;
-      } 
-      else if (status === "pending") {
-        pendingCount += 1;
-      } 
-      else if (status === "failed" || status === "refunded") {
-        failedOrRefundedCount += 1;
-        if (status === "refunded") {
-          refundedAmount += t.amount || 0;
-        }
-      }
-    }
-
-    const completedAvg = completedCount > 0 ? totalRevenue / completedCount : 0;
-
-    return {
-      totalRevenue,
-      completedCount,
-      completedAvg,
-      pendingCount,
-      failedOrRefundedCount,
-      refundedAmount,
-    };
-  };
-
-  // Filter + sort the list the user actually sees
-  const getFilteredTransactions = () => {
-    let result = [...transactions];
-
-    // Text search
-    if (searchText.trim()) {
-      const q = searchText.toLowerCase();
-      result = result.filter((t) => {
-        return (
-          t.customer_name.toLowerCase().includes(q) ||
-          t.customer_email.toLowerCase().includes(q) ||
-          (t.transaction_id && t.transaction_id.toLowerCase().includes(q))
-        );
-      });
-    }
-
-    // Status filter
-    if (statusFilter !== "ALL") {
-      result = result.filter(
-        (t) => t.status.toUpperCase() === statusFilter.toUpperCase()
+      // 1. Current biweekly period (for whole salon)
+      const currentResponse = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/salon_payroll/${salonId}/current-period`
       );
-    }
 
-    // Sorting
-    if (sortBy === "date_desc") {
-      result.sort((a, b) => new Date(b.date) - new Date(a.date));
-    } 
-    else if (sortBy === "amount_desc") {
-      result.sort((a, b) => (b.amount || 0) - (a.amount || 0));
-    }
+      if (currentResponse.status === 404) {
+        setError("Salon not found in payroll system");
+        setLoading(false);
+        return;
+      }
 
-    return result;
+      if (!currentResponse.ok) {
+        throw new Error("Failed to fetch current period data");
+      }
+
+      const currentData = await currentResponse.json();
+      setCurrentPeriod(currentData);
+
+      // 2. History
+      const historyResponse = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/salon_payroll/${salonId}/history`
+      );
+
+      if (!historyResponse.ok) {
+        throw new Error("Failed to fetch payroll history");
+      }
+      const historyData = await historyResponse.json();
+      setPayrollHistory(historyData.history || []);
+
+      // 3. Monthly totals
+      const monthlyResponse = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/salon_payroll/${salonId}/monthly-total`
+      );
+
+      if (monthlyResponse.ok) {
+        const monthlyData = await monthlyResponse.json();
+        setMonthlyTotal(monthlyData);
+      }
+
+      // 4. Transaction list (existing receipts endpoint)
+      const txResponse = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/receipts/salon/${salonId}/transactions`
+      );
+
+      if (txResponse.ok) {
+        const txData = await txResponse.json();
+        setTransactions(txData.transactions || []);
+      }
+
+      setLoading(false);
+    } catch (err) {
+      console.error("Error fetching salon payroll:", err);
+      setError(err.message);
+      setLoading(false);
+    }
   };
 
-  const summary = getSummary();
-  const filteredTransactions = getFilteredTransactions();
-
-  return (
-    <div className="payments-page">
-      {/* Tabs (Payments / Appointments) */}
-      <div className="payments-tabs">
-        <button className="payments-tab payments-tab--active">Payments</button>
-        <button className="payments-tab" disabled>Appointments</button>
-      </div>
-
-      {/* Summary cards */}
-      <div className="payments-summary-row">
-        <div className="payments-card">
-          <div className="payments-card-label">Total Revenue</div>
-          <div className="payments-card-value">{formatCurrency(summary.totalRevenue)}</div>
-          <div className="payments-card-sub">+12.5% from last month</div>
-        </div>
-
-        <div className="payments-card">
-          <div className="payments-card-label">Completed</div>
-          <div className="payments-card-value">{summary.completedCount}</div>
-          <div className="payments-card-sub">{formatCurrency(summary.completedAvg)} avg</div>
-        </div>
-
-        <div className="payments-card">
-          <div className="payments-card-label">Pending</div>
-          <div className="payments-card-value">{summary.pendingCount}</div>
-          <div className="payments-card-sub">Awaiting processing</div>
-        </div>
-
-        <div className="payments-card">
-          <div className="payments-card-label">Failed / Refunded</div>
-          <div className="payments-card-value">{summary.failedOrRefundedCount}</div>
-          <div className="payments-card-sub">{formatCurrency(summary.refundedAmount)} refunded</div>
+  if (loading) {
+    return (
+      <div className="payment-container">
+        <header className="jade-header">
+          <h1>Salon Payments</h1>
+        </header>
+        <div className="payment-message payment-message--loading">
+          Loading salon payment information...
         </div>
       </div>
+    );
+  }
 
-      {/* Filters + header row */}
-      <div className="payments-filters-card">
-        <div className="payments-filters-header">
-          <div>
-            <div className="payments-filters-title">Payment Transactions</div>
-            <div className="payments-filters-sub">View and manage all payment transactions</div>
-          </div>
-          <button className="payments-export-btn">
-            <Download size={16} />
-            <span>Export CSV</span>
+  if (error) {
+    return (
+      <div className="payment-container">
+        <header className="jade-header">
+          <h1>Salon Payments</h1>
+        </header>
+        <div className="payment-message payment-message--error">
+          <p className="payment-error-text">Error: {error}</p>
+          <p className="payment-error-id">Salon ID: {salonId || "Not found"}</p>
+          <button className="payment-retry-button" onClick={fetchSalonPayroll}>
+            Retry
           </button>
         </div>
+      </div>
+    );
+  }
 
-        <div className="payments-filters-row">
-          {/* Search */}
-          <div className="payments-filter">
-            <div className="payments-input-wrapper">
-              <Search size={14} className="payments-input-icon" />
-              <input
-                type="text"
-                placeholder="Customer, email, or transaction ID..."
-                value={searchText}
-                onChange={(e) => setSearchText(e.target.value)}
-                className="payments-input"
-              />
-            </div>
-          </div>
-
-          {/* Status filter */}
-          <div className="payments-filter">
-            <label className="payments-filter-label">Status</label>
-            <select className="payments-select" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-              <option value="ALL">All Statuses</option>
-              <option value="Completed">Completed</option>
-              <option value="Pending">Pending</option>
-              <option value="Failed">Failed</option>
-              <option value="Refunded">Refunded</option>
-            </select>
-          </div>
-
-          {/* Date range – just UI for now */}
-          <div className="payments-filter">
-            <label className="payments-filter-label">Date Range</label>
-            <button className="payments-date-btn"><CalendarIcon size={14} /><span>Select date</span></button>
-          </div>
-        </div>
-
-        <div className="payments-filters-footer">
-          <span>Showing {filteredTransactions.length} of {transactions.length}{" "}transactions
-          </span>
-          <div className="payments-sort-buttons">
-            <button
-              className={`payments-sort-btn ${sortBy === "date_desc" ? "payments-sort-btn--active" : ""}`}
-              onClick={() => setSortBy("date_desc")}
-            >
-              Date ↓
-            </button>
-            <button
-              className={`payments-sort-btn ${
-                sortBy === "amount_desc" ? "payments-sort-btn--active" : ""
-              }`}
-              onClick={() => setSortBy("amount_desc")}
-            >
-              Amount ↓
-            </button>
-          </div>
+  if (!salonId) {
+    return (
+      <div className="payment-container">
+        <header className="jade-header">
+          <h1>Salon Payments</h1>
+        </header>
+        <div className="payment-message">
+          No salon information found. Please log in again as an owner.
         </div>
       </div>
+    );
+  }
 
-      {/* Transactions list */}
-      <div className="payments-list">
-        {filteredTransactions.map((t) => {
-          const dt = formatDateTime(t.date);
-          const status = (t.status || "").toLowerCase();
+  return (
+    <div className="payment-container">
+      <header className="jade-header">
+        <h1>Salon Payments</h1>
+      </header>
 
-          let statusClass = "status-pill--default";
-          if (status === "failed") statusClass = "status-pill--failed";
-          else if (status === "pending") statusClass = "status-pill--pending";
-          else if (status === "refunded") statusClass = "status-pill--refunded";
-          else if (status === "completed" || status === "successful")
-            statusClass = "status-pill--success";
+      {/* Commission Structure Info */}
+      <div className="commission-info">
+        <Info className="commission-info__icon" size={20} />
+        <p className="commission-info__text">
+          <strong className="commission-info__title">
+            MyJade Commission Structure:
+          </strong>{" "}
+          Stylists earn 70% of <strong>service</strong> revenue. Your salon
+          retains 30% of services and 100% of <strong>product</strong> revenue.
+        </p>
+      </div>
 
-          return (
-            <div key={t.payment_id} className="payment-row">
-              <div className="payment-row-main">
-                <div className="payment-row-col payment-row-col--date">
-                  <div className="payment-date">{dt.date}</div>
-                  <div className="payment-time">{dt.time}</div>
+      {/* Monthly Total for Salon */}
+      {monthlyTotal && (
+        <section className="monthly-total">
+          <div className="monthly-total__header">
+            <PieChart className="monthly-total__icon" size={24} />
+            <h2 className="monthly-total__title">
+              {monthlyTotal.month} Revenue Overview
+            </h2>
+          </div>
+          <p className="monthly-total__note">
+            Includes completed and booked appointments for this month, plus
+            product sales.
+          </p>
+          <div className="monthly-total__grid">
+            <div className="stat-card">
+              <p className="stat-card__label">Service Revenue</p>
+              <p className="stat-card__value">
+                ${monthlyTotal.total_service_revenue.toFixed(2)}
+              </p>
+            </div>
+            <div className="stat-card">
+              <p className="stat-card__label">Product Revenue</p>
+              <p className="stat-card__value">
+                ${monthlyTotal.total_product_revenue.toFixed(2)}
+              </p>
+            </div>
+            <div className="stat-card stat-card--highlight">
+              <p className="stat-card__label">Total Revenue</p>
+              <p className="stat-card__value">
+                ${monthlyTotal.total_revenue.toFixed(2)}
+              </p>
+            </div>
+            <div className="stat-card">
+              <p className="stat-card__label">
+                Salon Earnings (Services + Products)
+              </p>
+              <p className="stat-card__value">
+                ${monthlyTotal.salon_total_earnings.toFixed(2)}
+              </p>
+              <p className="stat-card__meta">
+                Stylists earned ${monthlyTotal.employee_earnings.toFixed(2)} from
+                services
+              </p>
+            </div>
+            <div className="stat-card">
+              <p className="stat-card__label">Appointments</p>
+              <p className="stat-card__value">
+                {monthlyTotal.appointments_completed}
+              </p>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Current Pay Period for Salon */}
+      {currentPeriod && (
+        <section className="card-section">
+          <h2 className="card-section__title">Current Pay Period (Salon)</h2>
+          <p className="card-section__subtitle">
+            <Calendar size={16} className="card-section__subtitle-icon" />
+            {currentPeriod.pay_period.period_label}
+          </p>
+
+          <div className="current-period__grid">
+            {/* Service Revenue */}
+            <div className="current-period__card">
+              <div className="current-period__content">
+                <div className="current-period__icon-wrap current-period__icon-wrap--soft">
+                  <DollarSign size={24} className="current-period__icon" />
                 </div>
-
-                <div className="payment-row-col payment-row-col--customer">
-                  <div className="payment-name">{t.customer_name}</div>
-                  <div className="payment-email">{t.customer_email}</div>
-                </div>
-
-                <div className="payment-row-col payment-row-col--items">
-                  <div className="payment-tags">
-                    {t.items.map((itemName, idx) => (
-                      <span key={idx} className="payment-tag">{itemName}</span>
-                    ))}
-                  </div>
-                  <div className="payment-stylist">
-                    by {t.stylist || "N/A"}
-                  </div>
-                </div>
-
-                <div className="payment-row-col payment-row-col--amount">
-                  <div className="payment-amount">
-                    {formatCurrency(t.amount)}
-                  </div>
-                  <div className="payment-method">{t.payment_method}</div>
-                </div>
-
-                <div className="payment-row-col payment-row-col--status">
-                  <span className={`status-pill ${statusClass}`}>
-                    {t.status}
-                  </span>
-                  <div className="payment-txn-id">{t.transaction_id}</div>
+                <div>
+                  <p className="current-period__label">Service Revenue</p>
+                  <p className="current-period__value">
+                    ${currentPeriod.total_service_revenue.toFixed(2)}
+                  </p>
+                  <p className="current-period__meta">
+                    From {currentPeriod.appointments_completed} appointments
+                  </p>
                 </div>
               </div>
-
-              {t.refund_reason && (
-                <div className="payment-refund-row">
-                  <span className="payment-refund-label">Refund reason:</span>
-                  <span className="payment-refund-text">
-                    {t.refund_reason}
-                  </span>
-                </div>
-              )}
             </div>
-          );
-        })}
 
-        {filteredTransactions.length === 0 && (
-          <div className="payments-empty-state">
-            No transactions match your filters.
+            {/* Product Revenue */}
+            <div className="current-period__card">
+              <div className="current-period__content">
+                <div className="current-period__icon-wrap current-period__icon-wrap--soft">
+                  <DollarSign size={24} className="current-period__icon" />
+                </div>
+                <div>
+                  <p className="current-period__label">Product Revenue</p>
+                  <p className="current-period__value">
+                    ${currentPeriod.total_product_revenue.toFixed(2)}
+                  </p>
+                  <p className="current-period__meta">
+                    From product sales this period
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Salon Earnings */}
+            <div className="current-period__card current-period__card--highlight">
+              <div className="current-period__content">
+                <div className="current-period__icon-wrap current-period__icon-wrap--solid">
+                  <TrendingUp
+                    size={24}
+                    className="current-period__icon current-period__icon--inverse"
+                  />
+                </div>
+                <div>
+                  <p className="current-period__label current-period__label--strong">
+                    Salon Earnings (Services + Products)
+                  </p>
+                  <p className="current-period__value">
+                    ${currentPeriod.salon_total_earnings.toFixed(2)}
+                  </p>
+                  <p className="current-period__meta current-period__meta--strong">
+                    Services (30%): $
+                    {currentPeriod.salon_share_services.toFixed(2)} · Products
+                    (100%): ${currentPeriod.salon_share_products.toFixed(2)}
+                  </p>
+                  <p className="current-period__meta">
+                    Stylists (70% services): $
+                    {currentPeriod.employee_earnings.toFixed(2)}
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
-        )}
-      </div>
+
+          <div className="current-period__banner">
+            <p className="current-period__banner-text">
+              <strong className="current-period__banner-label">
+                Pay Period:
+              </strong>{" "}
+              {currentPeriod.pay_period.start_date} to{" "}
+              {currentPeriod.pay_period.end_date}
+            </p>
+          </div>
+        </section>
+      )}
+
+      {/* Salon Pay History */}
+      {!!payrollHistory.length && (
+        <section className="card-section">
+          <h2 className="card-section__title">Salon Pay History</h2>
+          <p className="card-section__subtitle card-section__subtitle--muted">
+            Last 6 biweekly periods
+          </p>
+
+          <div className="history-list">
+            {payrollHistory.map((period, index) => (
+              <div
+                key={index}
+                className={`history-item ${
+                  index === 0 ? "history-item--recent" : ""
+                }`}
+              >
+                <div>
+                  <p className="history-item__period">{period.period_label}</p>
+                  <p className="history-item__dates">
+                    {period.period_start} to {period.period_end}
+                  </p>
+                </div>
+
+                <div className="history-item__metrics">
+                  <div className="history-item__metric">
+                    <Clock size={16} className="history-item__metric-icon" />
+                    <span className="history-item__metric-text">
+                      {period.hours_worked.toFixed(2)} hrs
+                    </span>
+                  </div>
+                  <div className="history-item__metric">
+                    <Calendar
+                      size={16}
+                      className="history-item__metric-icon"
+                    />
+                    <span className="history-item__metric-text">
+                      {period.appointments_completed} appts
+                    </span>
+                  </div>
+                  <div className="history-item__metric">
+                    <DollarSign
+                      size={16}
+                      className="history-item__metric-icon"
+                    />
+                    <span className="history-item__metric-text">
+                      ${period.total_revenue.toFixed(2)} total revenue
+                    </span>
+                  </div>
+                  <div className="history-item__metric">
+                    <DollarSign
+                      size={16}
+                      className="history-item__metric-icon"
+                    />
+                    <span className="history-item__metric-text">
+                      ${period.total_service_revenue.toFixed(2)} services · $
+                      {period.total_product_revenue.toFixed(2)} products
+                    </span>
+                  </div>
+                </div>
+
+                <div className="history-item__earnings">
+                  <p className="history-item__earnings-label">
+                    Salon Earnings
+                  </p>
+                  <p className="history-item__earnings-value">
+                    ${period.salon_total_earnings.toFixed(2)}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Transactions Table from receipts.py */}
+      <section className="card-section">
+        <h2 className="card-section__title">Recent Transactions</h2>
+        <p className="card-section__subtitle card-section__subtitle--muted">
+          From /api/receipts/salon/{salonId}/transactions
+        </p>
+
+        <div className="transactions-table-wrapper">
+          <table className="transactions-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Customer</th>
+                <th>Items</th>
+                <th>Stylist</th>
+                <th>Amount</th>
+                <th>Method</th>
+                <th>Status</th>
+                <th>Refund Reason</th>
+              </tr>
+            </thead>
+            <tbody>
+              {transactions.map((tx) => (
+                <tr key={tx.transaction_id || tx.order_id}>
+                  <td>
+                    {tx.date ? new Date(tx.date).toLocaleString() : "-"}
+                  </td>
+                  <td>{tx.customer_name}</td>
+                  <td>
+                    {tx.items && tx.items.length
+                      ? tx.items.join(", ")
+                      : "-"}
+                  </td>
+                  <td>{tx.stylist}</td>
+                  <td>${tx.amount.toFixed(2)}</td>
+                  {/* payment_method will be "N/A" for now */}
+                  <td>{tx.payment_method || "N/A"}</td>
+                  <td>{tx.status}</td>
+                  <td>{tx.refund_reason || "-"}</td>
+                </tr>
+              ))}
+
+              {transactions.length === 0 && (
+                <tr>
+                  <td colSpan={8} style={{ textAlign: "center" }}>
+                    No transactions found for this salon yet.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </section>
     </div>
   );
 }

@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { MapPin, Calendar, User } from "lucide-react";
 import {useLocation} from "react-router-dom";
-import EditAppointmentModal from "../components/layout/EditAppointmentModal";
+import EditAppt from "../components/layout/EditAppt";
+import CustomerSendMessageModal from "../components/layout/CustomerSendMessageModal";
 import "../App.css";
 
 const MyAppointments = () => {
   const location = useLocation();
   const userFromState = location.state?.user;
-  const customerId = userFromState?.profile_id ?? userIdFromState ?? null;
+  const customerId = userFromState?.profile_id ?? null;
 
   console.log("Customer id:", customerId);
+  console.log("User: ", location.state?.user);
 
   // const customerId = 2; // TODO: replace with real logged-in customer id
 
@@ -19,6 +21,11 @@ const MyAppointments = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [selectedAppt, setSelectedAppt] = useState(null);
+
+  const [showMessageModal, setShowMessageModal] = useState(false);
+  const [messageAppt, setMessageAppt] = useState(null);
+
+  const [showCancelNotice, setShowCancelNotice] = useState(false);
 
   const handleEditClick = (appt) => {
     setSelectedAppt(appt);
@@ -31,11 +38,80 @@ const MyAppointments = () => {
     setTimeout(() => setShowSuccess(false), 2000);
   };
 
-  const handleCancelClick = (apptId) => {
-    setUpcomingAppointments((prev) =>
-      prev.filter((appt) => appt.id !== apptId)
-    );
+  const handleSendMessageClick = (appt) => {
+    setMessageAppt(appt);
+    setShowMessageModal(true);
   };
+
+const handleCancelClick = async (appt) => {
+  if (!customerId) return;
+
+  try {
+    // Cancel appointment in db
+    const res = await fetch(
+      `${import.meta.env.VITE_API_URL}/api/appointments/${customerId}/appointments/${appt.id}`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "CANCELLED" }),
+      }
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      console.error("Failed to cancel appointment:", data);
+      return;
+    }
+
+    try {
+      const notifyRes = await fetch(`${import.meta.env.VITE_API_URL}/api/notifications/appointment/cancel`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            appointment_id: appt.id,
+            cancelled_by: "customer",
+            reason: "Appointment cancelled by customer via client portal.",
+          }),
+        }
+      );
+
+      let notifyData = null;
+      try {
+        notifyData = await notifyRes.json();
+      } catch {}
+
+      if (!notifyRes.ok) {
+        console.error(
+          "Failed to send cancellation email:",
+          notifyData || "Unknown error"
+        );
+      }
+    } 
+    catch (notifyErr) {
+      console.error("Error calling cancellation email endpoint:", notifyErr);
+    }
+
+    setUpcomingAppointments((prev) =>
+      prev.filter((a) => a.id !== appt.id)
+    );
+
+    setPreviousAppointments((prev) => [
+      {
+        ...appt,
+        status: "CANCELLED",
+      },
+      ...prev,
+    ]);
+
+    setShowCancelNotice(true);
+    setTimeout(() => setShowCancelNotice(false), 2000);
+  } 
+  catch (err) {
+    console.error("Error cancelling appointment:", err);
+  }
+};
 
   const formatApptDateTime = (isoString) => {
     if (!isoString) return "Date & time TBD";
@@ -54,6 +130,8 @@ const MyAppointments = () => {
 
   // Load upcoming appointments from backend
   useEffect(() => {
+    if (!customerId) return; // guard
+
     const fetchUpcomingAppointments = async () => {
       try {
         const url = `${import.meta.env.VITE_API_URL}/api/appointments/${customerId}/upcoming`;
@@ -71,11 +149,16 @@ const MyAppointments = () => {
           return;
         }
 
-        const data = await res.json(); // this should be the list returned by your endpoint
-
+        const data = await res.json();
         console.log("Upcoming appointments from backend:", data);
 
-        const mapped = data.map((apt) => ({
+        // only keep BOOKED / Booked
+        const bookedOnly = (data || []).filter((apt) => {
+          const normalized = (apt.status || "").toUpperCase();
+          return normalized === "BOOKED";
+        });
+
+        const mapped = bookedOnly.map((apt) => ({
           id: apt.id,
           serviceName: apt.service_name || "Service",
           location: apt.salon_name || "Salon",
@@ -83,8 +166,16 @@ const MyAppointments = () => {
           staffName:
             (apt.employee_first_name || "") +
             (apt.employee_last_name ? ` ${apt.employee_last_name}` : ""),
-          // On "My Appointments" page, customer is the logged-in user
           customerName: "You",
+            salonId: apt.salon_id,
+            employeeId: apt.employee_id,
+            serviceId: apt.service_id,
+            serviceDuration: apt.service_duration,
+            servicePrice: apt.service_price,
+            startAt: apt.start_at,
+            endAt: apt.end_at,
+            notes: apt.notes,
+            status: apt.status,
         }));
 
         setUpcomingAppointments(mapped);
@@ -96,6 +187,7 @@ const MyAppointments = () => {
 
     fetchUpcomingAppointments();
   }, [customerId]);
+
 
   // Load previous appointments from backend
   useEffect(() => {
@@ -129,6 +221,7 @@ const MyAppointments = () => {
             (apt.employee_first_name || "") +
             (apt.employee_last_name ? ` ${apt.employee_last_name}` : ""),
           customerName: "You",
+          status: apt.status,
         }));
 
         setPreviousAppointments(mapped);
@@ -140,6 +233,46 @@ const MyAppointments = () => {
 
     fetchPreviousAppointments();
   }, [customerId]);
+
+  const StatusBadge = ({ status }) => {
+    if (!status) return null;
+
+    const normalized = status.toUpperCase();
+
+    // Default values
+    let variantClass = "status-badge-booked";
+    let label = normalized;
+
+    switch (normalized) {
+      // Treat BOOKED in previous as "COMPLETED" / happened-- TEMP
+      case "BOOKED":
+        variantClass = "status-badge-completed";
+        label = "COMPLETED";
+        break;
+      case "CONFIRMED":
+        variantClass = "status-badge-confirmed";
+        break;
+      case "CHECKED_IN":
+        variantClass = "status-badge-checked-in";
+        break;
+      case "IN_PROGRESS":
+        variantClass = "status-badge-in-progress";
+        break;
+      case "COMPLETED":
+        variantClass = "status-badge-completed";
+        break;
+      case "CANCELLED":
+      default:
+        variantClass = "status-badge-booked";
+    }
+
+    return (
+      <span className={`status-badge ${variantClass}`}>
+        {label.replace(/_/g, " ")}
+      </span>
+    );
+  };
+
 
   return (
     <div className="appointments-container">
@@ -173,7 +306,9 @@ const MyAppointments = () => {
             </div>
 
             <div className="appt-buttons">
-              <button className="btn-send">Send Message</button>
+              <button className="btn-send" type="button" onClick={() => handleSendMessageClick(appt)}>
+                Send Message
+              </button>
               <button
                 className="btn-edit"
                 onClick={() => handleEditClick(appt)}
@@ -182,7 +317,7 @@ const MyAppointments = () => {
               </button>
               <button
                 className="btn-cancel"
-                onClick={() => handleCancelClick(appt.id)}
+                onClick={() => handleCancelClick(appt)}
               >
                 Cancel
               </button>
@@ -213,15 +348,16 @@ const MyAppointments = () => {
               <p className="appt-customer">
                 Customer: {appt.customerName}
               </p>
+              {appt.status && (
+                <div className="appt-status-wrapper">
+                  <StatusBadge status={appt.status} />
+                </div>
+              )}
             </div>
 
             <div className="appt-buttons">
-              <button className="btn-send">Send Message</button>
-              <button
-                className="btn-edit"
-                onClick={() => handleEditClick(appt)}
-              >
-                Edit
+              <button className="btn-send" type="button" onClick={() => handleSendMessageClick(appt)}>
+                Send Message
               </button>
             </div>
           </div>
@@ -230,52 +366,38 @@ const MyAppointments = () => {
 
       {/* Edit Modal */}
       {showEditModal && selectedAppt && (
-        <div className="modal-overlay">
-          <div className="modal-box">
-            <h3 className="modal-title">Edit Appointment</h3>
-
-            <label>Service</label>
-            <select
-              className="service-select"
-              defaultValue={selectedAppt.serviceName}
-            >
-              <option>Classic Fade</option>
-              <option>Beard Trim</option>
-              <option>Hair Color</option>
-            </select>
-
-            <label>Select Experts</label>
-            <div className="expert-container">
-              {[1, 2, 3, 4].map((n) => (
-                <div key={n} className="expert-card">
-                  <img
-                    src={`https://i.pravatar.cc/100?img=${n}`}
-                    alt="Expert"
-                  />
-                  <p>Name Last Name</p>
-                </div>
-              ))}
-            </div>
-
-            <label>Date & Time</label>
-            <div className="calendar-container">
-              {["7:30am", "8:00am", "8:30am", "9:00am", "9:30am", "10:00am"].map(
-                (time) => (
-                  <button key={time} className="time-btn">
-                    {time}
-                  </button>
-                )
-              )}
-            </div>
-
-            <div className="modal-buttons">
-              <button className="btn-delete">Delete Appt</button>
-              <button className="btn-save" onClick={handleSave}>
-                Save Changes
-              </button>
-            </div>
-          </div>
-        </div>
+        <EditAppt
+          isOpen={showEditModal}
+          onClose={() => setShowEditModal(false)}
+          appointment={selectedAppt}
+          customerId={customerId}
+          onUpdated={(updated) => {
+            // update upcoming list so UI reflects backend changes
+            setUpcomingAppointments((prev) =>
+              prev.map((appt) =>
+                appt.id === updated.id ? {
+                    ...appt,
+                    serviceName: updated.service_name || appt.serviceName,
+                    location: updated.salon_name || appt.location,
+                    dateTime: formatApptDateTime(updated.start_at),
+                    staffName:
+                      (updated.employee_first_name || "") +
+                      (updated.employee_last_name
+                        ? ` ${updated.employee_last_name}`
+                        : ""),
+                    employeeId: updated.employee_id,
+                    startAt: updated.start_at,
+                    endAt: updated.end_at,
+                    notes: updated.notes,
+                    status: updated.status,
+                  }
+                : appt
+              )
+            );
+            setShowSuccess(true);
+            setTimeout(() => setShowSuccess(false), 2000);
+          }}
+        />
       )}
 
       {/* Success Popup */}
@@ -285,6 +407,27 @@ const MyAppointments = () => {
             <h3>Thank You!</h3>
             <p className="booking-updated">Booking Updated!</p>
             <p>Your appointment has been successfully updated.</p>
+          </div>
+        </div>
+      )}
+
+      {showMessageModal && messageAppt && (
+        <CustomerSendMessageModal
+          isOpen={showMessageModal}
+          onClose={() => {
+            setShowMessageModal(false);
+            setMessageAppt(null);
+          }}
+          appointment={messageAppt}
+        />
+      )}
+
+      {showCancelNotice && (
+        <div className="modal-overlay">
+          <div className="success-box">
+            <h3>Cancellation Email Sent</h3>
+            <p className="booking-updated">Email sent to salon</p>
+            <p>The salon has been notified about your cancellation.</p>
           </div>
         </div>
       )}

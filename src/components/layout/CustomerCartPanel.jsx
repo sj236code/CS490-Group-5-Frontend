@@ -36,7 +36,6 @@ function CustomerCartPanel({ onClose, user }) {
     }, []);
 
     const fetchCart = async () => {
-        // const userId = 1; // hardcoded for testing
         const url = `${import.meta.env.VITE_API_URL}/api/cart/${customerId}`;
 
         console.log("Importing cart from customer: ", customerId);
