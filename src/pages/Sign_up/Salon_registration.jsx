@@ -66,19 +66,8 @@ function RegisterSalon() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const fetchTypes = async () => {
-            try {
-                const response = await fetch(`${import.meta.env.VITE_API_URL}/api/salon_register/types`);
-                const data = await response.json();
-                if (data.status === 'success') {
-                    setSalonTypes(data.types);
-                }
-            } catch (err) {
-                console.error('Failed to fetch salon types:', err);
-                setSalonTypes(['Salon', 'Barber', 'Lashes', 'Mani/Pedi', 'Hair Color', 'Nails', 'Waxing', 'Spa', 'Threading', 'Other']);
-            }
-        };
-        fetchTypes();
+        // Set the specific types you want shown
+        setSalonTypes(['Salon', 'Barber', 'Lashes', 'Mani/Pedi', 'Hair Color', 'Nails', 'Waxing', 'Spa', 'Threading', 'Other']);
     }, []);
 
     const handleInputChange = (e) => {
