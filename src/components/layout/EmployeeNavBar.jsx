@@ -24,7 +24,7 @@ function EmployeeNavBar({ onClose, onLogout, userId, user }) {
         try {
             const res = await fetch(
             `${API_BASE}/api/employee/verification/status/${employeeProfileId}`,
-            { signal: controller.signal },
+            { signal: controller.signal }
             );
             if (!res.ok) {
             console.error("Failed to fetch employee verification status");
@@ -46,6 +46,7 @@ function EmployeeNavBar({ onClose, onLogout, userId, user }) {
 
     const isVerified = employmentStatus === "APPROVED";
     const isPending = employmentStatus === "INACTIVE";
+    const isRejected = employmentStatus === "REJECTED";
 
     const navTo = (path) => {
         navigate(path, { state: { userId, user } });
@@ -85,9 +86,9 @@ function EmployeeNavBar({ onClose, onLogout, userId, user }) {
                 <span>
                     {isVerified
                     ? "Verified"
-                    : isPending
-                    ? "Pending Verification"
-                    : "Verification Rejected"}
+                    : isRejected
+                    ? "Verification Rejected"
+                    : "Pending Verification"}
                 </span>
                 </div>
             </div>
@@ -124,6 +125,20 @@ function EmployeeNavBar({ onClose, onLogout, userId, user }) {
                     Messages
                 </button>
                 </>
+            ) : isRejected ? (
+                <div className="nb-pending-message">
+                <p className="nb-pending-title">
+                    Your employee application was rejected.
+                </p>
+                <p className="nb-pending-body">
+                    Unfortunately, your employee account was not approved at this
+                    time. Please contact the salon owner directly for more details
+                    or next steps.
+                </p>
+                <p className="nb-pending-id">
+                    Employee ID: <strong>{employeeNumber}</strong>
+                </p>
+                </div>
             ) : (
                 <div className="nb-pending-message">
                 <p className="nb-pending-title">
@@ -147,10 +162,7 @@ function EmployeeNavBar({ onClose, onLogout, userId, user }) {
 
             {/* Footer */}
             <div className="nb-footer">
-            <button
-                className="nb-footer-link"
-                onClick={() => navTo("/contact")}
-            >
+            <button className="nb-footer-link" onClick={() => navTo("/contact")}>
                 Contact
             </button>
             <button className="nb-footer-link" onClick={() => navTo("/faq")}>
