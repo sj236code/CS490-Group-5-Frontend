@@ -48,6 +48,7 @@
 
 .salon-message {
     margin-top: 20px;
+    margin-bottom: 30px;
 }
 
 .salon-message-bold {
@@ -60,4 +61,19 @@
     font-size: 16px;
     color: #6B6B6B;
     margin: 0;
+}
+
+.go-home-btn {
+    font-size: 20px;
+    color: #FFFFFF;
+    background: #879D85;
+    border: none;
+    border-radius: 14px;
+    padding: 12px 40px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.go-home-btn:hover {
+    background: #66785F;
 }
