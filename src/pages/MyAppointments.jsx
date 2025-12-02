@@ -221,6 +221,7 @@ const handleCancelClick = async (appt) => {
             (apt.employee_first_name || "") +
             (apt.employee_last_name ? ` ${apt.employee_last_name}` : ""),
           customerName: "You",
+          status: apt.status,
         }));
 
         setPreviousAppointments(mapped);
@@ -232,6 +233,46 @@ const handleCancelClick = async (appt) => {
 
     fetchPreviousAppointments();
   }, [customerId]);
+
+  const StatusBadge = ({ status }) => {
+    if (!status) return null;
+
+    const normalized = status.toUpperCase();
+
+    // Default values
+    let variantClass = "status-badge-booked";
+    let label = normalized;
+
+    switch (normalized) {
+      // Treat BOOKED in previous as "COMPLETED" / happened-- TEMP
+      case "BOOKED":
+        variantClass = "status-badge-completed";
+        label = "COMPLETED";
+        break;
+      case "CONFIRMED":
+        variantClass = "status-badge-confirmed";
+        break;
+      case "CHECKED_IN":
+        variantClass = "status-badge-checked-in";
+        break;
+      case "IN_PROGRESS":
+        variantClass = "status-badge-in-progress";
+        break;
+      case "COMPLETED":
+        variantClass = "status-badge-completed";
+        break;
+      case "CANCELLED":
+      default:
+        variantClass = "status-badge-booked";
+    }
+
+    return (
+      <span className={`status-badge ${variantClass}`}>
+        {label.replace(/_/g, " ")}
+      </span>
+    );
+  };
+
 
   return (
     <div className="appointments-container">
@@ -307,6 +348,11 @@ const handleCancelClick = async (appt) => {
               <p className="appt-customer">
                 Customer: {appt.customerName}
               </p>
+              {appt.status && (
+                <div className="appt-status-wrapper">
+                  <StatusBadge status={appt.status} />
+                </div>
+              )}
             </div>
 
             <div className="appt-buttons">
