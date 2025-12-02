@@ -1,24 +1,13 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, Upload, X } from 'lucide-react';
 import './Salon_registration.css';
-
-// Hardcoded salon type tags
-const SALON_TAG_OPTIONS = [
-    'Hair Styling',
-    'Hair Cut',
-    'Nails',
-    'Waxing',
-    'Spa',
-    'Massage',
-    'Makeup',
-    'Skincare'
-];
 
 function RegisterSalon() {
     const [currentStep, setCurrentStep] = useState(1);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [salonTypes, setSalonTypes] = useState([]);
     const fileInputRef = useRef(null);
     const serviceImageInputRefs = useRef([]);
     
@@ -34,7 +23,6 @@ function RegisterSalon() {
         
         // Step 2: Salon Details
         salonName: '',
-        salonType: '',
         salonTags: [],
         address1: '',
         address2: '',
@@ -76,6 +64,22 @@ function RegisterSalon() {
     });
 
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const fetchTypes = async () => {
+            try {
+                const response = await fetch(`${import.meta.env.VITE_API_URL}/api/salon_register/types`);
+                const data = await response.json();
+                if (data.status === 'success') {
+                    setSalonTypes(data.types);
+                }
+            } catch (err) {
+                console.error('Failed to fetch salon types:', err);
+                setSalonTypes(['Hair', 'Nails', 'Waxing', 'Spa', 'Barber']);
+            }
+        };
+        fetchTypes();
+    }, []);
 
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -259,7 +263,7 @@ function RegisterSalon() {
                 }
                 break;
             case 2:
-                if (!formData.salonName || !formData.salonType || !formData.address1 || !formData.city || !formData.state || !formData.zip || !formData.salonPhone) {
+                if (!formData.salonName || !formData.address1 || !formData.city || !formData.state || !formData.zip || !formData.salonPhone) {
                     setError('Please fill in all required fields');
                     return false;
                 }
@@ -309,7 +313,6 @@ function RegisterSalon() {
                 formDataToSend.append('owner_password', formData.password);
                 
                 formDataToSend.append('salon_name', formData.salonName);
-                formDataToSend.append('salon_type', formData.salonType);
                 formDataToSend.append('salon_tags', JSON.stringify(formData.salonTags));
                 formDataToSend.append('salon_address1', formData.address1);
                 formDataToSend.append('salon_address2', formData.address2);
@@ -377,7 +380,6 @@ function RegisterSalon() {
                     },
                     salon: {
                         name: formData.salonName,
-                        type: formData.salonType,
                         tags: formData.salonTags,
                         address: formData.address1,
                         city: formData.city,
@@ -543,37 +545,12 @@ function RegisterSalon() {
                                     type="text" 
                                     name="salonName"
                                     placeholder="Salon Name" 
-                                    className="half"
+                                    className="full"
                                     value={formData.salonName}
                                     onChange={handleInputChange}
                                     disabled={loading}
                                     required
                                 />
-                                <input 
-                                    type="text" 
-                                    name="salonType"
-                                    placeholder="Salon Type" 
-                                    className="half"
-                                    value={formData.salonType}
-                                    onChange={handleInputChange}
-                                    disabled={loading}
-                                    required
-                                />
-                            </div>
-                            
-                            <p className="section-label">Select Salon Categories:</p>
-                            <div className="tags-container">
-                                {SALON_TAG_OPTIONS.map(tag => (
-                                    <button
-                                        key={tag}
-                                        type="button"
-                                        className={`tag-pill ${formData.salonTags.includes(tag) ? 'selected' : ''}`}
-                                        onClick={() => handleTagToggle(tag)}
-                                        disabled={loading}
-                                    >
-                                        {tag}
-                                    </button>
-                                ))}
                             </div>
                             
                             <div className="row">
@@ -640,6 +617,21 @@ function RegisterSalon() {
                                     disabled={loading}
                                     required
                                 />
+                            </div>
+                            
+                            <p className="section-label">Select the category(s) that best describe your salon:</p>
+                            <div className="tags-container">
+                                {salonTypes.map(tag => (
+                                    <button
+                                        key={tag}
+                                        type="button"
+                                        className={`tag-pill ${formData.salonTags.includes(tag) ? 'selected' : ''}`}
+                                        onClick={() => handleTagToggle(tag)}
+                                        disabled={loading}
+                                    >
+                                        {tag}
+                                    </button>
+                                ))}
                             </div>
                         </div>
                     )}
