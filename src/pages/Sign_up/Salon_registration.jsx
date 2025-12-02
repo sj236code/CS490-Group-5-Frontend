@@ -75,7 +75,7 @@ function RegisterSalon() {
                 }
             } catch (err) {
                 console.error('Failed to fetch salon types:', err);
-                setSalonTypes(['Hair', 'Nails', 'Waxing', 'Spa', 'Barber']);
+                setSalonTypes(['Salon', 'Barber', 'Lashes', 'Mani/Pedi', 'Hair Color', 'Nails', 'Waxing', 'Spa', 'Threading', 'Other']);
             }
         };
         fetchTypes();
