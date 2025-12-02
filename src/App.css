@@ -7579,3 +7579,33 @@ label {
   gap: 8px;
   margin-top: 0.5rem;
 }
+
+/* Pending Verification Message (Salon Owner Nav) */
+.nb-pending-message {
+  margin-top: 1rem;
+  padding: 0.9rem 1rem;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border-left: 4px solid rgba(255, 255, 255, 0.35);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.nb-pending-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.nb-pending-body {
+  font-size: 0.85rem;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.nb-pending-id {
+  font-size: 0.75rem;
+  margin-top: 0.3rem;
+  color: rgba(255, 255, 255, 0.6);
+}
