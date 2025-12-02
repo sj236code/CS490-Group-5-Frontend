@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { MapPin, Calendar, User } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import EmployeeEditAppt from "../components/layout/EmployeeEditAppt";
+import EmployeeSendMessageModal from "../components/layout/EmployeeSendMessageModal";
 import "../App.css";
 
 const EmployeeAppointments = () => {
@@ -20,6 +21,9 @@ const EmployeeAppointments = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [selectedAppt, setSelectedAppt] = useState(null);
+
+  const [showMessageModal, setShowMessageModal] = useState(false);
+  const [messageAppt, setMessageAppt] = useState(null);
 
   const formatApptDateTime = (isoString) => {
     if (!isoString) return "Date & time TBD";
@@ -204,6 +208,12 @@ const EmployeeAppointments = () => {
     );
   };
 
+  const handleSendMessageClick = (appt) => {
+    setMessageAppt(appt);
+    setShowMessageModal(true);
+  };
+
+
   return (
     <div className="appointments-container">
       <header className="jade-header">
@@ -244,7 +254,7 @@ const EmployeeAppointments = () => {
             </div>
 
             <div className="appt-buttons">
-              <button className="btn-send" type="button" disabled>
+              <button className="btn-send" type="button" onClick={() => handleSendMessageClick(appt)}>
                 Send Message
               </button>
               <button
@@ -300,7 +310,7 @@ const EmployeeAppointments = () => {
             </div>
 
             <div className="appt-buttons">
-              <button className="btn-send" type="button" disabled>
+              <button className="btn-send" type="button" onClick={() => handleSendMessageClick(appt)}>
                 Send Message
               </button>
             </div>
@@ -348,6 +358,18 @@ const EmployeeAppointments = () => {
           </div>
         </div>
       )}
+
+      {showMessageModal && messageAppt && (
+        <EmployeeSendMessageModal
+          isOpen={showMessageModal}
+          onClose={() => {
+            setShowMessageModal(false);
+            setMessageAppt(null);
+          }}
+          appointment={messageAppt}
+        />
+      )}
+      
     </div>
   );
 };
