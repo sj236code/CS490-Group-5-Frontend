@@ -25,6 +25,8 @@ const MyAppointments = () => {
   const [showMessageModal, setShowMessageModal] = useState(false);
   const [messageAppt, setMessageAppt] = useState(null);
 
+  const [showCancelNotice, setShowCancelNotice] = useState(false);
+
   const handleEditClick = (appt) => {
     setSelectedAppt(appt);
     setShowEditModal(true);
@@ -41,34 +43,75 @@ const MyAppointments = () => {
     setShowMessageModal(true);
   };
 
-  const handleCancelClick = async (apptId) => {
-    if (!customerId) return;
+const handleCancelClick = async (appt) => {
+  if (!customerId) return;
+
+  try {
+    // Cancel appointment in db
+    const res = await fetch(
+      `${import.meta.env.VITE_API_URL}/api/appointments/${customerId}/appointments/${appt.id}`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "CANCELLED" }),
+      }
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      console.error("Failed to cancel appointment:", data);
+      return;
+    }
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/appointments/${customerId}/appointments/${apptId}`,
+      const notifyRes = await fetch(`${import.meta.env.VITE_API_URL}/api/notifications/appointment/cancel`,
         {
-          method: "PUT",
+          method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ status: "CANCELLED" }),
+          body: JSON.stringify({
+            appointment_id: appt.id,
+            cancelled_by: "customer",
+            reason: "Appointment cancelled by customer via client portal.",
+          }),
         }
       );
 
-      const data = await res.json();
+      let notifyData = null;
+      try {
+        notifyData = await notifyRes.json();
+      } catch {}
 
-      if (!res.ok) {
-        console.error("Failed to cancel appointment:", data);
-        return;
+      if (!notifyRes.ok) {
+        console.error(
+          "Failed to send cancellation email:",
+          notifyData || "Unknown error"
+        );
       }
-
-      // remove from upcoming list in UI
-      setUpcomingAppointments((prev) =>
-        prev.filter((appt) => appt.id !== apptId)
-      );
     } 
-    catch (err) {
-      console.error("Error cancelling appointment:", err);
+    catch (notifyErr) {
+      console.error("Error calling cancellation email endpoint:", notifyErr);
     }
-  };
+
+    setUpcomingAppointments((prev) =>
+      prev.filter((a) => a.id !== appt.id)
+    );
+
+    setPreviousAppointments((prev) => [
+      {
+        ...appt,
+        status: "CANCELLED",
+      },
+      ...prev,
+    ]);
+
+    setShowCancelNotice(true);
+    setTimeout(() => setShowCancelNotice(false), 2000);
+  } 
+  catch (err) {
+    console.error("Error cancelling appointment:", err);
+  }
+};
 
   const formatApptDateTime = (isoString) => {
     if (!isoString) return "Date & time TBD";
@@ -233,7 +276,7 @@ const MyAppointments = () => {
               </button>
               <button
                 className="btn-cancel"
-                onClick={() => handleCancelClick(appt.id)}
+                onClick={() => handleCancelClick(appt)}
               >
                 Cancel
               </button>
@@ -331,6 +374,16 @@ const MyAppointments = () => {
           }}
           appointment={messageAppt}
         />
+      )}
+
+      {showCancelNotice && (
+        <div className="modal-overlay">
+          <div className="success-box">
+            <h3>Cancellation Email Sent</h3>
+            <p className="booking-updated">Email sent to salon</p>
+            <p>The salon has been notified about your cancellation.</p>
+          </div>
+        </div>
       )}
     </div>
   );
