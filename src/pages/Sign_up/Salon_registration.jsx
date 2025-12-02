@@ -301,46 +301,81 @@ function RegisterSalon() {
         setLoading(true);
         
         try {
-            const hasFiles = formData.businessLicense || formData.services.some(s => s.image);
+            // Step 1: Upload service images FIRST and get their URLs
+            const servicesWithUrls = [];
             
-            if (hasFiles) {
-                const formDataToSend = new FormData();
+            for (let i = 0; i < formData.services.length; i++) {
+                const service = formData.services[i];
                 
-                formDataToSend.append('owner_first_name', formData.firstName);
-                formDataToSend.append('owner_last_name', formData.lastName);
-                formDataToSend.append('owner_email', formData.email);
-                formDataToSend.append('owner_phone', formData.phone);
-                formDataToSend.append('owner_password', formData.password);
+                if (!service.name || !service.price) continue;
                 
-                formDataToSend.append('salon_name', formData.salonName);
-                formDataToSend.append('salon_tags', JSON.stringify(formData.salonTags));
-                formDataToSend.append('salon_address1', formData.address1);
-                formDataToSend.append('salon_address2', formData.address2);
-                formDataToSend.append('salon_city', formData.city);
-                formDataToSend.append('salon_state', formData.state);
-                formDataToSend.append('salon_zip', formData.zip);
-                formDataToSend.append('salon_phone', formData.salonPhone);
+                let icon_url = null;
                 
-                formDataToSend.append('hours', JSON.stringify(formData.hours));
-                
-                const servicesWithoutImages = formData.services
-                    .filter(s => s.name && s.price)
-                    .map(s => ({
-                        name: s.name,
-                        price: s.price,
-                        duration: s.duration,
-                        description: s.description
-                    }));
-                
-                formDataToSend.append('services', JSON.stringify(servicesWithoutImages));
-                
-                formData.services.forEach((service, index) => {
-                    if (service.image && service.name && service.price) {
-                        formDataToSend.append(`service_image_${index}`, service.image);
+                // If service has an image, upload it via temp service
+                if (service.image) {
+                    try {
+                        const tempFormData = new FormData();
+                        const tmpName = `__tmp_registration_${Date.now()}_${i}`;
+                        
+                        tempFormData.append("name", tmpName);
+                        tempFormData.append("salon_id", "1"); // Temp salon ID
+                        tempFormData.append("price", "0");
+                        tempFormData.append("duration", "0");
+                        tempFormData.append("is_active", "false");
+                        tempFormData.append("icon_file", service.image);
+                        
+                        const tmpRes = await fetch(
+                            `${import.meta.env.VITE_API_URL}/api/salon_register/add_service`,
+                            { method: "POST", body: tempFormData }
+                        );
+                        
+                        const tmpData = await tmpRes.json();
+                        
+                        if (tmpRes.ok && tmpData?.service?.icon_url) {
+                            icon_url = tmpData.service.icon_url;
+                            
+                            // Delete temp service
+                            if (tmpData.service.id) {
+                                await fetch(
+                                    `${import.meta.env.VITE_API_URL}/api/salon_register/delete_service/${tmpData.service.id}`,
+                                    { method: "DELETE" }
+                                ).catch(() => {}); // Ignore delete errors
+                            }
+                        }
+                    } catch (imgErr) {
+                        console.warn(`Failed to upload image for service ${i}:`, imgErr);
                     }
-                });
+                }
                 
-                formDataToSend.append('payment_methods', JSON.stringify({
+                servicesWithUrls.push({
+                    name: service.name,
+                    price: service.price,
+                    duration: service.duration || 60,
+                    description: service.description || '',
+                    icon_url: icon_url
+                });
+            }
+            
+            // Step 2: Now send the full registration with service URLs
+            const requestData = {
+                owner: {
+                    name: `${formData.firstName} ${formData.lastName}`,
+                    email: formData.email,
+                    phone: formData.phone,
+                    password: formData.password
+                },
+                salon: {
+                    name: formData.salonName,
+                    tags: formData.salonTags,
+                    address: formData.address1,
+                    city: formData.city,
+                    state: formData.state,
+                    zip: formData.zip,
+                    phone: formData.salonPhone
+                },
+                hours: formData.hours,
+                services: servicesWithUrls,
+                payment_methods: {
                     card: formData.paymentCard,
                     cash: formData.paymentCash,
                     venmo: formData.paymentVenmo,
@@ -348,81 +383,26 @@ function RegisterSalon() {
                     check: formData.paymentCheck,
                     other: formData.paymentOther,
                     other_details: formData.paymentOtherDetails
-                }));
-                
-                formDataToSend.append('terms_agreed', formData.termsAgreed.toString());
-                formDataToSend.append('business_confirmed', formData.businessConfirmed.toString());
-                
-                if (formData.businessLicense) {
-                    formDataToSend.append('business_license', formData.businessLicense);
-                }
+                },
+                terms_agreed: formData.termsAgreed,
+                business_confirmed: formData.businessConfirmed
+            };
 
-                const response = await fetch(`${import.meta.env.VITE_API_URL}/api/salon_register/register`, {
-                    method: 'POST',
-                    body: formDataToSend
-                });
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/salon_register/register`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestData)
+            });
 
-                const data = await response.json();
+            const data = await response.json();
 
-                if (data.status === 'success' || response.ok) {
-                    console.log('Salon registration successful:', data);
-                    navigate('/register-salon-success');
-                } else {
-                    setError(data.message || data.error || 'Unable to register salon. Please try again.');
-                }
+            if (data.status === 'success' || response.ok) {
+                console.log('Salon registration successful:', data);
+                navigate('/register-salon-success');
             } else {
-                const requestData = {
-                    owner: {
-                        name: `${formData.firstName} ${formData.lastName}`,
-                        email: formData.email,
-                        phone: formData.phone,
-                        password: formData.password
-                    },
-                    salon: {
-                        name: formData.salonName,
-                        tags: formData.salonTags,
-                        address: formData.address1,
-                        city: formData.city,
-                        state: formData.state,
-                        zip: formData.zip,
-                        phone: formData.salonPhone
-                    },
-                    hours: formData.hours,
-                    services: formData.services.filter(s => s.name && s.price).map(s => ({
-                        name: s.name,
-                        price: s.price,
-                        duration: s.duration,
-                        description: s.description
-                    })),
-                    payment_methods: {
-                        card: formData.paymentCard,
-                        cash: formData.paymentCash,
-                        venmo: formData.paymentVenmo,
-                        zelle: formData.paymentZelle,
-                        check: formData.paymentCheck,
-                        other: formData.paymentOther,
-                        other_details: formData.paymentOtherDetails
-                    },
-                    terms_agreed: formData.termsAgreed,
-                    business_confirmed: formData.businessConfirmed
-                };
-
-                const response = await fetch(`${import.meta.env.VITE_API_URL}/api/salon_register/register`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(requestData)
-                });
-
-                const data = await response.json();
-
-                if (data.status === 'success' || response.ok) {
-                    console.log('Salon registration successful:', data);
-                    navigate('/register-salon-success');
-                } else {
-                    setError(data.message || data.error || 'Unable to register salon. Please try again.');
-                }
+                setError(data.message || data.error || 'Unable to register salon. Please try again.');
             }
         } catch (err) {
             console.error('Salon registration error:', err);
