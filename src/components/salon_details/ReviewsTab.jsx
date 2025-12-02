@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Star } from 'lucide-react'; 
+import { Star, Plus } from 'lucide-react';
+import PostReviewModal from './PostReviewModal';
 import './ReviewsTab.css'; 
 
 
@@ -26,6 +27,23 @@ function ReviewsTab({ salon }) {
     const [reviews, setReviews] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [showPostModal, setShowPostModal] = useState(false);
+    const [customerId, setCustomerId] = useState(null);
+
+    useEffect(() => {
+        const storedUserId = localStorage.getItem('user_id');
+        if (storedUserId) {
+            // Get customer ID
+            fetch(`${import.meta.env.VITE_API_URL}/api/auth/user-type/${storedUserId}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.profile_id) {
+                        setCustomerId(data.profile_id);
+                    }
+                })
+                .catch(err => console.error('Failed to fetch customer profile:', err));
+        }
+    }, []);
 
     useEffect(() => {
         if (!salon?.id) {
@@ -38,7 +56,7 @@ function ReviewsTab({ salon }) {
             setIsLoading(true);
             setError(null);
             try {
-                const response = await fetch(`${import.meta.env.VITE_API_URL}/api/salons/details/1/reviews`);
+                const response = await fetch(`${import.meta.env.VITE_API_URL}/api/salons/details/${salon.id}/reviews`);
                 if (!response.ok) {
                     throw new Error("Failed to fetch reviews");
                 }
@@ -64,12 +82,55 @@ function ReviewsTab({ salon }) {
     }
 
     if (reviews.length === 0) {
-        return <div>No reviews have been posted yet.</div>;
+        return (
+            <div className="reviews-container">
+                <div className="reviews-empty">
+                    <p>No reviews have been posted yet.</p>
+                    {customerId ? (
+                        <button
+                            className="btn-post-review"
+                            onClick={() => setShowPostModal(true)}
+                        >
+                            <Plus size={18} />
+                            Be the first to review
+                        </button>
+                    ) : (
+                        <p className="login-prompt">Sign in to post a review</p>
+                    )}
+                </div>
+                {showPostModal && customerId && (
+                    <PostReviewModal
+                        salon={salon}
+                        customerId={customerId}
+                        onClose={() => setShowPostModal(false)}
+                        onReviewPosted={() => {
+                            // Refresh reviews after posting
+                            window.location.reload();
+                        }}
+                    />
+                )}
+            </div>
+        );
     }
 
     return (
-        <div className="reviews-list">
-            {reviews.map((review) => (
+        <div className="reviews-container">
+            <div className="reviews-header">
+                <h2>Reviews</h2>
+                {customerId ? (
+                    <button
+                        className="btn-post-review"
+                        onClick={() => setShowPostModal(true)}
+                    >
+                        <Plus size={18} />
+                        Post a Review
+                    </button>
+                ) : (
+                    <p className="login-prompt">Sign in to post a review</p>
+                )}
+            </div>
+            <div className="reviews-list">
+                {reviews.map((review) => (
                 <div key={review.id} className="review-item">
                     <div className="review-header">
                         <span className="review-customer-name">{review.customer_name}</span>
@@ -95,6 +156,19 @@ function ReviewsTab({ salon }) {
                     )}
                 </div>
             ))}
+            </div>
+
+            {showPostModal && customerId && (
+                <PostReviewModal
+                    salon={salon}
+                    customerId={customerId}
+                    onClose={() => setShowPostModal(false)}
+                    onReviewPosted={() => {
+                        // Refresh reviews after posting
+                        window.location.reload();
+                    }}
+                />
+            )}
         </div>
     );
 }

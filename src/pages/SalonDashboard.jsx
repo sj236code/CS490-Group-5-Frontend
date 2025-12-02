@@ -4,14 +4,16 @@ import { Star } from 'lucide-react';
 import DashboardManageTab from '../components/salon_dashboard/DashboardManageTab';
 import DashboardLoyaltyTab from '../components/salon_dashboard/DashboardLoyaltyTab';
 import DashboardCalendarTab from '../components/salon_dashboard/DashboardCalendarTab';
+import DashboardMetricsTab from '../components/salon_dashboard/DashboardMetricsTab';
+import DashboardEmployeesTab from '../components/salon_dashboard/DashboardEmployeesTab';
 
 function SalonDashboard() {
     const location = useLocation();
     const navigate = useNavigate();
     const [searchParams] = useSearchParams(); 
-    const { salon } = location.state || {};
+    const { salon, user } = location.state || {};
 
-    const [workingTab, setWorkingTab] = useState("Manage");
+    const [workingTab, setWorkingTab] = useState("Metrics");
     const [salonDetails, setSalonDetails] = useState(null);
 
     useEffect(() => {
@@ -76,7 +78,7 @@ function SalonDashboard() {
             </div>
 
             <div className="salon-details-tabs">
-                {["Metrics", "Calendar", "Manage", "Loyalty"].map(tab => (
+                {["Metrics", "Calendar", "Manage", "Loyalty", "Employees"].map(tab => (
                     <button
                         key={tab}
                         className="salon-detail-tab-link"
@@ -88,10 +90,11 @@ function SalonDashboard() {
             </div>
 
             <div className="salon-details-tab-content">
-                {workingTab === "Metrics" && <h2>Metrics Page for: {salonDetails.name}</h2>}
-                {workingTab === "Calendar" && <DashboardCalendarTab salon={salonDetails} />}
+                {workingTab === "Metrics" && <DashboardMetricsTab salon={salonDetails} user={user}/>}
+                {workingTab === "Calendar" && <DashboardCalendarTab salon={salonDetails} user={user}/>}
                 {workingTab === "Loyalty" && <DashboardLoyaltyTab salon={salonDetails} />}
                 {workingTab === "Manage" && <DashboardManageTab salon={salonDetails} />}
+                {workingTab === "Employees" && <DashboardEmployeesTab salon={salonDetails} user={user} />}
             </div>
         </div>
     );

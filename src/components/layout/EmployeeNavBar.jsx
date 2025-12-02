@@ -44,14 +44,14 @@ function EmployeeNavBar({onClose, onLogout, userId, user}){
                     </div>
                 </div>
 
-                {/* MyJade Account */}
-                <div className="nb-section">
-                    <div className="nb-section-title">MyJade Account</div>
-                    <button className="nb-text-link" onClick={() => navTo('/employee-appointments')}>Appointments</button>
-                    <button className="nb-text-link" onClick={() => navTo('/employee-availability')}>Scheduling</button>
-                    <button className="nb-text-link" onClick={() => navTo('/paymentportal')}>Payment Portal</button>
-                    <button className="nb-text-link" onClick={() => navTo('/messages')}>Messages</button>
-                    <button className="nb-text-link" onClick={handleLogout}>Log Out</button>
+            {/* MyJade Account */}
+            <div className="nb-section">
+                <div className="nb-section-title">MyJade Account</div>
+                <button className="nb-text-link" onClick={() => navTo('/employee-appointments')}>Appointments</button>
+                <button className="nb-text-link" onClick={() => navTo('/employee-availability')}>Scheduling</button>
+                <button className="nb-text-link" onClick={() => navTo('/employee-payment-portal')}>Payment Portal</button>
+                <button className="nb-text-link" onClick={() => navTo('/messages')}>Messages</button>
+                <button className="nb-text-link" onClick={handleLogout}>Log Out</button>
 
                 </div>
 
