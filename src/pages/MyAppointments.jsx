@@ -270,12 +270,6 @@ const MyAppointments = () => {
               <button className="btn-send" type="button" onClick={() => handleSendMessageClick(appt)}>
                 Send Message
               </button>
-              <button
-                className="btn-edit"
-                onClick={() => handleEditClick(appt)}
-              >
-                Edit
-              </button>
             </div>
           </div>
         ))}
