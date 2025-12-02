@@ -2,7 +2,11 @@
 import { useEffect, useState } from "react";
 import { BarChart3, Users } from "lucide-react";
 
-function DashboardLoyaltyTab({salon}) {
+const API_BASE = import.meta.env.VITE_API_URL
+  ? import.meta.env.VITE_API_URL.replace(/\/+$/, "")
+  : "";
+
+function DashboardLoyaltyTab({ salon }) {
   // Program Summary
   const [programSummary, setProgramSummary] = useState({
     pointsPerDollar: 1,
@@ -12,14 +16,14 @@ function DashboardLoyaltyTab({salon}) {
   // Manage Program Settings form
   const [programSettings, setProgramSettings] = useState({
     pointsPerDollar: 1,
-    redemptionValue: "10 pts = $1",
+    redemptionValue: "100 pts = $10 off",
     expirationDays: 365,
   });
 
-  // Pause state
-  const [isPaused, setIsPaused] = useState(false);
+  const [hasProgram, setHasProgram] = useState(false);
+  const [isPaused, setIsPaused] = useState(false); // true when active=0
 
-  // Chart + customer table
+  // Chart + customer table (still mock for now)
   const [engagementData, setEngagementData] = useState([]);
   const [customerPoints, setCustomerPoints] = useState([]);
 
@@ -32,49 +36,59 @@ function DashboardLoyaltyTab({salon}) {
     }
   }, [salon?.id]);
 
-  // Later you can replace this with a real endpoint for summary + settings
   const loadProgramDetails = async () => {
+    if (!salon?.id) return;
+
     try {
-      // Example shape if you fetch from your backend:
-      // const res = await fetch(`${import.meta.env.VITE_API_URL}/api/loyalty/${salon.id}/settings`);
-      // const data = await res.json();
-      // setProgramSummary({
-      //   pointsPerDollar: data.points_per_dollar,
-      //   redeemText: data.redemption_text,
-      // });
-      // setProgramSettings({
-      //   pointsPerDollar: data.points_per_dollar,
-      //   redemptionValue: data.redemption_value,
-      //   expirationDays: data.expiration_days,
-      // });
-      // setIsPaused(data.is_paused);
+      const res = await fetch(`${API_BASE}/api/loyalty/salon/${salon.id}`);
 
-      // For now, use mock data
-      const mockSummary = {
-        pointsPerDollar: 1,
-        redeemText: "100 pts = $10 off",
-      };
-      const mockSettings = {
-        pointsPerDollar: 1,
-        redemptionValue: "10 pts = $1",
-        expirationDays: 365,
-      };
+      if (!res.ok) {
+        // If backend says "no program", treat as no program configured yet
+        if (res.status === 404) {
+          console.warn("No loyalty program found for this salon yet.");
+          setHasProgram(false);
+          setIsPaused(true);
+          return;
+        }
 
-      setProgramSummary(mockSummary);
-      setProgramSettings(mockSettings);
-      setIsPaused(false);
+        console.error("Failed to load loyalty program:", res.status);
+        setHasProgram(false);
+        setIsPaused(true);
+        return;
+      }
+
+      const data = await res.json();
+      console.log("Loyalty program for salon:", data);
+
+      setHasProgram(true);
+
+      const redeemText = data.reward_description || "100 pts = $10 off";
+
+      const pointsPerDollar = Number(data.points_per_dollar || 1);
+
+      setProgramSummary({
+        pointsPerDollar,
+        redeemText,
+      });
+
+      setProgramSettings((prev) => ({
+        ...prev,
+        pointsPerDollar,
+        redemptionValue: redeemText,
+      }));
+
+      // active is 0/1 – active=0 means "inactive / not set up / paused"
+      const active = data.active;
+      setIsPaused(active === 0 || active === false);
     } catch (err) {
       console.error("Unable to load program details:", err);
+      setHasProgram(false);
+      setIsPaused(true);
     }
   };
 
   const loadEngagementData = async () => {
     try {
-      // Later:
-      // const res = await fetch(`${import.meta.env.VITE_API_URL}/api/loyalty/${salon.id}/engagement`);
-      // const data = await res.json();
-      // setEngagementData(data);
-
       const mockEngagement = [
         { month: "Jan", earned: 300, redeemed: 100 },
         { month: "Feb", earned: 600, redeemed: 250 },
@@ -91,11 +105,6 @@ function DashboardLoyaltyTab({salon}) {
 
   const loadCustomerPoints = async () => {
     try {
-      // Later:
-      // const res = await fetch(`${import.meta.env.VITE_API_URL}/api/loyalty/${salon.id}/customers`);
-      // const data = await res.json();
-      // setCustomerPoints(data.customers);
-
       const mockCustomers = [
         { id: 1, name: "John Doe", points: 320, visits: 12, lastVisit: "Jan 6" },
         { id: 2, name: "Jane Doe", points: 80, visits: 3, lastVisit: "Sept 28" },
@@ -115,45 +124,77 @@ function DashboardLoyaltyTab({salon}) {
   };
 
   const handleSaveSettings = async () => {
-    // When user saves, update summary to match settings
     const newSummary = {
       pointsPerDollar: programSettings.pointsPerDollar,
       redeemText: programSettings.redemptionValue,
     };
     setProgramSummary(newSummary);
 
+    if (!salon?.id) {
+      console.warn("No salon id available to save settings");
+      return;
+    }
+
     try {
-      // Later you can send to backend:
-      // await fetch(`${import.meta.env.VITE_API_URL}/api/loyalty/${salon.id}/settings`, {
-      //   method: "PUT",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify({
-      //     points_per_dollar: programSettings.pointsPerDollar,
-      //     redemption_value: programSettings.redemptionValue,
-      //     expiration_days: programSettings.expirationDays,
-      //     is_paused: isPaused,
-      //   }),
-      // });
-      console.log("Saving settings:", programSettings, "Paused:", isPaused);
+      const body = {
+        reward_description: programSettings.redemptionValue,
+        active: isPaused ? 0 : 1,
+        // points_per_dollar: programSettings.pointsPerDollar, // when supported
+      };
+
+      const res = await fetch(`${API_BASE}/api/loyalty/salon/${salon.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+
+      if (!res.ok) {
+        const errBody = await res.json().catch(() => null);
+        console.error("Unable to save settings:", errBody || res.status);
+      } else {
+        const data = await res.json();
+        console.log("Saved loyalty settings:", data);
+        setHasProgram(true);
+      }
     } catch (err) {
       console.error("Unable to save settings:", err);
     }
   };
 
   const handlePauseToggle = async () => {
+    if (!salon?.id) {
+      console.warn("No salon id available to toggle pause");
+      return;
+    }
+
     const newPaused = !isPaused;
     setIsPaused(newPaused);
 
     try {
-      // Later:
-      // await fetch(`${import.meta.env.VITE_API_URL}/api/loyalty/${salon.id}/pause`, {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify({ is_paused: newPaused }),
-      // });
-      console.log(newPaused ? "Program paused" : "Program unpaused");
-    } catch (err) {
+      const body = {
+        active: newPaused ? 0 : 1,
+      };
+
+      const res = await fetch(`${API_BASE}/api/loyalty/salon/${salon.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+
+      if (!res.ok) {
+        const errBody = await res.json().catch(() => null);
+        console.error("Unable to update pause state:", errBody || res.status);
+        setIsPaused(!newPaused);
+      } 
+      else {
+        const data = await res.json();
+        console.log("Updated pause state:", data);
+        setHasProgram(true);
+      }
+    } 
+    catch (err) {
       console.error("Unable to update pause state:", err);
+      setIsPaused(!newPaused);
     }
   };
 
@@ -166,8 +207,15 @@ function DashboardLoyaltyTab({salon}) {
           <div className="loyalty-card program-summary-card">
             <h2 className="loyalty-card-title">Program Summary</h2>
 
-            {isPaused ? (
-              <p className="loyalty-text-line">Program Paused</p>
+            {/* NEW SUMMARY LOGIC */}
+            {!hasProgram ? (
+              <p className="loyalty-text-line">
+                No loyalty program found. Use the form below to set up your Loyalty Program.
+              </p>
+            ) : isPaused ? (
+              <p className="loyalty-text-line">
+                Set up Loyalty Program to see Details.
+              </p>
             ) : (
               <>
                 <p className="loyalty-text-line">
@@ -182,7 +230,9 @@ function DashboardLoyaltyTab({salon}) {
 
           {/* Manage Program Settings Card */}
           <div className="loyalty-card program-settings-card">
-            <h2 className="loyalty-card-title">Manage Program Settings</h2>
+            <h2 className="loyalty-card-title">
+              {hasProgram && !isPaused ? "Manage Program Settings" : "Set up Loyalty Program"}
+            </h2>
 
             <div className="loyalty-field-row">
               <label className="loyalty-label">Points per $ spent:</label>
@@ -225,10 +275,10 @@ function DashboardLoyaltyTab({salon}) {
 
             <div className="loyalty-button-row">
               <button className="loyalty-primary-btn" onClick={handleSaveSettings}>
-                Save Changes
+                {hasProgram && !isPaused ? "Save Changes" : "Create Program"}
               </button>
               <button className="loyalty-secondary-btn" onClick={handlePauseToggle}>
-                {isPaused ? "Unpause Program" : "Pause Program"}
+                {isPaused ? "Activate Program" : "Pause Program"}
               </button>
             </div>
           </div>
