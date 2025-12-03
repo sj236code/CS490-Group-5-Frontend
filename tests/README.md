@@ -17,22 +17,8 @@ tests/
 │   └─ owner-auth.spec.js          # Salon owner login
 │
 ├─ customer/
-│   ├─ dashboard.spec.js           # Customer dashboard
-│   ├─ salon-search.spec.js        # Search & browse salons
-│   ├─ appointment-booking.spec.js # Book an appointment
-│   ├─ appointment-history.spec.js # View past appointments
+│   ├─ book-appt.spec.js           # Book Appointment
 │   └─ loyalty.spec.js             # Customer loyalty features
-│
-├─ employee/
-│   ├─ dashboard.spec.js
-│   ├─ appointments.spec.js
-│   └─ availability.spec.js
-│
-├─ owner/
-│   ├─ dashboard.spec.js
-│   ├─ employees.spec.js
-│   ├─ loyalty.spec.js
-│   └─ payments.spec.js
 │
 └─ utils/
     ├─ login.js                    # Reusable login helpers for each role
