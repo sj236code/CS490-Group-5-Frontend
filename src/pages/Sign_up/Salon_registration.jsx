@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, Upload, X } from 'lucide-react';
 import './Salon_registration.css';
@@ -7,6 +7,7 @@ function RegisterSalon() {
     const [currentStep, setCurrentStep] = useState(1);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [salonTypes, setSalonTypes] = useState([]);
     const fileInputRef = useRef(null);
     const serviceImageInputRefs = useRef([]);
     
@@ -22,7 +23,7 @@ function RegisterSalon() {
         
         // Step 2: Salon Details
         salonName: '',
-        salonType: '',
+        salonTags: [],
         address1: '',
         address2: '',
         city: '',
@@ -64,6 +65,22 @@ function RegisterSalon() {
 
     const navigate = useNavigate();
 
+    useEffect(() => {
+        const fetchTypes = async () => {
+            try {
+                const response = await fetch(`${import.meta.env.VITE_API_URL}/api/salon_register/types`);
+                const data = await response.json();
+                if (data.status === 'success') {
+                    setSalonTypes(data.types);
+                }
+            } catch (err) {
+                console.error('Failed to fetch salon types:', err);
+                setSalonTypes(['Salon', 'Barber', 'Lashes', 'Mani/Pedi', 'Hair Color', 'Nails', 'Waxing', 'Spa', 'Threading', 'Other']);
+            }
+        };
+        fetchTypes();
+    }, []);
+
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
         setFormData(prev => ({
@@ -71,6 +88,25 @@ function RegisterSalon() {
             [name]: type === 'checkbox' ? checked : value
         }));
         setError('');
+    };
+
+    const handleTagToggle = (tag) => {
+        setFormData(prev => {
+            const currentTags = prev.salonTags;
+            const isSelected = currentTags.includes(tag);
+            
+            if (isSelected) {
+                return {
+                    ...prev,
+                    salonTags: currentTags.filter(t => t !== tag)
+                };
+            } else {
+                return {
+                    ...prev,
+                    salonTags: [...currentTags, tag]
+                };
+            }
+        });
     };
 
     const handleHoursChange = (day, field, value) => {
@@ -105,14 +141,12 @@ function RegisterSalon() {
         const file = event.target.files?.[0];
         if (!file) return;
 
-        // Validate file type
         const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
         if (!validTypes.includes(file.type)) {
             setError('Please upload a JPG or PNG file for service images');
             return;
         }
 
-        // Validate file size (5MB max)
         if (file.size > 5 * 1024 * 1024) {
             setError('Image size must be less than 5MB');
             return;
@@ -160,14 +194,12 @@ function RegisterSalon() {
         const file = event.target.files?.[0];
         if (!file) return;
 
-        // Validate file type
         const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
         if (!validTypes.includes(file.type)) {
             setError('Please upload a JPG, PNG, or PDF file');
             return;
         }
 
-        // Validate file size (5MB max)
         if (file.size > 5 * 1024 * 1024) {
             setError('File size must be less than 5MB');
             return;
@@ -231,8 +263,12 @@ function RegisterSalon() {
                 }
                 break;
             case 2:
-                if (!formData.salonName || !formData.salonType || !formData.address1 || !formData.city || !formData.state || !formData.zip || !formData.salonPhone) {
+                if (!formData.salonName || !formData.address1 || !formData.city || !formData.state || !formData.zip || !formData.salonPhone) {
                     setError('Please fill in all required fields');
+                    return false;
+                }
+                if (formData.salonTags.length === 0) {
+                    setError('Please select at least one salon category');
                     return false;
                 }
                 break;
@@ -265,54 +301,81 @@ function RegisterSalon() {
         setLoading(true);
         
         try {
-            // Check if we have any files to upload
-            const hasFiles = formData.businessLicense || formData.services.some(s => s.image);
+            // Step 1: Upload service images FIRST and get their URLs
+            const servicesWithUrls = [];
             
-            if (hasFiles) {
-                // Use FormData if we have files
-                const formDataToSend = new FormData();
+            for (let i = 0; i < formData.services.length; i++) {
+                const service = formData.services[i];
                 
-                // Add owner info
-                formDataToSend.append('owner_first_name', formData.firstName);
-                formDataToSend.append('owner_last_name', formData.lastName);
-                formDataToSend.append('owner_email', formData.email);
-                formDataToSend.append('owner_phone', formData.phone);
-                formDataToSend.append('owner_password', formData.password);
+                if (!service.name || !service.price) continue;
                 
-                // Add salon info
-                formDataToSend.append('salon_name', formData.salonName);
-                formDataToSend.append('salon_type', formData.salonType);
-                formDataToSend.append('salon_address1', formData.address1);
-                formDataToSend.append('salon_address2', formData.address2);
-                formDataToSend.append('salon_city', formData.city);
-                formDataToSend.append('salon_state', formData.state);
-                formDataToSend.append('salon_zip', formData.zip);
-                formDataToSend.append('salon_phone', formData.salonPhone);
+                let icon_url = null;
                 
-                // Add hours as JSON string
-                formDataToSend.append('hours', JSON.stringify(formData.hours));
-                
-                // Add services (without images in JSON)
-                const servicesWithoutImages = formData.services
-                    .filter(s => s.name && s.price)
-                    .map(s => ({
-                        name: s.name,
-                        price: s.price,
-                        duration: s.duration,
-                        description: s.description
-                    }));
-                
-                formDataToSend.append('services', JSON.stringify(servicesWithoutImages));
-                
-                // Add service images with index reference
-                formData.services.forEach((service, index) => {
-                    if (service.image && service.name && service.price) {
-                        formDataToSend.append(`service_image_${index}`, service.image);
+                // If service has an image, upload it via temp service
+                if (service.image) {
+                    try {
+                        const tempFormData = new FormData();
+                        const tmpName = `__tmp_registration_${Date.now()}_${i}`;
+                        
+                        tempFormData.append("name", tmpName);
+                        tempFormData.append("salon_id", "1"); // Temp salon ID
+                        tempFormData.append("price", "0");
+                        tempFormData.append("duration", "0");
+                        tempFormData.append("is_active", "false");
+                        tempFormData.append("icon_file", service.image);
+                        
+                        const tmpRes = await fetch(
+                            `${import.meta.env.VITE_API_URL}/api/salon_register/add_service`,
+                            { method: "POST", body: tempFormData }
+                        );
+                        
+                        const tmpData = await tmpRes.json();
+                        
+                        if (tmpRes.ok && tmpData?.service?.icon_url) {
+                            icon_url = tmpData.service.icon_url;
+                            
+                            // Delete temp service
+                            if (tmpData.service.id) {
+                                await fetch(
+                                    `${import.meta.env.VITE_API_URL}/api/salon_register/delete_service/${tmpData.service.id}`,
+                                    { method: "DELETE" }
+                                ).catch(() => {}); // Ignore delete errors
+                            }
+                        }
+                    } catch (imgErr) {
+                        console.warn(`Failed to upload image for service ${i}:`, imgErr);
                     }
-                });
+                }
                 
-                // Add payment methods as JSON string
-                formDataToSend.append('payment_methods', JSON.stringify({
+                servicesWithUrls.push({
+                    name: service.name,
+                    price: service.price,
+                    duration: service.duration || 60,
+                    description: service.description || '',
+                    icon_url: icon_url
+                });
+            }
+            
+            // Step 2: Now send the full registration with service URLs
+            const requestData = {
+                owner: {
+                    name: `${formData.firstName} ${formData.lastName}`,
+                    email: formData.email,
+                    phone: formData.phone,
+                    password: formData.password
+                },
+                salon: {
+                    name: formData.salonName,
+                    tags: formData.salonTags,
+                    address: formData.address1,
+                    city: formData.city,
+                    state: formData.state,
+                    zip: formData.zip,
+                    phone: formData.salonPhone
+                },
+                hours: formData.hours,
+                services: servicesWithUrls,
+                payment_methods: {
                     card: formData.paymentCard,
                     cash: formData.paymentCash,
                     venmo: formData.paymentVenmo,
@@ -320,85 +383,26 @@ function RegisterSalon() {
                     check: formData.paymentCheck,
                     other: formData.paymentOther,
                     other_details: formData.paymentOtherDetails
-                }));
-                
-                // Add verification
-                formDataToSend.append('terms_agreed', formData.termsAgreed.toString());
-                formDataToSend.append('business_confirmed', formData.businessConfirmed.toString());
-                
-                // Add business license file if present
-                if (formData.businessLicense) {
-                    formDataToSend.append('business_license', formData.businessLicense);
-                }
+                },
+                terms_agreed: formData.termsAgreed,
+                business_confirmed: formData.businessConfirmed
+            };
 
-                // API Call with FormData
-                const response = await fetch(`${import.meta.env.VITE_API_URL}/api/salon_register/register`, {
-                    method: 'POST',
-                    body: formDataToSend
-                });
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/salon_register/register`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestData)
+            });
 
-                const data = await response.json();
+            const data = await response.json();
 
-                if (data.status === 'success' || response.ok) {
-                    console.log('Salon registration successful:', data);
-                    navigate('/register-salon-success');
-                } else {
-                    setError(data.message || data.error || 'Unable to register salon. Please try again.');
-                }
+            if (data.status === 'success' || response.ok) {
+                console.log('Salon registration successful:', data);
+                navigate('/register-salon-success');
             } else {
-                // Use JSON if no files (original approach)
-                const requestData = {
-                    owner: {
-                        name: `${formData.firstName} ${formData.lastName}`,
-                        email: formData.email,
-                        phone: formData.phone,
-                        password: formData.password
-                    },
-                    salon: {
-                        name: formData.salonName,
-                        type: formData.salonType,
-                        address: formData.address1,
-                        city: formData.city,
-                        state: formData.state,
-                        zip: formData.zip,
-                        phone: formData.salonPhone
-                    },
-                    hours: formData.hours,
-                    services: formData.services.filter(s => s.name && s.price).map(s => ({
-                        name: s.name,
-                        price: s.price,
-                        duration: s.duration,
-                        description: s.description
-                    })),
-                    payment_methods: {
-                        card: formData.paymentCard,
-                        cash: formData.paymentCash,
-                        venmo: formData.paymentVenmo,
-                        zelle: formData.paymentZelle,
-                        check: formData.paymentCheck,
-                        other: formData.paymentOther,
-                        other_details: formData.paymentOtherDetails
-                    },
-                    terms_agreed: formData.termsAgreed,
-                    business_confirmed: formData.businessConfirmed
-                };
-
-                const response = await fetch(`${import.meta.env.VITE_API_URL}/api/salon_register/register`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(requestData)
-                });
-
-                const data = await response.json();
-
-                if (data.status === 'success' || response.ok) {
-                    console.log('Salon registration successful:', data);
-                    navigate('/register-salon-success');
-                } else {
-                    setError(data.message || data.error || 'Unable to register salon. Please try again.');
-                }
+                setError(data.message || data.error || 'Unable to register salon. Please try again.');
             }
         } catch (err) {
             console.error('Salon registration error:', err);
@@ -521,23 +525,14 @@ function RegisterSalon() {
                                     type="text" 
                                     name="salonName"
                                     placeholder="Salon Name" 
-                                    className="half"
+                                    className="full"
                                     value={formData.salonName}
                                     onChange={handleInputChange}
                                     disabled={loading}
                                     required
                                 />
-                                <input 
-                                    type="text" 
-                                    name="salonType"
-                                    placeholder="Salon Type" 
-                                    className="half"
-                                    value={formData.salonType}
-                                    onChange={handleInputChange}
-                                    disabled={loading}
-                                    required
-                                />
                             </div>
+                            
                             <div className="row">
                                 <input 
                                     type="text" 
@@ -603,6 +598,21 @@ function RegisterSalon() {
                                     required
                                 />
                             </div>
+                            
+                            <p className="section-label">Select the category(s) that best describe your salon:</p>
+                            <div className="tags-container">
+                                {salonTypes.map(tag => (
+                                    <button
+                                        key={tag}
+                                        type="button"
+                                        className={`tag-pill ${formData.salonTags.includes(tag) ? 'selected' : ''}`}
+                                        onClick={() => handleTagToggle(tag)}
+                                        disabled={loading}
+                                    >
+                                        {tag}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
                     )}
 
@@ -614,21 +624,117 @@ function RegisterSalon() {
                                 {Object.keys(formData.hours).map(day => (
                                     <div key={day} className="hours-row">
                                         <span className="day-name">{day.charAt(0).toUpperCase() + day.slice(1).slice(0, 3)}.</span>
-                                        <input 
-                                            type="time" 
-                                            className="time-input"
+                                        <select 
+                                            className="time-select"
                                             value={formData.hours[day].open}
                                             onChange={(e) => handleHoursChange(day, 'open', e.target.value)}
                                             disabled={formData.hours[day].closed || loading}
-                                        />
+                                        >
+                                            <option value="00:00">12:00 AM</option>
+                                            <option value="00:30">12:30 AM</option>
+                                            <option value="01:00">1:00 AM</option>
+                                            <option value="01:30">1:30 AM</option>
+                                            <option value="02:00">2:00 AM</option>
+                                            <option value="02:30">2:30 AM</option>
+                                            <option value="03:00">3:00 AM</option>
+                                            <option value="03:30">3:30 AM</option>
+                                            <option value="04:00">4:00 AM</option>
+                                            <option value="04:30">4:30 AM</option>
+                                            <option value="05:00">5:00 AM</option>
+                                            <option value="05:30">5:30 AM</option>
+                                            <option value="06:00">6:00 AM</option>
+                                            <option value="06:30">6:30 AM</option>
+                                            <option value="07:00">7:00 AM</option>
+                                            <option value="07:30">7:30 AM</option>
+                                            <option value="08:00">8:00 AM</option>
+                                            <option value="08:30">8:30 AM</option>
+                                            <option value="09:00">9:00 AM</option>
+                                            <option value="09:30">9:30 AM</option>
+                                            <option value="10:00">10:00 AM</option>
+                                            <option value="10:30">10:30 AM</option>
+                                            <option value="11:00">11:00 AM</option>
+                                            <option value="11:30">11:30 AM</option>
+                                            <option value="12:00">12:00 PM</option>
+                                            <option value="12:30">12:30 PM</option>
+                                            <option value="13:00">1:00 PM</option>
+                                            <option value="13:30">1:30 PM</option>
+                                            <option value="14:00">2:00 PM</option>
+                                            <option value="14:30">2:30 PM</option>
+                                            <option value="15:00">3:00 PM</option>
+                                            <option value="15:30">3:30 PM</option>
+                                            <option value="16:00">4:00 PM</option>
+                                            <option value="16:30">4:30 PM</option>
+                                            <option value="17:00">5:00 PM</option>
+                                            <option value="17:30">5:30 PM</option>
+                                            <option value="18:00">6:00 PM</option>
+                                            <option value="18:30">6:30 PM</option>
+                                            <option value="19:00">7:00 PM</option>
+                                            <option value="19:30">7:30 PM</option>
+                                            <option value="20:00">8:00 PM</option>
+                                            <option value="20:30">8:30 PM</option>
+                                            <option value="21:00">9:00 PM</option>
+                                            <option value="21:30">9:30 PM</option>
+                                            <option value="22:00">10:00 PM</option>
+                                            <option value="22:30">10:30 PM</option>
+                                            <option value="23:00">11:00 PM</option>
+                                            <option value="23:30">11:30 PM</option>
+                                        </select>
                                         <span>to</span>
-                                        <input 
-                                            type="time" 
-                                            className="time-input"
+                                        <select 
+                                            className="time-select"
                                             value={formData.hours[day].close}
                                             onChange={(e) => handleHoursChange(day, 'close', e.target.value)}
                                             disabled={formData.hours[day].closed || loading}
-                                        />
+                                        >
+                                            <option value="00:00">12:00 AM</option>
+                                            <option value="00:30">12:30 AM</option>
+                                            <option value="01:00">1:00 AM</option>
+                                            <option value="01:30">1:30 AM</option>
+                                            <option value="02:00">2:00 AM</option>
+                                            <option value="02:30">2:30 AM</option>
+                                            <option value="03:00">3:00 AM</option>
+                                            <option value="03:30">3:30 AM</option>
+                                            <option value="04:00">4:00 AM</option>
+                                            <option value="04:30">4:30 AM</option>
+                                            <option value="05:00">5:00 AM</option>
+                                            <option value="05:30">5:30 AM</option>
+                                            <option value="06:00">6:00 AM</option>
+                                            <option value="06:30">6:30 AM</option>
+                                            <option value="07:00">7:00 AM</option>
+                                            <option value="07:30">7:30 AM</option>
+                                            <option value="08:00">8:00 AM</option>
+                                            <option value="08:30">8:30 AM</option>
+                                            <option value="09:00">9:00 AM</option>
+                                            <option value="09:30">9:30 AM</option>
+                                            <option value="10:00">10:00 AM</option>
+                                            <option value="10:30">10:30 AM</option>
+                                            <option value="11:00">11:00 AM</option>
+                                            <option value="11:30">11:30 AM</option>
+                                            <option value="12:00">12:00 PM</option>
+                                            <option value="12:30">12:30 PM</option>
+                                            <option value="13:00">1:00 PM</option>
+                                            <option value="13:30">1:30 PM</option>
+                                            <option value="14:00">2:00 PM</option>
+                                            <option value="14:30">2:30 PM</option>
+                                            <option value="15:00">3:00 PM</option>
+                                            <option value="15:30">3:30 PM</option>
+                                            <option value="16:00">4:00 PM</option>
+                                            <option value="16:30">4:30 PM</option>
+                                            <option value="17:00">5:00 PM</option>
+                                            <option value="17:30">5:30 PM</option>
+                                            <option value="18:00">6:00 PM</option>
+                                            <option value="18:30">6:30 PM</option>
+                                            <option value="19:00">7:00 PM</option>
+                                            <option value="19:30">7:30 PM</option>
+                                            <option value="20:00">8:00 PM</option>
+                                            <option value="20:30">8:30 PM</option>
+                                            <option value="21:00">9:00 PM</option>
+                                            <option value="21:30">9:30 PM</option>
+                                            <option value="22:00">10:00 PM</option>
+                                            <option value="22:30">10:30 PM</option>
+                                            <option value="23:00">11:00 PM</option>
+                                            <option value="23:30">11:30 PM</option>
+                                        </select>
                                         <label className="closed-label">
                                             <input 
                                                 type="checkbox"

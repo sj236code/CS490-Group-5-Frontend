@@ -5,6 +5,10 @@ import './Salon_registration_success.css';
 function RegisterSalonSuccess() {
     const navigate = useNavigate();
 
+    function handleGoHome() {
+        navigate('/');
+    }
+
     return (
         <div className="salon-success-page">
             <div className="salon-success-container">
@@ -21,6 +25,10 @@ function RegisterSalonSuccess() {
                     <p className="salon-message-bold">Verification Request Submitted!</p>
                     <p className="salon-message-normal">You will receive an email once approved.</p>
                 </div>
+
+                <button className="go-home-btn" onClick={handleGoHome}>
+                    Go to Home
+                </button>
             </div>
         </div>
     );
