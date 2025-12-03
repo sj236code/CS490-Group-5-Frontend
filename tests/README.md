@@ -42,3 +42,39 @@ tests/
 ## Naming convention:
 tests/<role>/<feature>.spec.js
 Example: tests/customer/appointment-booking.spec.js
+
+## How to run tests
+
+All commands should be run from the frontend repo root
+
+1. Run the full Playwright test suite ( without visual display )
+```
+npx playwright test
+```
+
+2. Run tests for a specific role
+```
+# All customer tests
+npx playwright test tests/customer
+
+# All employee tests
+npx playwright test tests/employee
+
+# All owner tests
+npx playwright test tests/owner
+
+# All auth tests
+npx playwright test tests/auth
+```
+
+3. Run a single test from a specific file ( command also found in the top of each file )
+```
+npx playwright test tests/auth/customer-auth.spec.js
+npx playwright test tests/customer/appointment-booking.spec.js
+```
+
+4. Run tests in headed mode ( visually )
+```
+# Single file, Firefox, headed (good for debugging)
+npx playwright test tests/auth/customer-auth.spec.js --project=firefox --headed
+```
