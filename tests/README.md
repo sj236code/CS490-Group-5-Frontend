@@ -78,3 +78,25 @@ npx playwright test tests/customer/appointment-booking.spec.js
 # Single file, Firefox, headed (good for debugging)
 npx playwright test tests/auth/customer-auth.spec.js --project=firefox --headed
 ```
+
+## How to use codegen to automatically generate tests
+
+1. Start you rdev server so the app is running
+```
+npm run dev
+```
+
+2. In a new terminal, run
+```
+npx playwright codegen http://localhost:5173
+```
+
+3. Two windows will open: a browser window with the site, and a Playwright Inspector window
+
+4. Click around and fill fields as you desire the test to execute.
+
+5. Once finished with test, at the top of the browser, click the stop button. 
+
+6. Open the Playwright Inspector window and paste the code into the test file you want to. 
+
+7. Clean up the code ( reduce redundancy such as using tests/utils/login.js for login )
