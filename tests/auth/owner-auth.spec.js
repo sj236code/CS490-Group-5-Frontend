@@ -1,6 +1,9 @@
 // RUN COMMAND: 
 // npx playwright test tests/auth/owner-auth.spec.js --project=firefox --headed
 
+// USE CASE:
+// A user can sign in as an owner
+
 import { test, expect } from '@playwright/test';
 
 // Sign into Playwright Salon Owner Tester account

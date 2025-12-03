@@ -1,6 +1,9 @@
 // RUN COMMAND: 
 // npx playwright test tests/auth/employee-auth.spec.js --project=firefox --headed
 
+// USE CASE:
+// A user can sign in as an employee
+
 import { test, expect } from '@playwright/test';
 
 // Sign into Playwright Employee Tester account
