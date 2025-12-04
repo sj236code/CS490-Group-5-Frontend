@@ -5,7 +5,7 @@ name: Playwright E2E Tests
 
 on:
   push:
-    branches: [main, dev, sandbox]
+    branches: [main, dev, sandbox, uiTesting/playwright/saanya]
   pull_request:
     branches: [main, dev, sandbox]
 
