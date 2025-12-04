@@ -34,7 +34,7 @@ jobs:
         with:
           path: frontend
 
-      # 3) Checkout BACKEND repo (adjust repository + path)
+      # 3) Checkout BACKEND repo
       - uses: actions/checkout@v4
         with:
           repository: BarkStrip/CS490-Group-5-Backend
@@ -57,17 +57,19 @@ jobs:
         env:
           FLASK_ENV: testing
           TESTING: "True"
-          # your config.py will use this as MYSQL_TEST_URL in testing mode
+          # config.py will use this as MYSQL_TEST_URL in testing mode
           MYSQL_TEST_URL: mysql+pymysql://root:mysql2025@127.0.0.1:3306/salon_app_test
-          MYSQL_PUBLIC_URL: mysql+pymysql://root:mysql2025@127.0.0.1:3306/salon_app_test
+          # leave public URL empty so we NEVER hit Railway here
+          MYSQL_PUBLIC_URL: ""
         run: |
           python - << 'EOF'
           import os, sys
           sys.path.append(os.getcwd())
 
-          from main import create_app          # adjust if your entrypoint is different
-          from app.extensions import db        # adjust imports to match your project
-          from app.models import Base          # or wherever Base lives
+          from main import create_app
+          from app.extensions import db
+          from app.models import Base
+          from tests.seed_playwright_data import seed_playwright_users
 
           app = create_app()
           with app.app_context():
@@ -75,6 +77,9 @@ jobs:
               Base.metadata.drop_all(bind=db.engine)
               Base.metadata.create_all(bind=db.engine)
               print("Tables:", list(Base.metadata.tables.keys()))
+
+              # Seed Playwright test data (customer, owner, salon, employee, etc.)
+              seed_playwright_users()
           EOF
 
       # 6) Run backend in TESTING mode
@@ -84,7 +89,7 @@ jobs:
           FLASK_ENV: testing
           TESTING: "True"
           MYSQL_TEST_URL: mysql+pymysql://root:mysql2025@127.0.0.1:3306/salon_app_test
-          MYSQL_PUBLIC_URL: mysql+pymysql://root:mysql2025@127.0.0.1:3306/salon_app_test
+          MYSQL_PUBLIC_URL: ""
         run: |
           flask run --host=0.0.0.0 --port=5000 &
           # small delay to let backend start up
