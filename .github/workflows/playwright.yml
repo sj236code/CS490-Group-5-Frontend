@@ -57,13 +57,17 @@ jobs:
           MYSQL_TEST_URL: mysql+pymysql://root:mysql2025@127.0.0.1:3306/salon_app_test
           TESTING: "1"
           PORT: "5000"
+          PYTHONPATH: .
         run: |
           echo "📦 Creating tables using Base.metadata and seeding Playwright users..."
           python -u << 'EOF'
           import os, sys
 
-          backend_root = os.getcwd()
-          sys.path.insert(0, backend_root)
+          print("CWD:", os.getcwd())
+          print("Contents:", os.listdir("."))
+
+          # Backend root is the working directory; make sure it's on sys.path
+          sys.path.insert(0, os.getcwd())
 
           from main import create_app
           from app.extensions import db
