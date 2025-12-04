@@ -52,17 +52,17 @@ jobs:
         run: |
           pip install -r requirements.txt
 
-      - name: Initialize test database schema + seed Playwright users
+      - name: Initialize test database schema + seed Playwright data
         working-directory: backend
         env:
-          # Match the backend CI style
+          # Use the SAME creds as the MySQL service above
           SQLALCHEMY_DATABASE_URI: mysql+pymysql://root:mysql2025@127.0.0.1:3306/salon_app_test
           MYSQL_PUBLIC_URL: mysql+pymysql://root:mysql2025@127.0.0.1:3306/salon_app_test
           MYSQL_TEST_URL: mysql+pymysql://root:mysql2025@127.0.0.1:3306/salon_app_test
-          TESTING: "1" # same as backend CI
+          TESTING: "True"
           PORT: "5000"
         run: |
-          echo "📦 Creating tables using Base.metadata and seeding Playwright data..."
+          echo "📦 Creating tables using Base.metadata and seeding Playwright users..."
           python - << 'EOF'
           import os, sys
           sys.path.append(os.getcwd())
@@ -92,7 +92,7 @@ jobs:
           TESTING: "True"
           MYSQL_TEST_URL: mysql+pymysql://root:mysql2025@127.0.0.1:3306/salon_app_test
           MYSQL_PUBLIC_URL: mysql+pymysql://root:mysql2025@127.0.0.1:3306/salon_app_test
-          PORT: "5000" 
+          PORT: "5000"
         run: |
           flask run --host=0.0.0.0 --port=5000 &
           # small delay to let backend start up
