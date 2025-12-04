@@ -59,7 +59,7 @@ jobs:
           TESTING: "True"
           # your config.py will use this as MYSQL_TEST_URL in testing mode
           MYSQL_TEST_URL: mysql+pymysql://root:mysql2025@127.0.0.1:3306/salon_app_test
-          MYSQL_PUBLIC_URL: ""
+          MYSQL_PUBLIC_URL: mysql+pymysql://root:mysql2025@127.0.0.1:3306/salon_app_test
         run: |
           python - << 'EOF'
           import os, sys
@@ -84,7 +84,7 @@ jobs:
           FLASK_ENV: testing
           TESTING: "True"
           MYSQL_TEST_URL: mysql+pymysql://root:mysql2025@127.0.0.1:3306/salon_app_test
-          MYSQL_PUBLIC_URL: ""
+          MYSQL_PUBLIC_URL: mysql+pymysql://root:mysql2025@127.0.0.1:3306/salon_app_test
         run: |
           flask run --host=0.0.0.0 --port=5000 &
           # small delay to let backend start up
