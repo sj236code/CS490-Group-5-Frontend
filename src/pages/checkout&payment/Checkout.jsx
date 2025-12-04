@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import DiscountItem from "./DiscountItem";
 import axios from "axios";
+
 import "./Checkout.css";
 
 function Checkout() {
@@ -13,21 +15,13 @@ function Checkout() {
 
     const cartItems = (location.state && location.state.cartItems) || [];
 
+    // --- Standard State ---
     const [paymentMethod, setPaymentMethod] = useState("card");
-    const [tip, setTip] = useState();
+    const [tip, setTip] = useState(""); // Changed to string for easier input handling
     const [employeeName] = useState("");
     const [savedMethods, setSavedMethods] = useState([]);
     const [selectedCardId, setSelectedCardId] = useState("");
-
-    const presubtotal = cartItems.reduce(
-        (sum, item) => sum + (item.item_price || 0) * (item.quantity || 1), 0
-    );
-
-    const taxRate = Number(import.meta.env.VITE_TAX_RATE) || 0.066;
-    const salesTax = presubtotal * taxRate;
-    const subtotal = salesTax + presubtotal;
-    const total = parseFloat(subtotal) + parseFloat(tip || 0);
-
+    
     const [cardDetails, setCardDetails] = useState({
         name: "",
         number: "",
@@ -43,99 +37,140 @@ function Checkout() {
         discover: "https://1000logos.net/wp-content/uploads/2020/11/Discover-Logo.jpg"
     };
 
+    const [discounts, setDiscounts] = useState([]);
+
+    const allChecked = discounts.every((d) => d.checked);
+
+    const toggleSelectAll = () => {
+        setDiscounts(prev =>
+            prev.map(d => ({ ...d, checked: !allChecked }))
+        );
+    };
+
+    const toggleSingle = (id) => {
+        setDiscounts(prev =>
+            prev.map(d =>
+                d.id === id ? { ...d, checked: !d.checked } : d
+            )
+        );
+    };
+
+    const presubtotal = cartItems.reduce(
+        (sum, item) => sum + (item.item_price || 0) * (item.quantity || 1), 0
+    );
+
+    const taxRate = Number(import.meta.env.VITE_TAX_RATE) || 0.066;
+    const salesTax = presubtotal * taxRate;
+    const subtotal = salesTax + presubtotal;
+
+    const discountTotal = discounts
+        .filter(d => d.checked)
+        .reduce((sum, d) => sum + d.amount, 0);
+
+    const total = Math.max(0, parseFloat(subtotal) + parseFloat(tip || 0) - discountTotal);
+
+    useEffect(() => {
+        if (!customer_id || cartItems.length === 0) return;
+
+        const extractSalonName = (item) => {
+            return (
+                item.product_salon_name ||
+                null
+            );
+        };
+
+        const fetchRewards = async () => {
+            const salonIds = [...new Set(cartItems.map(item => 
+                item.salon_id || item.service_salon_id || item.product_salon_id || item.salon?.id
+            ).filter(Boolean))];
+
+            try {
+                const response = await axios.post(
+                    `${import.meta.env.VITE_API_URL}/api/loyalty/cart/check-rewards`,
+                    { customer_id: customer_id, salon_ids: salonIds }
+                );
+
+                const rewardsData = response.data;
+
+                console.log("Cart itemsssssssssssssssss:", cartItems);
+                
+                setDiscounts(
+                    Object.entries(rewardsData).map(([salonId, data]) => {
+                        const matchingItem = cartItems.find(item =>
+                            item.salon_id == salonId ||
+                            item.service_salon_id == salonId ||
+                            item.product_salon_id == salonId ||
+                            item.salon?.id == salonId
+                        );
+
+                        const salonName = extractSalonName(matchingItem);
+
+                        return {
+                            id: Number(salonId),
+                            salon: salonName || `Salon #${salonId}`,
+                            pointsInfo: data.info_text,
+                            amount: data.max_discount || 0,
+                            checked: false
+                        };
+                    })
+                );
+
+            } catch (error) {
+                console.error("Error fetching rewards", error);
+                setDiscounts(prev => prev.map(d => ({...d, pointsInfo: "Unable to load points", amount: 0})));
+            }
+        };
+
+        fetchRewards();
+    }, [customer_id, cartItems]);
+
+
     const convertISOToMMYY = (isoDateString) => {
         if (!isoDateString) return "";
-
-        console.log("Converting ISO date:", isoDateString);
-
         const dateMatch = isoDateString.match(/^(\d{4})-(\d{2})-(\d{2})/);
-
         if (dateMatch) {
             const year = dateMatch[1].slice(-2);
             const month = dateMatch[2];
-
-            const formatted = `${month}/${year}`;
-            console.log("Converted from YYYY-MM-DD to MM/YY:", formatted);
-            return formatted;
+            return `${month}/${year}`;
         }
-
         try {
             const date = new Date(isoDateString);
-
-            if (isNaN(date.getTime())) {
-                console.warn("Invalid date format could not be parsed:", isoDateString);
-                return "";
-            }
-
+            if (isNaN(date.getTime())) return "";
             const month = String(date.getMonth() + 1).padStart(2, '0');
-
             const year = String(date.getFullYear()).slice(-2);
-
-            const formatted = `${month}/${year}`;
-            console.log("Converted from ISO via Date Object to MM/YY:", formatted);
-
-            return formatted;
+            return `${month}/${year}`;
         } catch (error) {
-            console.error("Error converting date:", error);
             return "";
         }
     };
 
     useEffect(() => {
-        if (!customer_id) {
-            console.debug("No customer_id present; skipping fetch of saved payment methods.");
-            return;
-        }
-
-        console.log("Customer ID found, starting fetch:", customer_id);
-
-        console.log("Cart Items in Checkout:", cartItems);
-        cartItems.forEach((item, index) => {
-            console.log(`Item ${index}:`, {
-                name: item.service_name || item.product_name,
-                pictures: item.pictures,
-                hasPictures: !!(item.pictures && item.pictures.length > 0)
-            });
-        });
+        if (!customer_id) return;
 
         const fetchMethods = async () => {
             try {
-                console.debug("fetching methods for customer_id:", customer_id);
-
                 const response = await axios.get(
                     `${import.meta.env.VITE_API_URL}/api/payments/${customer_id}/methods`,
                 );
-
-                console.debug("saved methods response:", response.data);
-
                 const methods = Array.isArray(response.data) ? response.data : response.data.methods || [];
                 setSavedMethods(methods);
 
                 const defaultCard = methods.find((m) => m.is_default);
                 if (defaultCard) {
-                    console.log("Setting default card, calling convertISOToMMYY:", defaultCard);
                     setSelectedCardId(defaultCard.id);
                     setCardDetails((prev) => ({
                         ...prev,
                         name: defaultCard.card_name || "",
                         expiry: convertISOToMMYY(defaultCard.expiration || defaultCard.Expiration || defaultCard.expiry),
                         number: "************" + (defaultCard.last4 || ""), 
-                        cvv: "",
-                        zip: "",
                     }));
-                } else {
-                    console.log("No default card found in saved methods. Skipping expiry conversion.");
                 }
             } catch (error) {
                 console.error("Failed to fetch saved payment methods:", error);
-                if (error.response) {
-                    console.debug("server response:", error.response.status, error.response.data);
-                }
             }
         };
-
         fetchMethods();
-    }, [customer_id, cartItems]);
+    }, [customer_id]);
 
     const handleCardSelect = (e) => {
         const selectedId = e.target.value;
@@ -145,14 +180,9 @@ function Checkout() {
             setCardDetails({ name: "", number: "", expiry: "", cvv: "", zip: "" });
             return;
         }
-
         const selectedMethod = savedMethods.find((m) => m.id === Number(selectedId));
         if (selectedMethod) {
-            console.log("Selected method data:", selectedMethod);
-
             const formattedExpiry = convertISOToMMYY(selectedMethod.expiration || selectedMethod.Expiration || selectedMethod.expiry);
-            console.log("Final formatted expiration for display: ", formattedExpiry);
-
             setCardDetails({
                 name: selectedMethod.card_name || "",
                 number: "************" + (selectedMethod.last4 || ""),
@@ -172,39 +202,24 @@ function Checkout() {
         }
 
         switch (name) {
-            case "name":
-                newValue = value.replace(/[^A-Za-z\s]/g, "");
-                break;
-            case "number":
+            case "name": newValue = value.replace(/[^A-Za-z\s]/g, ""); break;
+            case "number": 
                 if (selectedCardId) {
                     const cleanInput = value.replace(/\D/g, "");
-                    const last4Digits = cleanInput.slice(-4);
-                    newValue = "************" + last4Digits;
+                    newValue = "************" + cleanInput.slice(-4);
                 } else {
                     newValue = value.replace(/\D/g, "").slice(0, 16);
                 }
                 break;
             case "expiry":
                 newValue = value.replace(/[^\d/]/g, "");
-
-                if (newValue.length === 2 && !newValue.includes('/')) {
-                    newValue = newValue + '/';
-                }
-
-                if (newValue.length > 5) {
-                    newValue = newValue.slice(0, 5);
-                }
+                if (newValue.length === 2 && !newValue.includes('/')) newValue = newValue + '/';
+                if (newValue.length > 5) newValue = newValue.slice(0, 5);
                 break;
-            case "cvv":
-                newValue = value.replace(/\D/g, "").slice(0, 3);
-                break;
-            case "zip":
-                newValue = value.replace(/\D/g, "").slice(0, 5);
-                break;
-            default:
-                break;
+            case "cvv": newValue = value.replace(/\D/g, "").slice(0, 3); break;
+            case "zip": newValue = value.replace(/\D/g, "").slice(0, 5); break;
+            default: break;
         }
-
         setCardDetails((prev) => ({ ...prev, [name]: newValue }));
     };
 
@@ -214,142 +229,98 @@ function Checkout() {
         return `${brand} ending in ${method.last4 || "xxxx"}${defaultTag}`;
     };
 
+    // --- APPOINTMENT CREATION ---
     const createAppointmentsForServices = async () => {
         const serviceItems = cartItems.filter(
             (item) => item.item_type === "service" && item.start_at
         );
-
-        if (!serviceItems.length) {
-            console.log("No service items in cart; skipping appointment creation.");
-            return;
-        }
+        if (!serviceItems.length) return;
 
         try {
             await Promise.all(
-                serviceItems.map(async(item, index) => {
-                    const salonIdForThisService = item.salon_id ?? item.service_salon_id ?? item.salon?.id ?? null;
-                    const serviceIdForThisService = item.service_id ?? item.service?.id ?? item.serviceID ?? null;
-                    const employeeIdForThisService = item.stylist_id ?? item.employee_id ?? item.employeeId ?? null;
-
-                    const photosForThisService = item.images || [];
-                    console.log(`Item ${index} images:`, photosForThisService);
+                serviceItems.map(async(item) => {
+                    const salonId = item.salon_id ?? item.service_salon_id ?? item.salon?.id ?? null;
+                    const serviceId = item.service_id ?? item.service?.id ?? item.serviceID ?? null;
+                    const employeeId = item.stylist_id ?? item.employee_id ?? item.employeeId ?? null;
+                    const photos = item.images || [];
 
                     const payload = {
                         customer_id,
-                        salon_id: salonIdForThisService,
-                        service_id: serviceIdForThisService,
-                        employee_id: employeeIdForThisService, 
+                        salon_id: salonId,
+                        service_id: serviceId,
+                        employee_id: employeeId, 
                         start_at: item.start_at,
                         notes: item.notes || null,
                         status: "Booked",
                     };
 
-                    console.log(`Creating appointment #${index + 1}`, payload);
-
-                    const appointmentResponse = await axios.post(
-                        `${import.meta.env.VITE_API_URL}/api/appointments/add`, 
-                        payload
-                    ); 
+                    const apptRes = await axios.post(`${import.meta.env.VITE_API_URL}/api/appointments/add`, payload); 
                     
-                    if(appointmentResponse.data.appointment_id && photosForThisService.length > 0 && item.cart_item_id) {
+                    if(apptRes.data.appointment_id && photos.length > 0 && item.cart_item_id) {
                         try {
                             await axios.post(
                                 `${import.meta.env.VITE_API_URL}/api/cart/transfer-images-to-appointment`,
                                 {
                                     cart_item_id: item.cart_item_id,
-                                    appointment_id: appointmentResponse.data.appointment_id,
-                                    image_urls: photosForThisService  
+                                    appointment_id: apptRes.data.appointment_id,
+                                    image_urls: photos  
                                 }
                             );
-                            console.log(`Transferred ${photosForThisService.length} images to appointment ${appointmentResponse.data.appointment_id}`);
                         } catch (transferErr) {
-                            console.error("Error transferring images to appointment:", transferErr);
+                            console.error("Error transferring images:", transferErr);
                         }
-                    } else {
-                        console.log(`No images to transfer for appointment ${appointmentResponse.data.appointment_id} or missing cart_item_id`);
                     }
-                    
-                    return appointmentResponse;
+                    return apptRes;
                 })
             );
-
-            console.log("All service appointments created successfully.");
-        } 
-        catch (err) {
-            console.error("Error creating one or more appointments:", err);
+        } catch (err) {
+            console.error("Error creating appointments:", err);
         }
     };
     
+    // --- CONFIRM PAYMENT ---
     const confirmPayment = async () => {
         if (!customer_id) {
-            alert("Error: Customer ID is missing. Please return to your cart and check out again.");
+            alert("Error: Customer ID missing. Please return to cart.");
             return;
         }
 
+        // Validate Card
         if (paymentMethod === "card") {
             if (selectedCardId === "") {
                 const { name, number, expiry, cvv, zip } = cardDetails;
                 if (!name || !number || !expiry || !cvv || !zip || number.length < 16 || expiry.length < 5 || cvv.length < 3 || zip.length < 5) {
-                    alert("Please fill out all NEW card details before proceeding.");
+                    alert("Please fill out all NEW card details correctly.");
                     return;
                 }
             } else {
                 const { number, cvv } = cardDetails;
                 const selectedMethod = savedMethods.find((m) => m.id === Number(selectedCardId));
-
-                if (!selectedMethod) {
-                     alert("Error: Saved card details not found.");
-                     return;
-                }
-
-                if (cvv.length < 3) {
-                    alert("Please enter the 3-digit CVV for the saved card.");
-                    return;
-                }
-
-                const last4Input = number.slice(-4);
-                const actualLast4 = selectedMethod.last4;
-                
-                if (last4Input !== actualLast4) {
-                    alert("The last 4 digits you entered do not match the saved card's last 4 digits. Please check the number and try again.");
-                    return;
-                }
+                if (!selectedMethod) { alert("Saved card not found."); return; }
+                if (cvv.length < 3) { alert("Please enter the 3-digit CVV."); return; }
+                if (number.slice(-4) !== selectedMethod.last4) { alert("Last 4 digits mismatch."); return; }
             }
         }
 
-
-        const maskedCard =
-            paymentMethod === "card"
+        const maskedCard = paymentMethod === "card"
                 ? selectedCardId
                     ? `Saved Card ending in ${savedMethods.find(m => m.id === Number(selectedCardId))?.last4}`
                     : `${"*".repeat(12)} ${cardDetails.number.slice(-4)}`
                 : null;
         
+        // --- 5. PREPARE BOOKING DATA ---
         const totalServiceDuration = cartItems
             .filter((item) => item.item_type === "service")
             .reduce((sum, service) => sum + (service.service_duration || 0), 0);
 
-        const firstStartItem = cartItems.find(
-            (item) => item.start_at && item.start_at !== null
-        );
-
-        let appointmentDate = "N/A";
-        let appointmentTime = "N/A";
-
+        const firstStartItem = cartItems.find((item) => item.start_at);
+        let appointmentDate = "N/A", appointmentTime = "N/A";
         if (firstStartItem) {
             const dateObj = new Date(firstStartItem.start_at);
             if (!isNaN(dateObj.getTime())) {
-                appointmentDate = dateObj.toLocaleDateString("en-US", {
-                    weekday: "long", year: "numeric", month: "long", day: "numeric"
-                });
-                appointmentTime = dateObj.toLocaleTimeString("en-US", {
-                    hour: "2-digit", minute: "2-digit"
-                });
-            } else {
-                console.warn("Invalid start_at date:", firstStartItem.start_at);
+                appointmentDate = dateObj.toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
+                appointmentTime = dateObj.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
             }
-        } else {
-            console.warn("No valid start_at found in cartItems:", cartItems);
         }
 
         const bookingData = {
@@ -363,47 +334,54 @@ function Checkout() {
             cartItems,
             total,
             salesTax,
+            discountTotal // Pass this to confirmation if needed
         };
 
         try {
+            // Identify rewards to deduct points
+            const appliedRewards = discounts
+                .filter(d => d.checked)
+                .map(d => ({
+                    salon_id: d.id,
+                    discount_amount: d.amount
+                }));
+
             const response = await axios.post(
                 `${import.meta.env.VITE_API_URL}/api/payments/create_order`,
                 {
                     customer_id: customer_id,
-                    salon_id: cartItems[0]?.salon_id || null,
+                    salon_id: cartItems[0]?.salon_id || null, // Primary salon for order header
                     subtotal: presubtotal,
                     tip_amnt: parseFloat(tip || 0),
                     tax_amnt: salesTax,
+                    discount_amnt: discountTotal, // Total discount applied
                     total_amnt: total,
+                    applied_rewards: appliedRewards, // List of rewards used
                     promo_id: null,
                     cart_items: cartItems.map((item) => ({
                         kind: item.item_type,
                         product_id: item.item_type === "product" ? item.product_id : null,
                         service_id: item.item_type === "service" ? item.service_id : null,
+                        // Vital: Pass specific salon_id per item so loyalty accrues correctly
+                        salon_id: item.salon_id ?? item.service_salon_id ?? item.product_salon_id ?? item.salon?.id,
                         qty: item.quantity || 1,
                         unit_price: item.item_price,
                     })),
                 },
-                {
-                    headers: localStorage.getItem("token") ? { Authorization: `Bearer ${localStorage.getItem("token")}` } : {}
-                }
+                { headers: localStorage.getItem("token") ? { Authorization: `Bearer ${localStorage.getItem("token")}` } : {} }
             );
 
             if (response.status === 201) {
-                console.log("order created successfully", response.data);
-
+                console.log("Order created", response.data);
                 await createAppointmentsForServices();
-
                 navigate("/payment-confirmation", { state: { bookingData } });
-            } 
-            else {
-                alert("Unexpected response from server.");
+            } else {
+                alert("Unexpected response.");
             }
         } catch (error) {
             console.error("Error creating order:", error);
             if (error.response) {
-                console.error("Server Response Data:", error.response.data);
-                alert(`Error: ${error.response.data.error || error.response.data.details || 'Bad Request'}`);
+                alert(`Error: ${error.response.data.error || 'Payment Failed'}`);
             } else {
                 alert("Error processing payment. Please try again.");
             }
@@ -436,10 +414,47 @@ function Checkout() {
                 </div>
             </div>
 
-            <div className="secure-message">
-                <p>Your payment information is encrypted and secure</p>
+            <div className="discount-box">
+                <h2 className="discount-title">Discounts & Rewards</h2>
+                <div className="discount-subtitle">
+                    The following discounts are applied
+                </div>
+                <div className="discount-list">
+                    {discounts.map(item => (
+                        <DiscountItem
+                            key={item.id}
+                            id={item.id}
+                            salon={item.salon}
+                            pointsInfo={item.pointsInfo}
+                            amount={item.amount}
+                            checked={item.checked}
+                            onToggle={toggleSingle}
+                        />
+                    ))}
+
+                    {discounts.length === 0 && (
+                        <div className="discount-empty">No loyalty rewards available.</div>
+                    )}
+                    <div className="discount-header">
+                        <div className="select-all-left-group">
+                            <input
+                                type="checkbox"
+                                className="discount-checkbox"
+                                checked={allChecked}
+                                onChange={toggleSelectAll}
+                            />
+                            <span className="select-all">Select All</span>
+                        </div>
+                        
+                        <div className="discount-amount total-discount">
+                            Total Discount: ${discountTotal}
+                        </div>
+                        
+                    </div>
+                </div>
             </div>
 
+            {/* --- AMOUNT SECTION UPDATED --- */}
             <div className="amount-section">
                 <label>Add Tip?</label>
                 <input
@@ -450,7 +465,13 @@ function Checkout() {
                 />
                 <p className="summary-text">
                     Subtotal: ${subtotal.toFixed(2)} <br />
-                    Total (with tip): ${total.toFixed(2)}
+                    {/* Show discount line item if applied */}
+                    {discountTotal > 0 && (
+                        <span style={{ color: '#2ecc71' }}>
+                            Rewards Applied: -${discountTotal.toFixed(2)} <br />
+                        </span>
+                    )}
+                    <strong>Total (with tip): ${total.toFixed(2)}</strong>
                 </p>
             </div>
 
@@ -476,7 +497,6 @@ function Checkout() {
                 <div className="card-form">
                     <div className="form-group">
                         <label>Select Saved Card</label>
-
                         <div className="dropdown-with-logo">
                             <select
                                 className="card-dropdown"
@@ -493,23 +513,16 @@ function Checkout() {
                                         </option>
                                     ))}
                             </select>
-
                             <div className="logo-wrapper">
                                 {selectedCardId ? (
                                     <img
                                         alt="card-logo"
                                         className="card-logo"
-                                        src={
-                                            brandLogo[
-                                                (savedMethods.find((x) => x.id === Number(selectedCardId))?.brand || "")
-                                                    .toLowerCase()
-                                            ] || ""
-                                        }
+                                        src={brandLogo[(savedMethods.find((x) => x.id === Number(selectedCardId))?.brand || "").toLowerCase()] || ""}
                                     />
                                 ) : null}
                             </div>
                         </div>
-
                         <label>Cardholder Name</label>
                         <input
                             name="name"
@@ -520,7 +533,6 @@ function Checkout() {
                             disabled={selectedCardId !== ""}
                         />
                     </div>
-
                     <div className="form-group">
                         <label>Card Number</label>
                         <input
@@ -532,7 +544,6 @@ function Checkout() {
                             onChange={handleChange}
                         />
                     </div>
-
                     <div className="card-details">
                         <div className="form-group">
                             <label>Expiration Date</label>
@@ -556,7 +567,6 @@ function Checkout() {
                             />
                         </div>
                     </div>
-
                     <div className="form-group">
                         <label>Billing ZIP Code</label>
                         <input
@@ -572,10 +582,7 @@ function Checkout() {
 
             <div className="encryption-box">
                 <p>256-bit SSL Encryption</p>
-                <p>
-                    Your payment information is encrypted and never stored on our servers.
-                    We are PCI DSS compliant.
-                </p>
+                <p>Your payment information is encrypted and never stored on our servers. We are PCI DSS compliant.</p>
             </div>
 
             <button className="pay-btn" onClick={confirmPayment}>
