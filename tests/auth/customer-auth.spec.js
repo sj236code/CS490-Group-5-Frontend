@@ -8,6 +8,12 @@ import { test, expect } from '@playwright/test';
 
 test('existing test user can log in', async ({ page }) => {
 
+    page.on('response', async (res) => {
+        if (res.url().includes('/api/auth/login')) {
+            console.log('Login response', res.url(), res.status(), await res.text());
+        }
+    });
+
     // Force Full Screen for Viewing Purposes
     await page.addInitScript(() => {
         window.moveTo(0, 0);
