@@ -53,46 +53,62 @@
 import { test, expect } from '@playwright/test';
 
 test('existing test user can log in', async ({ page }) => {
-  // Give this test more time in CI
   test.setTimeout(60000);
 
-  // 🔍 Log all API calls so we can see what's going on in CI logs
+  // 🔍 Log browser console + page errors into CI logs
+  page.on('console', (msg) => {
+    console.log('BROWSER LOG:', msg.type(), msg.text());
+  });
+  page.on('pageerror', (err) => {
+    console.log('PAGE ERROR:', err.message);
+  });
+
+  // 🔍 Log all API calls
   page.on('request', (req) => {
     if (req.url().includes('/api/')) {
       console.log('➡️ REQUEST', req.method(), req.url());
     }
   });
-
   page.on('response', async (res) => {
     if (res.url().includes('/api/')) {
       console.log('⬅️ RESPONSE', res.status(), res.url());
-      try {
-        const body = await res.text();
-        console.log('   BODY:', body.slice(0, 300)); // keep it small
-      } catch (e) {
-        console.log('   BODY: <non-text or failed to read>', e?.message);
-      }
     }
   });
 
-  // Optional: full screen
-  await page.addInitScript(() => {
-    window.moveTo(0, 0);
-    window.resizeTo(screen.width, screen.height);
-  });
-
-  // Go to Sign In page
   await page.goto('/signin', { waitUntil: 'networkidle' });
 
-  // Fill credentials
   await page.getByPlaceholder('Email Address').fill('playwright_tester@jade.com');
   await page.getByPlaceholder('Password').fill('password123');
 
-  // Click Sign In (❗️NO waitForResponse here)
-  await page.locator('form').getByRole('button', { name: 'Sign In' }).click();
+  // explicitly wait for the login *response* and print its body
+  const [loginResp] = await Promise.all([
+    page
+      .waitForResponse(
+        (r) =>
+          r.url().includes('/api/auth/login') &&
+          r.request().method() === 'POST',
+        { timeout: 15000 }
+      )
+      .catch((e) => {
+        console.log('❌ waitForResponse timed out for /api/auth/login', e.message);
+        return null;
+      }),
+    page.locator('form').getByRole('button', { name: 'Sign In' }).click(),
+  ]);
 
-  // Wait for redirect to home
+  if (!loginResp) {
+    throw new Error('Login API did not respond within 15s');
+  }
+
+  const status = loginResp.status();
+  const bodyText = await loginResp.text();
+  console.log('🔎 LOGIN STATUS:', status);
+  console.log('🔎 LOGIN BODY:', bodyText.slice(0, 500));
+
+  if (status !== 200) {
+    throw new Error(`Login API failed with status ${status}: ${bodyText}`);
+  }
+
+  // Now expect redirect
   await expect(page).toHaveURL('/', { timeout: 20000 });
-
-  await page.waitForTimeout(500);
 });
