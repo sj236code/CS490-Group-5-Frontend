@@ -1,7 +1,6 @@
 # PR from any branch -> into main, dev, or sandbox: playwright runs on the PR
 # Direct push to main, dev, or sandbox: playwright runs on that push too
 # Builds frontend to prevent merging code that passes tests but fails production build
-
 name: Playwright E2E Tests
 
 on:
@@ -14,26 +13,108 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
-    env:
-      VITE_API_URL: https://jade-dev.up.railway.app
+    # 1) MySQL service for TEST DB
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: mysql2025
+          MYSQL_DATABASE: salon_app_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -pmysql2025"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
 
     steps:
+      # 2) Checkout FRONTEND repo (this one)
       - uses: actions/checkout@v4
+        with:
+          path: frontend
 
+      # 3) Checkout BACKEND repo (adjust repository + path)
+      - uses: actions/checkout@v4
+        with:
+          repository: BarkStrip/CS490-Group-5-Backend
+          path: backend
+
+      # 4) Set up Python for backend
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # 5) Install backend deps & initialize TEST DB schema
+      - name: Install backend dependencies
+        working-directory: backend
+        run: |
+          pip install -r requirements.txt
+
+      - name: Initialize test database schema
+        working-directory: backend
+        env:
+          FLASK_ENV: testing
+          TESTING: "True"
+          # your config.py will use this as MYSQL_TEST_URL in testing mode
+          MYSQL_TEST_URL: mysql+pymysql://root:mysql2025@127.0.0.1:3306/salon_app_test
+          MYSQL_PUBLIC_URL: ""
+        run: |
+          python - << 'EOF'
+          import os, sys
+          sys.path.append(os.getcwd())
+
+          from main import create_app          # adjust if your entrypoint is different
+          from app.extensions import db        # adjust imports to match your project
+          from app.models import Base          # or wherever Base lives
+
+          app = create_app()
+          with app.app_context():
+              print("Dropping & creating all tables in test DB...")
+              Base.metadata.drop_all(bind=db.engine)
+              Base.metadata.create_all(bind=db.engine)
+              print("Tables:", list(Base.metadata.tables.keys()))
+          EOF
+
+      # 6) Run backend in TESTING mode
+      - name: Run backend (testing mode)
+        working-directory: backend
+        env:
+          FLASK_ENV: testing
+          TESTING: "True"
+          MYSQL_TEST_URL: mysql+pymysql://root:mysql2025@127.0.0.1:3306/salon_app_test
+          MYSQL_PUBLIC_URL: ""
+        run: |
+          flask run --host=0.0.0.0 --port=5000 &
+          # small delay to let backend start up
+          sleep 10
+
+      # 7) Set up Node for frontend
       - uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      - name: Install deps
+      - name: Install frontend deps
+        working-directory: frontend
         run: npm ci
 
       - name: Build frontend
+        working-directory: frontend
+        env:
+          # IMPORTANT: point frontend to local backend, NOT Railway
+          VITE_API_URL: http://localhost:5000
         run: npm run build
 
       - name: Install Playwright
+        working-directory: frontend
         run: npx playwright install --with-deps
 
+      # 8) Run Playwright E2E tests against local backend + test DB
       - name: Run Playwright
+        working-directory: frontend
+        env:
+          VITE_API_URL: http://localhost:5000
         run: npx playwright test
 
       - name: Upload Playwright report
@@ -41,4 +122,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report
-          path: playwright-report
+          path: frontend/playwright-report
