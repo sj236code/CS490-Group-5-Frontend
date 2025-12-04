@@ -13,7 +13,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
-    # 1) MySQL service for TEST DB
     services:
       mysql:
         image: mysql:8.0
@@ -23,41 +22,43 @@ jobs:
         ports:
           - 3306:3306
         options: >-
-          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -pmysql2025"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -pmysql2025 --silent"
+          --health-interval=5s
+          --health-timeout=3s
+          --health-retries=15
 
     steps:
-      # 2) Checkout FRONTEND repo (this one)
+      # 1) Checkout FRONTEND (this repo)
       - uses: actions/checkout@v4
         with:
           path: frontend
 
-      # 3) Checkout BACKEND repo
+      # 2) Checkout BACKEND
       - uses: actions/checkout@v4
         with:
           repository: BarkStrip/CS490-Group-5-Backend
           path: backend
 
-      # 4) Set up Python for backend
+      # 3) Set up Python for backend
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      # 5) Install backend deps & initialize TEST DB schema
+      # 4) Install backend deps
       - name: Install backend dependencies
         working-directory: backend
         run: |
-          pip install -r requirements.txt
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt pymysql
 
+      # 5) Init schema + seed Playwright users in TEST DB
       - name: Initialize test database schema + seed Playwright data
         working-directory: backend
         env:
-          SQLALCHEMY_DATABASE_URI: mysql+pymysql://root:root@127.0.0.1:3306/salon_app_test
-          MYSQL_PUBLIC_URL: mysql+pymysql://root:root@127.0.0.1:3306/salon_app_test
-          MYSQL_TEST_URL: mysql+pymysql://root:root@127.0.0.1:3306/salon_app_test
+          SQLALCHEMY_DATABASE_URI: mysql+pymysql://root:mysql2025@127.0.0.1:3306/salon_app_test
+          MYSQL_PUBLIC_URL:        mysql+pymysql://root:mysql2025@127.0.0.1:3306/salon_app_test
+          MYSQL_TEST_URL:          mysql+pymysql://root:mysql2025@127.0.0.1:3306/salon_app_test
           TESTING: "1"
           PORT: "5000"
         run: |
@@ -66,13 +67,11 @@ jobs:
           import os, sys
 
           backend_root = os.getcwd()
-          # make backend code importable
           sys.path.append(backend_root)
 
           from main import create_app
           from app.extensions import db
           from app.models import Base
-          # 'tests' is a package now, so this works:
           from tests.seed_playwright_data import seed_playwright_users
 
           app = create_app()
@@ -87,21 +86,20 @@ jobs:
               print("✅ Schema initialized and seed data inserted.")
           EOF
 
-      # 6) Run backend in TESTING mode
+      # 6) Run backend in TESTING mode (same DB URL)
       - name: Run backend (testing mode)
         working-directory: backend
         env:
           FLASK_ENV: testing
           TESTING: "True"
-          MYSQL_TEST_URL: mysql+pymysql://root:mysql2025@127.0.0.1:3306/salon_app_test
+          MYSQL_TEST_URL:  mysql+pymysql://root:mysql2025@127.0.0.1:3306/salon_app_test
           MYSQL_PUBLIC_URL: mysql+pymysql://root:mysql2025@127.0.0.1:3306/salon_app_test
           PORT: "5000"
         run: |
           flask run --host=0.0.0.0 --port=5000 &
-          # small delay to let backend start up
           sleep 10
 
-      # 7) Set up Node for frontend
+      # 7) Node + frontend
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -113,7 +111,6 @@ jobs:
       - name: Build frontend
         working-directory: frontend
         env:
-          # IMPORTANT: point frontend to local backend, NOT Railway
           VITE_API_URL: http://localhost:5000
         run: npm run build
 
@@ -121,7 +118,6 @@ jobs:
         working-directory: frontend
         run: npx playwright install --with-deps
 
-      # 8) Run Playwright E2E tests against local backend + test DB
       - name: Run Playwright
         working-directory: frontend
         env:
