@@ -5,6 +5,16 @@ import ServiceGrid from '../components/landing/ServiceGrid';
 import SalonsSection from '../components/landing/SalonsSection';
 import TypeCard from '../components/landing/TypeCard';
 
+// Import type images from assets folder
+import Barber_img from '../assets/Barber.png';
+import Hair_color_img from '../assets/Hair_color.png';
+import Hair_removal_img from '../assets/Hair_removal.png';
+import Lashes_img from '../assets/Lashes.png';
+import Nails_img from '../assets/Nails.png';
+import Other_img from '../assets/Other.png';
+import Salon_img from '../assets/Salon.png';
+import Spa_img from '../assets/Spa.png';
+
 function LandingPage({userType, userId, user}){
     const navigate = useNavigate();    
     const [ownerSalonId, setOwnerSalonId] = useState(null);
@@ -13,18 +23,16 @@ function LandingPage({userType, userId, user}){
     // State for types
     const [types, setTypes] = useState([]);
 
-    // Url for links
+    // File for images
     const typeImages = {
-        'Barber': 'https://www.shutterstock.com/image-vector/barber-pole-icon-classic-shop-600nw-2498395151.jpg',
-        'Hair Color': 'https://media.istockphoto.com/id/1076982524/vector/hair-dye-icon-element-of-video-products-outline-icon-for-mobile-concept-and-web-apps-thin.jpg?s=612x612&w=0&k=20&c=4Czq0zH_0TNrZoOrB_BwomVmwfzmLu6VkpVWz63lqw4=',
-        'Lashes': 'https://media.istockphoto.com/id/1162516082/vector/eyelashes-and-mascara-vector-icon.jpg?s=612x612&w=0&k=20&c=_mdYObwDbo6RFkViiHBhHzlaFbXGqpNHYNORgsaXmLQ=',
-        'Mani/Pedi': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_WfdDLP2zVEExiQjnEfmkWFKeAyNiTHtcYA&s',
-        'Nails': 'https://img.freepik.com/premium-vector/manicure-icon-set-finger-nail-colours-vector-symbol-salon-woman-fingernail-glamour-paint-pictogram-female-beautiful-nail-art-gel-polish-care-sign_268104-3860.jpg',
-        'Other': 'https://icons.veryicon.com/png/o/education-technology/education-3/other-47.png',
-        'Salon': 'https://media.istockphoto.com/id/1202387135/vector/scissors-and-comb-icon-isolated-on-white-background.jpg?s=612x612&w=0&k=20&c=-x5Y2GLNKdrDdnqG6pMsF1uAIDtedM3qwlMqgN8ZBJk=',
-        'Spa': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRmeGK7PrmNP8thGZGfQGWLym_1LLExByuJFA&s',
-        'Threading': 'https://www.shutterstock.com/image-vector/closeup-female-eye-thread-eyebrow-600nw-1290410422.jpg',
-        'Waxing': 'https://cdn-icons-png.flaticon.com/512/6595/6595127.png',
+        'Barber': Barber_img,
+        'Hair Color': Hair_color_img,
+        'Hair Removal': Hair_removal_img,
+        'Lashes': Lashes_img,
+        'Nails': Nails_img,
+        'Other': Other_img,
+        'Salon': Salon_img,
+        'Spa': Spa_img,
     };
     // ============================================================
 
