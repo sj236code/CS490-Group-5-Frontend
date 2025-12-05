@@ -39,7 +39,15 @@ function LandingPage({userType, userId, user}){
             const data = await response.json();
 
             console.log('Types Successfully Received:', data.types?.length);
-            setTypes(data.types || []);
+            
+            // Sort types alphabetically, but put "Other" at the end
+            const sortedTypes = (data.types || []).sort((a, b) => {
+                if (a.name === 'Other') return 1;  // Move "Other" to end
+                if (b.name === 'Other') return -1; // Keep "Other" at end
+                return a.name.localeCompare(b.name); // Alphabetical for the rest
+            });
+            
+            setTypes(sortedTypes);
         } catch (err) {
             console.error('Error fetching types:', err);
         }
