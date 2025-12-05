@@ -12,12 +12,9 @@ function Checkout() {
     const customerIdFromState = (location.state && location.state.customer_id);
     const customerIdFromSession = sessionStorage.getItem("checkout_customer_id");
     const customer_id = customerIdFromState || customerIdFromSession;
-
     const cartItems = (location.state && location.state.cartItems) || [];
-
-    // --- Standard State ---
     const [paymentMethod, setPaymentMethod] = useState("card");
-    const [tip, setTip] = useState(""); // Changed to string for easier input handling
+    const [tip, setTip] = useState(""); 
     const [employeeName] = useState("");
     const [savedMethods, setSavedMethods] = useState([]);
     const [selectedCardId, setSelectedCardId] = useState("");
@@ -39,7 +36,7 @@ function Checkout() {
 
     const [discounts, setDiscounts] = useState([]);
 
-    const allChecked = discounts.every((d) => d.checked);
+    const allChecked = discounts.length > 0 && discounts.every((d) => d.checked);
 
     const toggleSelectAll = () => {
         setDiscounts(prev =>
@@ -65,65 +62,112 @@ function Checkout() {
 
     const discountTotal = discounts
         .filter(d => d.checked)
-        .reduce((sum, d) => sum + d.amount, 0);
+        .reduce((sum, d) => sum + (Number(d.amount) || 0), 0);
 
     const total = Math.max(0, parseFloat(subtotal) + parseFloat(tip || 0) - discountTotal);
 
+    const extractSalonName = (item) => {
+        if (!item) return null;
+        return (
+            item.service_salon_name ||
+            item.product_salon_name ||
+            item.salon_name ||
+            (item.salon && (item.salon.name || item.salon.title)) ||
+            null
+        );
+    };
+
     useEffect(() => {
-        if (!customer_id || cartItems.length === 0) return;
+        if (!customer_id || cartItems.length === 0) {
+            setDiscounts([]); // clear
+            return;
+        }
 
-        const extractSalonName = (item) => {
-            return (
-                item.product_salon_name ||
-                null
-            );
-        };
+        const fetchPreview = async () => {
+            const spendMap = {};
+            cartItems.forEach((item) => {
+                const salonId = item.salon_id || item.service_salon_id || item.product_salon_id || (item.salon && item.salon.id);
+                const price = Number(item.item_price || 0) * (Number(item.quantity || 1));
+                if (!salonId) return;
+                spendMap[salonId] = (spendMap[salonId] || 0) + price;
+            });
 
-        const fetchRewards = async () => {
-            const salonIds = [...new Set(cartItems.map(item => 
-                item.salon_id || item.service_salon_id || item.product_salon_id || item.salon?.id
-            ).filter(Boolean))];
+            const cart_spending = Object.entries(spendMap).map(([salon_id, amount_spent]) => ({
+                salon_id: Number(salon_id),
+                amount_spent: Number(amount_spent)
+            }));
+
+            const cartSalonIds = new Set(Object.keys(spendMap).map(Number));
 
             try {
-                const response = await axios.post(
-                    `${import.meta.env.VITE_API_URL}/api/loyalty/cart/check-rewards`,
-                    { customer_id: customer_id, salon_ids: salonIds }
+                const resp = await axios.post(
+                    `${import.meta.env.VITE_API_URL}/api/loyalty/cart/checkout-preview`,
+                    {
+                        customer_id: customer_id,
+                        cart_spending
+                    }
                 );
 
-                const rewardsData = response.data;
+                console.log("=== RAW CHECKOUT PREVIEW DATA ===");
+                console.log("Input cart_spending:", cart_spending);
+                console.log("Raw API Response:", resp.data);
+                console.log("Cart salon IDs:", Array.from(cartSalonIds));
+                console.log("===============================");
 
-                console.log("Cart itemsssssssssssssssss:", cartItems);
-                
-                setDiscounts(
-                    Object.entries(rewardsData).map(([salonId, data]) => {
-                        const matchingItem = cartItems.find(item =>
-                            item.salon_id == salonId ||
-                            item.service_salon_id == salonId ||
-                            item.product_salon_id == salonId ||
-                            item.salon?.id == salonId
-                        );
+                const rewardsData = resp.data || {};
+                const seenSalonOrder = Array.from(cartSalonIds);
 
-                        const salonName = extractSalonName(matchingItem);
+                const newDiscounts = seenSalonOrder.map((salonId, idx) => {
+                    const entry = rewardsData[String(salonId)] || {};
+                    const matchingItem = cartItems.find(item =>
+                        (item.salon_id && item.salon_id == salonId) ||
+                        (item.service_salon_id && item.service_salon_id == salonId) ||
+                        (item.product_salon_id && item.product_salon_id == salonId) ||
+                        (item.salon && item.salon.id && item.salon.id == salonId)
+                    );
+                    const salonName = entry.salon_name || extractSalonName(matchingItem) || `Salon #${salonId}`;
 
-                        return {
-                            id: Number(salonId),
-                            salon: salonName || `Salon #${salonId}`,
-                            pointsInfo: data.info_text,
-                            amount: data.max_discount || 0,
-                            checked: false
-                        };
-                    })
-                );
+                    let pointsInfo = entry.info_text;
+                    if (!pointsInfo) {
+                        const est = entry.estimated_points_earned;
+                        if (est && Number(est) > 0) {
+                            pointsInfo = `No points yet — you'll earn ${est} points from this purchase`;
+                        } else {
+                            pointsInfo = "No points available for use";
+                        }
+                    }
 
-            } catch (error) {
-                console.error("Error fetching rewards", error);
-                setDiscounts(prev => prev.map(d => ({...d, pointsInfo: "Unable to load points", amount: 0})));
+                    return {
+                        id: Number(salonId),
+                        salon: salonName,
+                        pointsInfo,
+                        amount: Number(entry.max_discount || 0),
+                        checked: false,
+                    };
+                });
+
+                setDiscounts(newDiscounts);
+
+            } catch (err) {
+                console.error("Failed to fetch checkout preview", err);
+                const fallback = {};
+                cartItems.forEach(item => {
+                    const sid = item.salon_id || item.service_salon_id || item.product_salon_id || (item.salon && item.salon.id);
+                    fallback[sid] = fallback[sid] || {
+                        id: sid,
+                        salon: extractSalonName(item) || `Salon #${sid}`,
+                        pointsInfo: "Unable to load points",
+                        amount: 0,
+                        checked: false
+                    };
+                });
+                setDiscounts(Object.values(fallback));
             }
         };
 
-        fetchRewards();
-    }, [customer_id, cartItems]);
-
+        fetchPreview();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [customer_id, JSON.stringify(cartItems)]); // JSON.stringify to watch deep changes in cartItems
 
     const convertISOToMMYY = (isoDateString) => {
         if (!isoDateString) return "";
@@ -170,6 +214,7 @@ function Checkout() {
             }
         };
         fetchMethods();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [customer_id]);
 
     const handleCardSelect = (e) => {
@@ -362,7 +407,6 @@ function Checkout() {
                         kind: item.item_type,
                         product_id: item.item_type === "product" ? item.product_id : null,
                         service_id: item.item_type === "service" ? item.service_id : null,
-                        // Vital: Pass specific salon_id per item so loyalty accrues correctly
                         salon_id: item.salon_id ?? item.service_salon_id ?? item.product_salon_id ?? item.salon?.id,
                         qty: item.quantity || 1,
                         unit_price: item.item_price,
@@ -372,7 +416,9 @@ function Checkout() {
             );
 
             if (response.status === 201) {
+
                 console.log("Order created", response.data);
+
                 await createAppointmentsForServices();
                 navigate("/payment-confirmation", { state: { bookingData } });
             } else {
@@ -447,7 +493,7 @@ function Checkout() {
                         </div>
                         
                         <div className="discount-amount total-discount">
-                            Total Discount: ${discountTotal}
+                            Total Discount: ${discountTotal.toFixed(2)}
                         </div>
                         
                     </div>
