@@ -139,9 +139,7 @@ function LandingPage({userType, userId, user}){
     return(
         <div>
             <HeroSection navTo={navTo} userType={userType} user={userProfile || user}/>
-            <ServiceGrid navTo={navTo} userType={userType} user={userProfile}/>
-            <SalonsSection navTo={navTo} userType={userType} user={userProfile}/>
-
+            
             {/* Browse by Type Section */}
             <section className="types-section">
                 <h2>Browse by Type</h2>
@@ -156,6 +154,9 @@ function LandingPage({userType, userId, user}){
                     ))}
                 </div>
             </section>
+            
+            <ServiceGrid navTo={navTo} userType={userType} user={userProfile}/>
+            <SalonsSection navTo={navTo} userType={userType} user={userProfile}/>
         </div>  
     );
 }
