@@ -1,5 +1,5 @@
 // RUN COMMAND:
-// npx playwright test tests/customer/salon-search.spec.js --project=firefox --headed
+// npx playwright test tests/customer/book-appt.spec.js --project=firefox --headed
 
 // USE CASE:
 // As a user, I want to view available barbers and time slots so that I can book easily.
