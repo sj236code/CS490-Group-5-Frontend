@@ -155,14 +155,12 @@ function SearchPage() {
                             <option>Any Type</option>
                             <option>Barber</option>
                             <option>Hair Color</option>
+                            <option>Hair Removal</option>
                             <option>Lashes</option>
-                            <option>Mani/Pedi</option>
                             <option>Nails</option>
-                            <option>Other</option>
                             <option>Salon</option>
                             <option>Spa</option>
-                            <option>Threading</option>
-                            <option>Waxing</option>
+                            <option>Other</option>
                         </select>
                     </div>
 
