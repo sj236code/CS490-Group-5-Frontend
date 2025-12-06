@@ -24,7 +24,8 @@ function CustomerCartPanel({ onClose, user }) {
             state: { 
                 cartItems: cart.items,
                 customer_id: customerId
-            } 
+            }
+
         });
         onClose(); // close the cart panel after navigating
     };
