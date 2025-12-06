@@ -7633,7 +7633,7 @@ label {
     grid-template-columns: repeat(4, 1fr);  /* Force exactly 4 columns */
     gap: 24px;
     padding: 20px 0;
-    max-width: 1200px;  
+    max-width: 1000px;  
     margin: 0 auto;     
 }
 
