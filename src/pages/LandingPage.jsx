@@ -171,7 +171,7 @@ function LandingPage({userType, userId, user}){
                 </div>
             </section>
             
-            <ServiceGrid navTo={navTo} userType={userType} user={userProfile}/>
+            {/* <ServiceGrid navTo={navTo} userType={userType} user={userProfile}/> */}
             <SalonsSection navTo={navTo} userType={userType} user={userProfile}/>
         </div>  
     );
