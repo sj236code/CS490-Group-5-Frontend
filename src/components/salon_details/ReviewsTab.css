@@ -206,8 +206,8 @@
 
 /* Individual review image item */
 .review-image-item {
-    width: 480px;
-    height: 480px;
+    width: 200px;
+    height: 200px;
     object-fit: cover;
     border-radius: 4px;
     border: 1px solid #D3D8CF;
