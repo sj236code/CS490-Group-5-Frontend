@@ -29,6 +29,11 @@ function DemographicsPage() {
 
   const base = import.meta.env.VITE_API_URL;
 
+  const handleGeneratePdf = () => {
+    const url = `${base}/api/admin/demographics/report-pdf`;
+    window.open(url, "_blank");
+  };
+
   useEffect(() => {
     const load = async () => {
       try {
@@ -218,6 +223,16 @@ function DemographicsPage() {
             </BarChart>
           </ResponsiveContainer>
         </div>
+      </div>
+
+    {/* ---- PDF button at bottom right ---- */}
+      <div
+        className="analytics-footer-actions"
+        style={{ marginTop: "24px", textAlign: "right" }}
+      >
+        <button className="primary-button" onClick={handleGeneratePdf}>
+          Generate PDF Report
+        </button>
       </div>
     </div>
   );

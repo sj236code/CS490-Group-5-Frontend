@@ -109,6 +109,18 @@ function RevenuePage() {
     }
   };
 
+  // --------- Generate PDF ---------
+  const handleGeneratePdf = () => {
+    const params = new URLSearchParams();
+    params.set("range", range);
+    if (salonId !== "all") params.set("salonId", salonId);
+
+    window.open(
+      `${API}/api/admin/revenue/report-pdf?${params.toString()}`,
+      "_blank"
+    );
+  };
+
   useEffect(() => {
     loadSalons();
   }, []);
@@ -265,6 +277,26 @@ function RevenuePage() {
           </ResponsiveContainer>
         </div>
       </div>
+
+      {/* NEW: PDF export button (right aligned, no CSS changes) */}
+<div
+  style={{
+    width: "100%",
+    display: "flex",
+    justifyContent: "flex-end",
+    marginTop: "20px",
+    marginBottom: "20px",
+  }}
+>
+  <button
+    type="button"
+    className="analytics-download-btn"
+    onClick={handleGeneratePdf}
+  >
+    Generate PDF Report
+  </button>
+</div>
+
     </div>
   );
 }
