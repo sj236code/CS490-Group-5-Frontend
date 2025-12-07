@@ -34,6 +34,11 @@ function SalonActivityPage() {
     type: "success",
   });
 
+   const handleGeneratePdf = () => {
+    const url = `${API}/api/admin/salon-activity/report-pdf`;
+    window.open(url, "_blank");
+  };
+
   const showToast = (message, type = "success") => {
     setToast({ show: true, message, type });
     setTimeout(() => {
@@ -341,8 +346,17 @@ function SalonActivityPage() {
           </ResponsiveContainer>
         </div>
       </div>
+
+      {/* ======= GENERATE PDF BUTTON (BOTTOM RIGHT) ======= */}
+      <div
+        className="sa-footer-actions"
+        style={{ marginTop: "24px", textAlign: "right" }}
+      >
+        <button className="primary-button" onClick={handleGeneratePdf}>
+          Generate PDF Report
+        </button>
+      </div>
     </div>
   );
 }
-
 export default SalonActivityPage;

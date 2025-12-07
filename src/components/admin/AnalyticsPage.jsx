@@ -11,6 +11,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import "../../App.css";
+const API = import.meta.env.VITE_API_URL;   //
 
 function AnalyticsPage() {
   const [summary, setSummary] = useState(null);
@@ -21,21 +22,25 @@ function AnalyticsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchAnalytics = async () => {
-      const base = import.meta.env.VITE_API_URL;
+  const handleGeneratePdf = () => {
+    const url = `${API}/api/admin/analytics/engagement/report-pdf?days=30`;
+    window.open(url, "_blank"); // opens / downloads the PDF
+  };
 
+    useEffect(() => {
+    const fetchAnalytics = async () => {
       try {
         setLoading(true);
         setError(null);
 
         const [summaryRes, engagementRes, returningRes, retentionRes] =
           await Promise.all([
-            fetch(`${base}/api/admin/analytics/engagement/summary?days=30`),
-            fetch(`${base}/api/admin/analytics/engagement-trend?days=30`),
-            fetch(`${base}/api/admin/analytics/returning-users-trend?days=30`),
-            fetch(`${base}/api/admin/analytics/retention-cohort`),
+            fetch(`${API}/api/admin/analytics/engagement/summary?days=30`),
+            fetch(`${API}/api/admin/analytics/engagement-trend?days=30`),
+            fetch(`${API}/api/admin/analytics/returning-users-trend?days=30`),
+            fetch(`${API}/api/admin/analytics/retention-cohort`),
           ]);
+
 
         if (
           !summaryRes.ok ||
@@ -233,6 +238,16 @@ function AnalyticsPage() {
             </BarChart>
           </ResponsiveContainer>
         </div>
+      </div>
+
+      {/* GENERATE PDF BUTTON AT THE BOTTOM */}
+      <div
+        className="analytics-footer"
+        style={{ marginTop: "24px", textAlign: "right" }}
+      >
+        <button className="primary-button" onClick={handleGeneratePdf}>
+          Generate PDF Report
+        </button>
       </div>
     </div>
   );
