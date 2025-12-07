@@ -140,7 +140,7 @@ function ReviewsTab({ salon }) {
                     </div>
                     <StarRating rating={review.rating} />
                     <p className="review-comment">{review.comment}</p>
-
+                    
                     {/* Display review images if they exist */}
                     {review.images && review.images.length > 0 && (
                         <div className="review-images-grid">
@@ -151,23 +151,6 @@ function ReviewsTab({ salon }) {
                                     alt={`Review image ${index + 1}`}
                                     className="review-image-item"
                                 />
-                            ))}
-                        </div>
-                    )}
-
-                    {/* Display review replies if they exist */}
-                    {review.replies && review.replies.length > 0 && (
-                        <div className="review-replies">
-                            {review.replies.map((reply) => (
-                                <div key={reply.id} className="review-reply-item">
-                                    <div className="reply-header">
-                                        <span className="reply-author">{reply.replier_name}</span>
-                                        <span className="reply-date">
-                                            {new Date(reply.created_at).toLocaleDateString()}
-                                        </span>
-                                    </div>
-                                    <p className="reply-text">{reply.text_body}</p>
-                                </div>
                             ))}
                         </div>
                     )}
