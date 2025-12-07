@@ -30,7 +30,6 @@ function CustomerLoyalty() {
     const pointsAway = progress.points_away ?? 0;
     const pointsToNext = progress.points_to_next_reward ?? 0;
 
-    // If they already have a reward ready
     if (pointsAway <= 0 && pointsToNext > 0) {
       return "You’ve unlocked a reward! Redeem it at your next visit.";
     }
@@ -39,7 +38,6 @@ function CustomerLoyalty() {
       return `Only ${pointsAway} points away from your next reward (${pointsToNext} points needed).`;
     }
 
-    // Fallback generic message
     if (prog.program_details?.points_per_dollar) {
       return `Earn ${prog.program_details.points_per_dollar} points for every $1 you spend here.`;
     }
@@ -71,28 +69,45 @@ function CustomerLoyalty() {
         setLoading(true);
         setError("");
 
-        // Dashboard summary
+        // 1) Points summary (lifetime + current)
+        try {
+          const pointsRes = await fetch(
+            `${import.meta.env.VITE_API_URL}/api/loyalty/customers/${customerId}/points-summary`
+          );
+
+          if (pointsRes.ok) {
+            const pointsData = await pointsRes.json();
+            setLifetimePoints(pointsData.lifetime_points || 0);
+            console.log("Points summary:", pointsData);
+          } else if (pointsRes.status === 404) {
+            console.warn("Customer not found for points summary");
+            setLifetimePoints(0);
+          } else {
+            console.error("Failed to fetch points summary");
+          }
+        } catch (pointsErr) {
+          console.error("Error loading points summary:", pointsErr);
+        }
+
+        // 2) Dashboard summary (active programs + total visits)
         const dashboardResponse = await fetch(
           `${import.meta.env.VITE_API_URL}/api/loyalty/customers/${customerId}/dashboard`
         );
 
         if (dashboardResponse.ok) {
           const dashboardData = await dashboardResponse.json();
-          setLifetimePoints(dashboardData.current_total_points || 0);
           setActivePrograms(dashboardData.active_programs_count || 0);
           setTotalVisits(dashboardData.total_visits_all_time || 0);
           console.log("Dashboard info received: ", dashboardData);
-        } 
-        else if (dashboardResponse.status === 404) {
+        } else if (dashboardResponse.status === 404) {
           console.error("Customer not found for loyalty dashboard");
           setError("We couldn’t find loyalty info for this account yet.");
-        } 
-        else {
+        } else {
           console.error("Failed to fetch loyalty dashboard");
           setError("Unable to load your loyalty summary right now.");
         }
 
-        // Programs list
+        // 3) Programs list
         const programsResponse = await fetch(
           `${import.meta.env.VITE_API_URL}/api/loyalty/customers/${customerId}/programs`
         );
@@ -100,7 +115,43 @@ function CustomerLoyalty() {
         if (programsResponse.ok) {
           const programsData = await programsResponse.json();
           console.log("Loyalty Programs Loaded: ", programsData);
-          setPrograms(Array.isArray(programsData) ? programsData : []);
+
+          // For each program, fetch visits for that specific salon (new visits endpoint)
+          const programsWithVisits = await Promise.all(
+            (Array.isArray(programsData) ? programsData : []).map(
+              async (prog) => {
+                try {
+                  const visitsRes = await fetch(
+                    `${import.meta.env.VITE_API_URL}/api/loyalty/customers/${customerId}/salons/${prog.salon_id}/visits`
+                  );
+
+                  if (visitsRes.ok) {
+                    const visitsData = await visitsRes.json();
+                    return {
+                      ...prog,
+                      total_visits_at_salon:
+                        visitsData.total_completed_visits ?? 0,
+                    };
+                  }
+
+                  console.error(
+                    "Failed to fetch visits for salon",
+                    prog.salon_id
+                  );
+                  return prog;
+                } catch (visitsErr) {
+                  console.error(
+                    "Error fetching visits for salon",
+                    prog.salon_id,
+                    visitsErr
+                  );
+                  return prog;
+                }
+              }
+            )
+          );
+
+          setPrograms(programsWithVisits);
         } else {
           console.error("Failed to fetch loyalty programs");
           setPrograms([]);
