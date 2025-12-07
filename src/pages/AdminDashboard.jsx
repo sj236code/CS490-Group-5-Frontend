@@ -3,7 +3,7 @@ import AnalyticsPage from "../components/admin/AnalyticsPage";
 import SalonActivityPage from "../components/admin/SalonActivityPage";
 import DemographicsPage from "../components/admin/DemographicsPage";
 import ReportsPage from "../components/admin/ReportsPage";
-import ViewUptimePage from "../components/admin/ViewUptimePage";
+import RevenuePage from "../components/admin/RevenuePage";
 import "../App.css";
 
 function AdminDashboard() {
@@ -19,8 +19,8 @@ function AdminDashboard() {
         return <DemographicsPage />;
       case "Reports":
         return <ReportsPage />;
-      case "ViewUptime":
-        return <ViewUptimePage />;
+      case "Revenue":
+        return <RevenuePage />;
       default:
         return <AnalyticsPage />;
     }
@@ -32,7 +32,7 @@ function AdminDashboard() {
 
       {/* Top Tabs */}
       <div className="admin-tabs">
-        {["Analytics", "SalonActivity", "Demographics", "Reports", "ViewUptime"].map((tab) => (
+        {["Analytics", "SalonActivity", "Demographics", "Reports", "Revenue"].map((tab) => (
           <button
             key={tab}
             className={`admin-tab ${activeTab === tab ? "active" : ""}`}

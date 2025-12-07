@@ -7609,3 +7609,137 @@ label {
   margin-top: 0.3rem;
   color: rgba(255, 255, 255, 0.6);
 }
+
+/* ===== Demographics loyalty cards ===== */
+
+.analytics-summary-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.5rem;
+  margin: 1.75rem 1.5rem 0 1.5rem;
+}
+
+/* individual card */
+.summary-card {
+  background: #f3f8ec;              
+  border-radius: 16px;
+  padding: 20px 24px;
+  border: 1px solid #dbe8d0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  text-align: left;                 
+}
+
+/* card title */
+.summary-card h4 {
+  margin: 0 0 12px 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #304027;
+}
+
+/* main metric row (big number + label) */
+.summary-main {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.summary-value {
+  font-size: 2.1rem;                
+  font-weight: 700;
+  color: #324422;
+  line-height: 1.1;
+}
+
+.summary-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #4b5b37;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-top: 3px;
+}
+
+/* smaller stats under the main metric */
+.summary-metrics {
+  margin-top: 6px;
+  font-size: 0.82rem;
+  color: #54634a;
+}
+
+.summary-metric-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 3px;
+}
+
+/* Stack on smaller screens */
+@media (max-width: 1100px) {
+  .analytics-summary-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* ===== Reports page ===== */
+
+.reports-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 1.25rem 1.5rem 0.75rem;
+  background: #43533d;
+  border-radius: 8px;
+  padding: 10px 16px;
+  color: #f7f9f2;
+}
+
+.reports-toolbar-title {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.reports-download-button {
+  background: #9db98a;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #24301e;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.reports-download-button:disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+
+.reports-download-button:hover:not(:disabled) {
+  background: #a9c39a;
+}
+
+.reports-card {
+  margin: 1rem 1.5rem 2rem;
+  background: #f3f7eb;
+  border-radius: 12px;
+  padding: 18px 20px;
+  border: 1px solid #dde6cf;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  max-width: 520px;
+}
+
+.reports-checkbox-row {
+  margin-bottom: 10px;
+  font-size: 0.9rem;
+  color: #334024;
+}
+
+.reports-checkbox-row input {
+  margin-right: 6px;
+}
