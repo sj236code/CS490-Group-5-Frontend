@@ -19,7 +19,7 @@ tests/
 ├─ customer/
 │   ├─ book-appt.spec.js           # Book Appointment
 │   ├─ secure-checkout.spec.js     # Checkout Securely
-│   └─ loyalty.spec.js             # Customer loyalty features
+│   └─ leave-review.spec.js        # Customer leaves a review
 │
 └─ utils/
     ├─ login.js                    # Reusable login helpers for each role
