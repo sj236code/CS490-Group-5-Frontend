@@ -7609,3 +7609,80 @@ label {
   margin-top: 0.3rem;
   color: rgba(255, 255, 255, 0.6);
 }
+
+/* ============================================================
+   TYPE CARDS SECTION - For Landing Page
+   ============================================================ */
+
+.types-section {
+    padding: 40px 20px;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.types-section h2 {
+    font-size: 32px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.types-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);  /* Force exactly 4 columns */
+    gap: 24px;
+    padding: 20px 0;
+    max-width: 1100px;  
+    margin: 0 auto;     
+}
+
+/* Type Card Styling */
+.type-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.type-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.type-card-image {
+    width: 100%;
+    height: 220px; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;  
+    background: #ffffff; 
+}
+
+.type-card-image img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;  
+}
+
+.type-card-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+}
+
+.type-card-content {
+    padding: 16px;
+    text-align: center;
+}
+
+.type-card-name {
+    font-size: 18px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0;
+}

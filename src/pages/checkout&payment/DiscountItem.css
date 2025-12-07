@@ -1,0 +1,78 @@
+.discount-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 0;
+}
+
+.discount-checkbox {
+    margin-right: 10px;
+}
+
+.discount-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.border {
+    flex: 1;
+    display: flex;
+    border: 1px solid #999;
+    border-radius: 10px;
+    padding: 10px;
+    align-items: center;
+    margin-left: 10px;
+}
+
+.discount-salon {
+    font-weight: 500;
+}
+
+.discount-points {
+    font-size: 13px;
+    color: #666;
+}
+
+.discount-amount {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.discount-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0;
+}
+
+.discount-left {
+    display: flex;
+    align-items: flex-start;
+}
+
+.discount-left input[type="checkbox"] {
+    transform: scale(1.2);
+    margin-right: 10px;
+}
+
+.discount-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.discount-salon {
+    font-weight: 600;
+}
+
+.discount-points {
+    font-size: 13px;
+    color: #666;
+    margin-top: 2px;
+}
+
+.discount-amount {
+    font-size: 16px;
+    font-weight: 600;
+    white-space: nowrap;
+}
