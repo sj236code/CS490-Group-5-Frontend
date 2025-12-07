@@ -6,7 +6,7 @@ name: Playwright E2E Tests
 
 on:
   push:
-    branches: [main, dev, sandbox]
+    branches: [main, dev, sandbox, uiTesting/playwright/saanya]
   pull_request:
     branches: [main, dev, sandbox]
 
@@ -14,31 +14,222 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
-    env:
-      VITE_API_URL: https://jade-dev.up.railway.app
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: mysql2025
+          MYSQL_DATABASE: salon_app_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -pmysql2025 --silent"
+          --health-interval=5s
+          --health-timeout=3s
+          --health-retries=15
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          path: frontend
+
+      - uses: actions/checkout@v4
+        with:
+          repository: BarkStrip/CS490-Group-5-Backend
+          path: backend
+          ref: dev
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt pymysql
+
+      - name: Initialize test database schema + seed Playwright data
+        working-directory: backend
+        env:
+          SQLALCHEMY_DATABASE_URI: mysql+pymysql://root:mysql2025@127.0.0.1:3306/salon_app_test
+          MYSQL_PUBLIC_URL: mysql+pymysql://root:mysql2025@127.0.0.1:3306/salon_app_test
+          MYSQL_TEST_URL: mysql+pymysql://root:mysql2025@127.0.0.1:3306/salon_app_test
+          TESTING: "1"
+          PORT: "5000"
+          PYTHONPATH: .
+        run: |
+          echo "📦 Creating tables using Base.metadata and seeding Playwright users..."
+          python -u << 'EOF'
+          import os, sys
+
+          print("CWD:", os.getcwd())
+          print("Contents:", os.listdir("."))
+
+          sys.path.insert(0, os.getcwd())
+
+          from main import create_app
+          from app.extensions import db
+          from app.models import Base
+          from tests.seed_playwright_data import seed_playwright_users
+
+          app = create_app()
+
+          with app.app_context():
+              print("Dropping all tables in test DB...")
+              Base.metadata.drop_all(bind=db.engine)
+
+              print("Creating all tables in test DB...")
+              Base.metadata.create_all(bind=db.engine)
+
+              print("Seeding Playwright fixtures...")
+              seed_playwright_users()
+
+              print("✅ Schema initialized and seed data inserted.")
+          EOF
+
+      - name: Verify Playwright seed user + password
+        working-directory: backend
+        env:
+          SQLALCHEMY_DATABASE_URI: mysql+pymysql://root:mysql2025@127.0.0.1:3306/salon_app_test
+          MYSQL_PUBLIC_URL: mysql+pymysql://root:mysql2025@127.0.0.1:3306/salon_app_test
+          MYSQL_TEST_URL: mysql+pymysql://root:mysql2025@127.0.0.1:3306/salon_app_test
+          TESTING: "1"
+          PYTHONPATH: .
+        run: |
+          python - << 'EOF'
+          import os
+          import bcrypt
+          from main import create_app
+          from app.extensions import db
+          from app.models import AuthUser
+
+          print("SQLALCHEMY_DATABASE_URI:", os.environ.get("SQLALCHEMY_DATABASE_URI"))
+
+          app = create_app()
+
+          with app.app_context():
+              user = db.session.query(AuthUser).filter_by(
+                  email="playwright_tester@jade.com"
+              ).first()
+
+              print("User exists:", bool(user))
+              if not user:
+                  raise SystemExit("❌ Seed user not found in test DB")
+
+              print("role:", user.role)
+              print("type(password_hash):", type(user.password_hash))
+              print("password_hash raw:", user.password_hash)
+
+              ok = bcrypt.checkpw(
+                  "password123".encode("utf-8"),
+                  user.password_hash if isinstance(user.password_hash, (bytes, bytearray))
+                  else str(user.password_hash).encode("utf-8"),
+              )
+              print("Password correct?:", ok)
+
+              if not ok:
+                  raise SystemExit("❌ Seeded password does not match 'password123'")
+          EOF
+
+      - name: Verify seeded Playwright customer login works via test_client
+        working-directory: backend
+        env:
+          SQLALCHEMY_DATABASE_URI: mysql+pymysql://root:mysql2025@127.0.0.1:3306/salon_app_test
+          MYSQL_PUBLIC_URL: mysql+pymysql://root:mysql2025@127.0.0.1:3306/salon_app_test
+          MYSQL_TEST_URL: mysql+pymysql://root:mysql2025@127.0.0.1:3306/salon_app_test
+          TESTING: "1"
+          PYTHONPATH: .
+        run: |
+          python - << 'EOF'
+          from main import create_app
+          from app.extensions import db
+          from app.models import AuthUser
+
+          print("🔍 Creating app + test_client to verify /api/auth/login")
+          app = create_app()
+
+          with app.app_context():
+              count = db.session.query(AuthUser).count()
+              print(f"AuthUser rows in test DB: {count}")
+              user = db.session.query(AuthUser).filter_by(
+                  email="playwright_tester@jade.com"
+              ).first()
+              print("Seeded user present?:", bool(user))
+
+          with app.test_client() as client:
+              resp = client.post(
+                  "/api/auth/login",
+                  json={
+                      "email": "playwright_tester@jade.com",
+                      "password": "password123",
+                  },
+              )
+              print("Status:", resp.status_code)
+              text = resp.get_data(as_text=True)
+              print("Raw response:", text)
+              try:
+                  print("JSON:", resp.get_json())
+              except Exception as e:
+                  print("JSON parse error:", e)
+
+              if resp.status_code != 200:
+                  raise SystemExit("❌ Login sanity check FAILED (non-200 status)")
+          print("✅ Login sanity check PASSED")
+          EOF
 
       - uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      - name: Install deps
+      - name: Install frontend deps
+        working-directory: frontend
         run: npm ci
 
       - name: Build frontend
+        working-directory: frontend
+        env:
+          VITE_API_URL: http://localhost:5000
         run: npm run build
 
       - name: Install Playwright
+        working-directory: frontend
         run: npx playwright install --with-deps
 
-      - name: Run Playwright
-        run: npx playwright test
+      - name: Run backend (testing mode) and Playwright tests
+        env:
+          FLASK_ENV: testing
+          TESTING: "1" 
+          MYSQL_TEST_URL:  mysql+pymysql://root:mysql2025@127.0.0.1:3306/salon_app_test
+          MYSQL_PUBLIC_URL: mysql+pymysql://root:mysql2025@127.0.0.1:3306/salon_app_test
+          PORT: "5000"
+          VITE_API_URL: http://localhost:5000
+          RESEND_API_KEY: "dummy-ci-key"
+        run: |
+          # start backend
+          cd backend
+          python main.py &
+          BACKEND_PID=$!
+          echo "Backend PID: $BACKEND_PID"
+          sleep 15
+
+          # optional: sanity check over HTTP
+          echo "Calling backend over HTTP..."
+          curl -i -X POST http://localhost:5000/api/auth/login \
+            -H "Content-Type: application/json" \
+            -d '{"email":"playwright_tester@jade.com","password":"password123"}'
+
+          # run Playwright from frontend
+          cd ../frontend
+          npx playwright test
+
+          # stop backend
+          kill $BACKEND_PID || echo "Backend already stopped"
 
       - name: Upload Playwright report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report
-          path: playwright-report
+          path: frontend/playwright-report
