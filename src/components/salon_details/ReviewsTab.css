@@ -174,18 +174,20 @@
     align-items: center;
     gap: 8px;
     padding: 10px 16px;
-    background-color: #d9c9ef;
+    background-color: #96A78D;
     color: white;
     border: none;
     border-radius: 6px;
     font-weight: 600;
     font-size: 0.95rem;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: all 0.2s ease;
 }
 
 .btn-post-review:hover {
-    background-color: #c9b7e0;
+    background-color: #4B5945;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 .login-prompt {
@@ -216,7 +218,7 @@
 .review-replies {
     margin-top: 1rem;
     padding-left: 1.5rem;
-    border-left: 3px solid #d9c9ef;
+    border-left: 3px solid #96A78D;
 }
 
 /* Individual reply item */
@@ -241,7 +243,7 @@
 
 .reply-author {
     font-weight: 600;
-    color: #6b46c1;
+    color: #4B5945;
     font-size: 0.9rem;
 }
 
@@ -256,4 +258,28 @@
     color: #555;
     line-height: 1.5;
     margin: 0;
+}
+
+/* Reply button for salon owners */
+.btn-reply {
+    margin-top: 12px;
+    padding: 8px 10px;
+    background-color: #96A78D;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    width: auto;
+}
+
+.btn-reply:hover {
+    background-color: #4B5945;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
