@@ -21,9 +21,12 @@ tests/
 │   ├─ secure-checkout.spec.js     # Checkout Securely
 │   └─ leave-review.spec.js        # Customer leaves a review
 │
-└─ utils/
-    ├─ login.js                    # Reusable login helpers for each role
-    └─ test-data.js                # Any shared test data (if needed)
+├─ utils/
+|   ├─ employee.js                 # Employee related helpers
+|   ├─ customer.js                 # Customer related helpers
+|   └─ login.js                    # Reusable login helpers for each role
+|
+└─ full-flow.spec.js               # Full flow script- run command in file
 ```
 
 ## Naming convention:
@@ -181,10 +184,11 @@ You do not repeat everything every time.
 ### How to Use Playwright Codegen
 Start dev server:
 ```
+export VITE_API_URL="http://localhost:5000"
 npm run dev
 ```
 
-Open codegen:
+Open codegen in another terminal:
 ```
 npx playwright codegen http://localhost:5173
 ```
