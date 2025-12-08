@@ -500,7 +500,6 @@ function Checkout() {
                 </div>
             </div>
 
-            {/* --- AMOUNT SECTION UPDATED --- */}
             <div className="amount-section">
                 <label>Add Tip?</label>
                 <input
@@ -511,7 +510,6 @@ function Checkout() {
                 />
                 <p className="summary-text">
                     Subtotal: ${subtotal.toFixed(2)} <br />
-                    {/* Show discount line item if applied */}
                     {discountTotal > 0 && (
                         <span style={{ color: '#2ecc71' }}>
                             Rewards Applied: -${discountTotal.toFixed(2)} <br />
