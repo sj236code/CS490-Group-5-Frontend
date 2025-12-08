@@ -6,12 +6,16 @@ import { test, expect } from '@playwright/test';
 import { loginEmployee, loginCustomer, loginOwner } from './utils/login';
 import { createSchedule } from './utils/employee';
 import { addProducts } from './utils/owner';
-import { addToCart, customerCheckout, leaveReview } from './utils/customer';
+import { addToCart, customerCheckout, leaveReview, editAppointment } from './utils/customer';
 
 test.describe.serial('entire test flow', () => {
 
     // Employee Sets Hours
     test('employee sets schedule via UI', async ({ page }) => {
+
+        console.log("============================================")
+        console.log("Employee Sets Schedule/ Hours")
+        console.log("============================================")
 
         // Login as an employee
         await loginEmployee(page);
@@ -26,6 +30,10 @@ test.describe.serial('entire test flow', () => {
 
     // Salon Owner Adds Product & Service
     test('salon owner adds a product and service to menu', async ({ page }) => {
+
+        console.log("============================================")
+        console.log("Salon Owner Adds Product & Services")
+        console.log("============================================")
         
         // Login as owner
         await loginOwner(page);
@@ -40,6 +48,10 @@ test.describe.serial('entire test flow', () => {
     // Customer Schedule an Appointment
     test('customer schedules appt w employee hours', async ({ page }) => {
 
+        console.log("============================================")
+        console.log("Customer Schedules an Appointment")
+        console.log("============================================")
+
         // Login as customer
         await loginCustomer(page);
         await page.waitForTimeout(500);
@@ -53,6 +65,10 @@ test.describe.serial('entire test flow', () => {
     // Customer Checks Out
     test('customer check out', async ({ page }) => {
 
+        console.log("============================================")
+        console.log("Customer Checks Out")
+        console.log("============================================")
+
         // Login as customer
         await loginCustomer(page);
         await page.waitForTimeout(500);
@@ -65,6 +81,10 @@ test.describe.serial('entire test flow', () => {
 
     // Customer Leaves a Review
         test('customer leaves a review', async ({ page }) => {
+
+        console.log("============================================")
+        console.log("Customer Leaves a Review")
+        console.log("============================================")
 
         // Login as customer
         await loginCustomer(page);

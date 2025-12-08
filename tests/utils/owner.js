@@ -1,6 +1,6 @@
 import { expect } from '@playwright/test';
 
-// Add a product & service to cart
+// Add a product & service to menu
 export async function addProducts(page) {
 
     await page.getByRole('button').first().click();
@@ -31,3 +31,5 @@ export async function addProducts(page) {
 
     await page.waitForTimeout(1000);
 }
+
+// Reply to a review
