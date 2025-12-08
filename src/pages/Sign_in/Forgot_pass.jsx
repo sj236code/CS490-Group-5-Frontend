@@ -4,13 +4,28 @@ import { ChevronLeft } from 'lucide-react';
 import './Forgot_pass.css';
 
 function ForgotPassword() {
+    const API_BASE = import.meta.env.VITE_API_URL;
+
     const [email, setEmail] = useState('');
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log('Sending OTP to:', email);
-        navigate('/verify-otp', { state: { email } });
+const handleSubmit = async (e) => {        
+    e.preventDefault();
+        try {
+            const response = await fetch(`${API_BASE}/api/auth/forgot-password`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+            });
+
+            if (response.ok) {
+                navigate('/verify-otp', { state: { email } });
+            } else {
+                console.error("Failed to send OTP");
+            }
+        } catch (error) {
+            console.error("Error:", error);
+        }
     };
 
     const handleBack = () => {
