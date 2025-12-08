@@ -1579,6 +1579,41 @@ body {
   font-weight: 600;
 }
 
+.gallery-controls .btn-small {
+  padding: 10px 16px;
+  border-radius: 8px;
+  background-color: #6B7C67;
+  color: white;
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.gallery-controls .btn-small:hover {
+  background-color: #5a6856;
+}
+
+.gallery-controls .btn-small.btn-outline {
+  background-color: transparent;
+  color: #6B7C67;
+  border: 2px solid #6B7C67;
+}
+
+.gallery-controls .btn-small.btn-outline:hover {
+  background-color: #6B7C67;
+  color: white;
+}
+
+.gallery-controls .btn-small:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 /* Footer buttons */
 
 .book-appt-footer {
