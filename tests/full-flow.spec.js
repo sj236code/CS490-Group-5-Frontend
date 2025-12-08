@@ -3,7 +3,7 @@
 
 import { test, expect } from '@playwright/test';
 import { loginEmployee, loginCustomer, loginOwner } from './utils/login';
-import { createSchedule } from './utils/employee';
+import { createSchedule, blockTime } from './utils/employee';
 import { addProducts, replyReview, activateLoyalty, viewHistory, trackPayments } from './utils/owner';
 import { addToCart, customerCheckout, leaveReview, editAppointment, viewLoyalty, redeemLoyalty, cancelAppt, earnPoints } from './utils/customer';
 
@@ -15,6 +15,8 @@ test.describe.serial('entire test flow', () => {
         console.log("============================================")
         console.log("1. Employee Sets Schedule/ Hours")
         console.log("============================================")
+
+        await page.waitForTimeout(2000);
 
         // Login as an employee
         await loginEmployee(page);
@@ -33,6 +35,8 @@ test.describe.serial('entire test flow', () => {
         console.log("============================================")
         console.log("2. Salon Owner Adds Product & Services")
         console.log("============================================")
+
+        await page.waitForTimeout(2000);
         
         // Login as owner
         await loginOwner(page);
@@ -51,6 +55,8 @@ test.describe.serial('entire test flow', () => {
         console.log("3. Salon Owner Activates & Sets up Loyalty")
         console.log("============================================")
 
+        await page.waitForTimeout(2000);
+
         // Login as owner
         await loginOwner(page);
         await page.waitForTimeout(500);
@@ -67,6 +73,8 @@ test.describe.serial('entire test flow', () => {
         console.log("============================================")
         console.log("4. Customer Schedules an Appointment")
         console.log("============================================")
+
+        await page.waitForTimeout(2000);
 
         // Login as customer
         await loginCustomer(page);
@@ -85,6 +93,8 @@ test.describe.serial('entire test flow', () => {
         console.log("5. Customer Checks Out")
         console.log("============================================")
 
+        await page.waitForTimeout(2000);
+
         // Login as customer
         await loginCustomer(page);
         await page.waitForTimeout(500);
@@ -101,6 +111,8 @@ test.describe.serial('entire test flow', () => {
         console.log("============================================")
         console.log("6. Customer Views Loyalty Status")
         console.log("============================================")
+
+        await page.waitForTimeout(2000);
 
         // Login as customer
         await loginCustomer(page);
@@ -119,6 +131,8 @@ test.describe.serial('entire test flow', () => {
         console.log("7. Customer Checks Out")
         console.log("============================================")
 
+        await page.waitForTimeout(2000);
+
         // Login as customer
         await loginCustomer(page);
         await page.waitForTimeout(500);
@@ -135,6 +149,8 @@ test.describe.serial('entire test flow', () => {
         console.log("============================================")
         console.log("8. Customer Leaves a Review")
         console.log("============================================")
+
+        await page.waitForTimeout(2000);
 
         // Login as customer
         await loginCustomer(page);
@@ -153,6 +169,8 @@ test.describe.serial('entire test flow', () => {
         console.log("9. Owner Replies to a Review")
         console.log("============================================")
 
+        await page.waitForTimeout(2000);
+
         // Login as salon owner
         await loginOwner(page);
         await page.waitForTimeout(500);
@@ -169,6 +187,8 @@ test.describe.serial('entire test flow', () => {
         console.log("============================================")
         console.log("10. Customer Redeems Loyalty Points")
         console.log("============================================")
+
+        await page.waitForTimeout(2000);
 
         // Login as customer
         await loginCustomer(page);
@@ -187,6 +207,8 @@ test.describe.serial('entire test flow', () => {
         console.log("11. Customer Cancels Appointment")
         console.log("============================================")
 
+        await page.waitForTimeout(2000);
+
         // Login as customer
         await loginCustomer(page);
         await page.waitForTimeout(500);
@@ -204,6 +226,8 @@ test.describe.serial('entire test flow', () => {
         console.log("12. Customer Earns Loyalty Points")
         console.log("============================================")
 
+        await page.waitForTimeout(2000);
+
         // Login as customer
         await loginCustomer(page);
         await page.waitForTimeout(500);
@@ -219,6 +243,8 @@ test.describe.serial('entire test flow', () => {
         console.log("============================================")
         console.log("13. Owner View History & Transactions")
         console.log("============================================")
+
+        await page.waitForTimeout(2000);
 
         // Login as owner
         await loginOwner(page);
@@ -236,12 +262,32 @@ test.describe.serial('entire test flow', () => {
         console.log("14. Owner Track Payments & Manage Revenue")
         console.log("============================================")
 
+        await page.waitForTimeout(2000);
+
         // Login as owner
         await loginOwner(page);
         await page.waitForTimeout(500);
 
         // Owner view revenue metrics
         await trackPayments(page);
+        await page.waitForTimeout(500);
+    })
+
+    // Barber Blocks Unavailable Time Slots
+    test('employee blocks times', async({ page }) => {
+
+        console.log("============================================")
+        console.log("15. Employee Blocks Times")
+        console.log("============================================")
+
+        await page.waitForTimeout(2000);
+
+        // Login as owner
+        await loginCustomer(page);
+        await page.waitForTimeout(500);
+
+        // Employee can block times- no overlap appts
+        await blockTime(page);
         await page.waitForTimeout(500);
     })
 
