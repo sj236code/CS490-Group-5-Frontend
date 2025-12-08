@@ -94,7 +94,7 @@ export async function replyReview(page) {
 
 }
 
-// Owner can see payments & histories
+// Owner can see customer histories
 export async function viewHistory(page) {
     
     await page.waitForTimeout(500);
@@ -113,6 +113,27 @@ export async function viewHistory(page) {
 
     await page.getByRole('cell', { name: 'Playwright Tester' }).nth(2).click();
 
+    await page.waitForTimeout(1500);
+
+}
+
+// Owner can track payments to manage revenue
+export async function trackPayments(page) {
+
     await page.waitForTimeout(1000);
+
+    await page.getByRole('button').first().click();
+    await page.waitForTimeout(500);
+    await page.getByRole('button', { name: 'Dashboard' }).click();
+
+    await page.waitForTimeout(1000);
+
+    await page.getByText('Salon Earnings (Services +').first().click();
+
+    await page.waitForTimeout(1250);
+
+    await page.locator('.current-period__card.current-period__card--highlight > .current-period__content').click();
+
+    await page.waitForTimeout(1250);
 
 }
