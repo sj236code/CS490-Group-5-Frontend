@@ -3,8 +3,16 @@ import { expect } from '@playwright/test';
 // Set up working hours
 export async function createSchedule(page) {
     await page.getByRole('button').first().click();
+    await page.waitForTimeout(250);
+
     await page.getByRole('button', { name: 'Scheduling' }).click();
+    
+    await page.waitForTimeout(500);
+    
     await page.getByRole('button', { name: 'Edit Hours' }).click();
+
+    await page.waitForTimeout(250);
+
     await page.getByRole('checkbox', { name: 'Available' }).first().check();
     await page.getByRole('checkbox', { name: 'Available' }).nth(1).check();
     await page.getByRole('checkbox', { name: 'Available' }).nth(2).check();
@@ -24,6 +32,7 @@ export async function createSchedule(page) {
     await page.getByRole('button', { name: 'Edit Hours' }).click();
     await page.getByRole('checkbox', { name: 'Available' }).nth(4).uncheck();
     await page.getByRole('checkbox', { name: 'Available' }).nth(3).uncheck();
+    await page.waitForTimeout(500);
     await page.getByRole('button', { name: 'Confirm' }).click();
 
     await page.waitForTimeout(1000);
