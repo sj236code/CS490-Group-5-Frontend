@@ -5,16 +5,24 @@ import './PostReviewModal.css';
 function PostReviewModal({ salon, customerId, onClose, onReviewPosted }) {
     const [rating, setRating] = useState(5);
     const [comment, setComment] = useState('');
-    const [image, setImage] = useState(null);
+    const [images, setImages] = useState([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(false);
 
     const handleImageChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            setImage(file);
+        const files = Array.from(e.target.files);
+        // Limit to 2 images
+        if (images.length + files.length > 2) {
+            setError('You can only upload up to 2 images');
+            return;
         }
+        setImages([...images, ...files]);
+        setError(null);
+    };
+
+    const removeImage = (index) => {
+        setImages(images.filter((_, i) => i !== index));
     };
 
     const handleSubmit = async (e) => {
@@ -35,9 +43,10 @@ function PostReviewModal({ salon, customerId, onClose, onReviewPosted }) {
             formData.append('salon_id', salon.id);
             formData.append('rating', rating);
             formData.append('comment', comment || '');
-            if (image) {
+            // Append both images if they exist
+            images.forEach((image, index) => {
                 formData.append('picture', image);
-            }
+            });
 
             const response = await fetch(
                 `${import.meta.env.VITE_API_URL}/api/reviews/postreview`,
@@ -62,7 +71,7 @@ function PostReviewModal({ salon, customerId, onClose, onReviewPosted }) {
             setSuccess(true);
             setRating(5);
             setComment('');
-            setImage(null);
+            setImages([]);
 
             if (onReviewPosted) {
                 onReviewPosted();
@@ -134,25 +143,49 @@ function PostReviewModal({ salon, customerId, onClose, onReviewPosted }) {
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="image">Add Photo (Optional)</label>
+                        <label htmlFor="image">Add Photos (Optional, up to 2)</label>
                         <input
                             id="image"
                             type="file"
                             accept="image/*"
                             onChange={handleImageChange}
                             className="file-input"
+                            multiple
+                            disabled={images.length >= 2}
                         />
-                        {image && (
-                            <div className="image-preview">
-                                <p>Selected: {image.name}</p>
-                                <button
-                                    type="button"
-                                    onClick={() => setImage(null)}
-                                    className="remove-image-btn"
-                                >
-                                    Remove
-                                </button>
+                        {images.length > 0 && (
+                            <div className="images-preview-container">
+                                {images.map((img, index) => (
+                                    <div key={index} className="image-preview">
+                                        <img
+                                            src={URL.createObjectURL(img)}
+                                            alt={`Preview ${index + 1}`}
+                                            style={{
+                                                width: '100px',
+                                                height: '100px',
+                                                objectFit: 'cover',
+                                                borderRadius: '4px',
+                                                marginBottom: '8px'
+                                            }}
+                                        />
+                                        <p style={{ fontSize: '12px', marginBottom: '4px' }}>
+                                            {img.name}
+                                        </p>
+                                        <button
+                                            type="button"
+                                            onClick={() => removeImage(index)}
+                                            className="remove-image-btn"
+                                        >
+                                            Remove
+                                        </button>
+                                    </div>
+                                ))}
                             </div>
+                        )}
+                        {images.length >= 2 && (
+                            <p style={{ fontSize: '12px', color: '#666', marginTop: '8px' }}>
+                                Maximum of 2 images reached
+                            </p>
                         )}
                     </div>
 

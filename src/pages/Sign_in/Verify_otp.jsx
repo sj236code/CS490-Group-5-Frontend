@@ -3,6 +3,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import './Verify_otp.css';
 
 function VerifyOTP() {
+    const API_BASE = import.meta.env.VITE_API_URL;
+
     const [otp, setOtp] = useState(['', '', '', '', '', '']);
     const [error, setError] = useState('');
     const navigate = useNavigate();
@@ -49,24 +51,33 @@ function VerifyOTP() {
         }
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        
-        const otpCode = otp.join('');
-        
-        if (otpCode.length !== 6) {
-            setError('Please enter all 6 digits');
-            return;
-        }
-        
-        console.log('Verifying OTP:', otpCode);
-        
-        if (otpCode === '123456') {
-            navigate('/reset-password');
+    const handleSubmit = async (e) => {
+    e.preventDefault();
+    const otpCode = otp.join('');
+    
+    if (otpCode.length !== 6) {
+        setError('Please enter all 6 digits');
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_BASE}/api/auth/verify-otp`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, otp: otpCode })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            navigate('/reset-password', { state: { email } });
         } else {
-            setError('The email or password you entered is incorrect.');
+            setError(data.error || 'Invalid Code');
         }
-    };
+    } catch (err) {
+        setError('Something went wrong. Please try again.');
+    }
+};  
 
     const handleResend = () => {
         setOtp(['', '', '', '', '', '']);

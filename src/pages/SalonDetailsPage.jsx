@@ -134,7 +134,7 @@ function SalonDetailsPage() {
                 {workingTab =="Reviews" && (
                     <div>
                         {/* <h2>Reviews Page for: {salonDetails.title}</h2> */}
-                        <ReviewsTab salon={salonDetails} />
+                        <ReviewsTab salon={salonDetails} user={user} />
                     </div>
                 )}
                 {workingTab =="Shop" && (

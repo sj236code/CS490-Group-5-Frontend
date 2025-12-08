@@ -1,153 +1,136 @@
+// src/pages/admin/ReportsPage.jsx
+
 import React, { useState } from "react";
 import "../../App.css";
 
 function ReportsPage() {
+  const base = import.meta.env.VITE_API_URL;
+
   const [selectedReports, setSelectedReports] = useState({
+    analytics: true,
+    salon: true,
     demographics: true,
-    engagement: true,
-    revenue: false,
+    revenue: true,
   });
 
-  const [reportData, setReportData] = useState({
-    demographics: null,
-    engagement: null,
-    revenue: null,
-  });
-
-  const [loading, setLoading] = useState(false);
-  const BASE_URL = "http://127.0.0.1:5000/api/admin/reports";
+  const [downloading, setDownloading] = useState(false);
 
   const toggleReport = (key) => {
-    setSelectedReports((prev) => ({ ...prev, [key]: !prev[key] }));
-  };
-
-  const handleCreate = async () => {
-    setLoading(true);
-    const newData = {};
-
-    try {
-      // Demographics
-      if (selectedReports.demographics) {
-        const res = await fetch(`${BASE_URL}/demographics`);
-        newData.demographics = await res.json();
-      }
-
-      // Engagement
-      if (selectedReports.engagement) {
-        const res = await fetch(`${BASE_URL}/engagement`);
-        newData.engagement = await res.json();
-      }
-
-      // Revenue
-      if (selectedReports.revenue) {
-        const res = await fetch(`${BASE_URL}/revenue`);
-        newData.revenue = await res.json();
-      }
-
-      setReportData(newData);
-      alert("✅ Reports loaded successfully!");
-    } catch (error) {
-      console.error("Error fetching reports:", error);
-      alert("❌ Failed to fetch reports. Check console for details.");
-    } finally {
-      setLoading(false);
-    }
+    setSelectedReports((prev) => ({
+      ...prev,
+      [key]: !prev[key],
+    }));
   };
 
   const handleDownload = async () => {
-    try {
-      const res = await fetch(`${BASE_URL}/generate`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(selectedReports),
-      });
+    const sections = Object.entries(selectedReports)
+      .filter(([, value]) => value)
+      .map(([key]) => key)
+      .join(",");
 
-      if (!res.ok) throw new Error("Download failed");
+    if (!sections) {
+      alert("Please select at least one report section.");
+      return;
+    }
+
+    try {
+      setDownloading(true);
+
+      const res = await fetch(
+        `${base}/api/admin/reports/download?sections=${encodeURIComponent(
+          sections
+        )}`,
+        {
+          method: "GET",
+        }
+      );
+
+      if (!res.ok) {
+        throw new Error("Failed to download Excel file.");
+      }
 
       const blob = await res.blob();
       const url = window.URL.createObjectURL(blob);
+
       const a = document.createElement("a");
       a.href = url;
-      a.download = "JADE_Report.xlsx";
+      a.download = "jade_admin_reports.xlsx"; // backend sends a timestamped name; this is a safe fallback
       document.body.appendChild(a);
       a.click();
       a.remove();
-      alert("📊 Report downloaded successfully!");
-    } catch (error) {
-      console.error("Error downloading report:", error);
-      alert("❌ Failed to download report.");
+
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Error downloading report:", err);
+      alert("Error downloading report. Please try again.");
+    } finally {
+      setDownloading(false);
     }
   };
 
   return (
-    <div className="reports-page">
-      <div className="reports-header">
+    <div className="analytics-page">
+      <div className="analytics-header">
         <h2>Admin generates reports to share performance insights</h2>
       </div>
 
-      <div className="reports-top-buttons">
+      <div className="reports-toolbar">
+        <div className="reports-toolbar-left">
+          <span className="reports-toolbar-title">View Reports</span>
+        </div>
         <button
-          className="view-btn"
-          disabled={loading}
-          onClick={handleCreate}
+          className="reports-download-button"
+          onClick={handleDownload}
+          disabled={downloading}
         >
-          {loading ? "Loading..." : "View Reports"}
-        </button>
-        <button className="create-btn" onClick={handleDownload}>
-          Download Excel
+          {downloading ? "Preparing Excel..." : "Download Excel"}
         </button>
       </div>
 
-      <div className="report-box">
-        <div className="checkbox-container">
+      <div className="reports-card">
+        <div className="reports-checkbox-row">
+          <label>
+            <input
+              type="checkbox"
+              checked={selectedReports.analytics}
+              onChange={() => toggleReport("analytics")}
+            />
+            Analytics (Engagement &amp; Retention)
+          </label>
+        </div>
+
+        <div className="reports-checkbox-row">
+          <label>
+            <input
+              type="checkbox"
+              checked={selectedReports.salon}
+              onChange={() => toggleReport("salon")}
+            />
+            Salon Activity
+          </label>
+        </div>
+
+        <div className="reports-checkbox-row">
           <label>
             <input
               type="checkbox"
               checked={selectedReports.demographics}
               onChange={() => toggleReport("demographics")}
             />
-            User Demographics
+            Demographics &amp; Loyalty
           </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={selectedReports.engagement}
-              onChange={() => toggleReport("engagement")}
-            />
-            User Engagement
-          </label>
+        </div>
+
+        <div className="reports-checkbox-row">
           <label>
             <input
               type="checkbox"
               checked={selectedReports.revenue}
               onChange={() => toggleReport("revenue")}
             />
-            Revenue
+            Revenue &amp; Sales
           </label>
         </div>
-      </div>
-
-      <div className="report-output">
-        {reportData.demographics && (
-          <div className="report-section">
-            <h4>👥 Demographics Summary</h4>
-            <pre>{JSON.stringify(reportData.demographics, null, 2)}</pre>
-          </div>
-        )}
-
-        {reportData.engagement && (
-          <div className="report-section">
-            <h4>📈 Engagement Summary</h4>
-            <pre>{JSON.stringify(reportData.engagement, null, 2)}</pre>
-          </div>
-        )}
-
-        {reportData.revenue && (
-          <div className="report-section">
-            <h4>💰 Revenue Summary</h4>
-            <pre>{JSON.stringify(reportData.revenue, null, 2)}</pre>
-          </div>
-        )}
       </div>
     </div>
   );
