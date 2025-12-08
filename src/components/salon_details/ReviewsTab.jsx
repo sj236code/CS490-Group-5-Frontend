@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Star, Plus } from 'lucide-react';
+import { Star, Plus, MessageSquare } from 'lucide-react';
 import PostReviewModal from './PostReviewModal';
+import PostReplyModal from './PostReplyModal';
 import './ReviewsTab.css'; 
 
 
@@ -23,27 +24,46 @@ const StarRating = ({ rating }) => {
     );
 };
 
-function ReviewsTab({ salon }) {
+function ReviewsTab({ salon, user }) {
     const [reviews, setReviews] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showPostModal, setShowPostModal] = useState(false);
+    const [showReplyModal, setShowReplyModal] = useState(false);
+    const [selectedReview, setSelectedReview] = useState(null);
     const [customerId, setCustomerId] = useState(null);
+    const [isSalonOwner, setIsSalonOwner] = useState(false);
+    const [salonOwnerId, setSalonOwnerId] = useState(null);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     useEffect(() => {
         const storedUserId = localStorage.getItem('user_id');
         if (storedUserId) {
-            // Get customer ID
+            setIsLoggedIn(true);
+            // Get customer ID or salon owner ID based on role
             fetch(`${import.meta.env.VITE_API_URL}/api/auth/user-type/${storedUserId}`)
                 .then(res => res.json())
                 .then(data => {
-                    if (data.profile_id) {
+                    if (data.role === 'OWNER' && data.profile_id) {
+                        // Check if this owner owns the current salon
+                        fetch(`${import.meta.env.VITE_API_URL}/api/salons/get_salon/${data.profile_id}`)
+                            .then(res => res.json())
+                            .then(salonData => {
+                                if (salonData.salon_ids && salonData.salon_ids.includes(salon?.id)) {
+                                    setIsSalonOwner(true);
+                                    setSalonOwnerId(storedUserId); // Use user_id for replier_id
+                                }
+                            })
+                            .catch(err => console.error('Failed to fetch salon ownership:', err));
+                    } else if (data.role === 'CUSTOMER' && data.profile_id) {
                         setCustomerId(data.profile_id);
                     }
                 })
-                .catch(err => console.error('Failed to fetch customer profile:', err));
+                .catch(err => console.error('Failed to fetch user profile:', err));
+        } else {
+            setIsLoggedIn(false);
         }
-    }, []);
+    }, [salon?.id]);
 
     useEffect(() => {
         if (!salon?.id) {
@@ -86,7 +106,7 @@ function ReviewsTab({ salon }) {
             <div className="reviews-container">
                 <div className="reviews-empty">
                     <p>No reviews have been posted yet.</p>
-                    {customerId ? (
+                    {customerId && (
                         <button
                             className="btn-post-review"
                             onClick={() => setShowPostModal(true)}
@@ -94,7 +114,8 @@ function ReviewsTab({ salon }) {
                             <Plus size={18} />
                             Be the first to review
                         </button>
-                    ) : (
+                    )}
+                    {!isLoggedIn && (
                         <p className="login-prompt">Sign in to post a review</p>
                     )}
                 </div>
@@ -117,7 +138,7 @@ function ReviewsTab({ salon }) {
         <div className="reviews-container">
             <div className="reviews-header">
                 <h2>Reviews</h2>
-                {customerId ? (
+                {customerId && (
                     <button
                         className="btn-post-review"
                         onClick={() => setShowPostModal(true)}
@@ -125,7 +146,8 @@ function ReviewsTab({ salon }) {
                         <Plus size={18} />
                         Post a Review
                     </button>
-                ) : (
+                )}
+                {!isLoggedIn && (
                     <p className="login-prompt">Sign in to post a review</p>
                 )}
             </div>
@@ -161,7 +183,7 @@ function ReviewsTab({ salon }) {
                             {review.replies.map((reply) => (
                                 <div key={reply.id} className="review-reply-item">
                                     <div className="reply-header">
-                                        <span className="reply-author">{reply.replier_name}</span>
+                                        <span className="reply-author">{salon.name || salon.title}</span>
                                         <span className="reply-date">
                                             {new Date(reply.created_at).toLocaleDateString()}
                                         </span>
@@ -169,6 +191,22 @@ function ReviewsTab({ salon }) {
                                     <p className="reply-text">{reply.text_body}</p>
                                 </div>
                             ))}
+                        </div>
+                    )}
+
+                    {/* Reply button for salon owners (only if no reply exists) */}
+                    {isSalonOwner && (!review.replies || review.replies.length === 0) && (
+                        <div style={{ display: 'flex' }}>
+                            <button
+                                className="btn-reply"
+                                onClick={() => {
+                                    setSelectedReview(review);
+                                    setShowReplyModal(true);
+                                }}
+                            >
+                                <MessageSquare size={16} />
+                                Reply
+                            </button>
                         </div>
                     )}
                 </div>
@@ -182,6 +220,21 @@ function ReviewsTab({ salon }) {
                     onClose={() => setShowPostModal(false)}
                     onReviewPosted={() => {
                         // Refresh reviews after posting
+                        window.location.reload();
+                    }}
+                />
+            )}
+
+            {showReplyModal && selectedReview && salonOwnerId && (
+                <PostReplyModal
+                    review={selectedReview}
+                    replierId={salonOwnerId}
+                    onClose={() => {
+                        setShowReplyModal(false);
+                        setSelectedReview(null);
+                    }}
+                    onReplyPosted={() => {
+                        // Refresh reviews after posting reply
                         window.location.reload();
                     }}
                 />
