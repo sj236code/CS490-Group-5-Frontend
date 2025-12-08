@@ -18,6 +18,7 @@ export async function addToCart(page) {
     await page.getByRole('button', { name: 'Book' }).first().click();
     await page.waitForTimeout(500);
     await page.getByRole('button', { name: 'P Playwright TesterEmp' }).click();
+    await page.getByRole('button', { name: 'Next' }).click();
     await page.locator('div:nth-child(3) > div:nth-child(13) > .rbc-events-container').click();
 
     await page.waitForTimeout(1000);
@@ -158,6 +159,7 @@ export async function redeemLoyalty(page) {
     await page.getByRole('button', { name: 'Book' }).nth(1).click();
     await page.waitForTimeout(500);
     await page.getByRole('button', { name: 'P Playwright TesterEmp' }).click();
+    await page.getByRole('button', { name: 'Next' }).click();
     await page.locator('div:nth-child(3) > div:nth-child(13) > .rbc-events-container').click();
     await page.waitForTimeout(500);
     await page.getByRole('button', { name: 'Add to Cart' }).click();
@@ -240,7 +242,8 @@ export async function earnPoints(page){
     await page.waitForTimeout(500);
     await page.getByRole('button', { name: 'P Playwright TesterEmp' }).click();
     await page.waitForTimeout(500);
-    await page.locator('.rbc-day-slot.rbc-time-column.rbc-now > div:nth-child(13) > .rbc-events-container').click();
+    await page.getByRole('button', { name: 'Next' }).click();
+    await page.locator('div:nth-child(3) > div:nth-child(13) > .rbc-events-container').click();
     await page.waitForTimeout(500);
     await page.getByRole('button', { name: 'Add to Cart' }).click();
     await page.waitForTimeout(500);

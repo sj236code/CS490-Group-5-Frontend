@@ -93,3 +93,26 @@ export async function replyReview(page) {
     await page.waitForTimeout(1000);
 
 }
+
+// Owner can see payments & histories
+export async function viewHistory(page) {
+    
+    await page.waitForTimeout(500);
+
+    await page.getByRole('button').first().click();
+
+    await page.waitForTimeout(1000);
+
+    await page.getByRole('button', { name: 'Payments' }).click();
+
+    await page.waitForTimeout(1000);
+
+    await page.getByText('Sep 28 - Oct 11,').click();
+
+    await page.waitForTimeout(1000);
+
+    await page.getByRole('cell', { name: 'Playwright Tester' }).nth(2).click();
+
+    await page.waitForTimeout(1000);
+
+}
