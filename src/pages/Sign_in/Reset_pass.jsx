@@ -1,14 +1,19 @@
 import { useState } from 'react';
+import { useLocation } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom';
 import './Reset_pass.css';
 
 function ResetPassword() {
+    const API_BASE = import.meta.env.VITE_API_URL;
+
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
+    const location = useLocation();
+    const email = location.state?.email;
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {        
         e.preventDefault();
         
         if (newPassword.length < 8) {
@@ -21,8 +26,21 @@ function ResetPassword() {
             return;
         }
         
-        console.log('Resetting password:', newPassword);
-        navigate('/password-reset-success');
+        try {
+            const response = await fetch(`${API_BASE}/api/auth/reset-password`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password: newPassword })
+            });
+
+            if (response.ok) {
+                navigate('/signin');
+            } else {
+                setError('Failed to reset password');
+            }
+        } catch (err) {
+            setError('Server error');
+        }
     };
 
     return (

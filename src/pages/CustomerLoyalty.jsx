@@ -1,29 +1,26 @@
 import { UserRound, Gift, Calendar } from "lucide-react";
 import { useEffect, useState } from "react";
-import ProgramCard from "../components/layout/ProgramCard";
+import { useLocation } from "react-router-dom";
 
 function CustomerLoyalty() {
-  const customerId = 2;
+  const location = useLocation();
+  const userFromState = location.state?.user;
+  const customerId = userFromState?.profile_id ?? null;
 
-  // const lifetimePoints = 920;
-  // const activePrograms = 3;
-  // const totalVisits = 8;
-  
+  console.log("Customer id:", customerId);
+  console.log("User: ", location.state?.user);
+
   const [lifetimePoints, setLifetimePoints] = useState(0);
   const [activePrograms, setActivePrograms] = useState(0);
   const [totalVisits, setTotalVisits] = useState(0);
-
   const [programs, setPrograms] = useState([]);
 
-  const activity = [
-     { title: "Haircut & Style", date: "Jan 6, 2025", pts: 85 },
-     { title: "Color Treatment", date: "Dec 15, 2024", pts: 150 },
-     { title: "Manicure", date: "Oct 15, 2024", pts: 45 },
- ];
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   const getTierFromPoints = (points) => {
-    if (points >= 500) return "Gold";
-    if (points >= 250) return "Silver";
+    if (points >= 250) return "Gold";
+    if (points >= 100) return "Silver";
     if (points > 0) return "Bronze";
     return "Member";
   };
@@ -33,88 +30,142 @@ function CustomerLoyalty() {
     const pointsAway = progress.points_away ?? 0;
     const pointsToNext = progress.points_to_next_reward ?? 0;
 
-    if (pointsAway <= 0) {
-      return "You’ve unlocked a reward! Redeem at your next visit.";
+    if (pointsAway <= 0 && pointsToNext > 0) {
+      return "You’ve unlocked a reward! Redeem it at your next visit.";
     }
 
-    return `Only ${pointsAway} points away from your next reward (${pointsToNext} points).`;
+    if (pointsAway > 0 && pointsToNext > 0) {
+      return `Only ${pointsAway} points away from your next reward (${pointsToNext} points needed).`;
+    }
+
+    if (prog.program_details?.points_per_dollar) {
+      return `Earn ${prog.program_details.points_per_dollar} points for every $1 you spend here.`;
+    }
+
+    return "Earn points on every visit to unlock rewards.";
   };
 
-  const formatActivityDate = (iso) => {
-    if (!iso) return "";
-    const d = new Date(iso);
-    return d.toLocaleDateString(undefined, {month: "short", day: "numeric", year: "numeric",});
+  const getProgressPercent = (prog) => {
+    const progress = prog.next_reward_progress || {};
+    const pointsAway = progress.points_away ?? 0;
+    const pointsToNext = progress.points_to_next_reward ?? 0;
+
+    if (!pointsToNext || pointsToNext <= 0) return 0;
+
+    const earnedTowardNext = pointsToNext - pointsAway;
+    const pct = (earnedTowardNext / pointsToNext) * 100;
+    return Math.min(Math.max(pct, 0), 100);
   };
 
   useEffect(() => {
     const fetchLoyaltyData = async () => {
-      try{
+      if (!customerId) {
+        setError("No customer found. Please log in again.");
+        setLoading(false);
+        return;
+      }
 
-        // Dashboard Summ
-        const dashboardResponse = await fetch(`${import.meta.env.VITE_API_URL}/api/loyalty/customers/${customerId}/dashboard`);
+      try {
+        setLoading(true);
+        setError("");
 
-        if (dashboardResponse.status === 404){
-          console.error("Customer not found for loyalty dashboard");
+        // 1) Points summary (lifetime + current)
+        try {
+          const pointsRes = await fetch(
+            `${import.meta.env.VITE_API_URL}/api/loyalty/customers/${customerId}/points-summary`
+          );
+
+          if (pointsRes.ok) {
+            const pointsData = await pointsRes.json();
+            setLifetimePoints(pointsData.lifetime_points || 0);
+            console.log("Points summary:", pointsData);
+          } else if (pointsRes.status === 404) {
+            console.warn("Customer not found for points summary");
+            setLifetimePoints(0);
+          } else {
+            console.error("Failed to fetch points summary");
+          }
+        } catch (pointsErr) {
+          console.error("Error loading points summary:", pointsErr);
         }
-        else if(!dashboardResponse.ok){
-          console.error("Failed to fetch loyalty dashboard");
-        }
-        else{
+
+        // 2) Dashboard summary (active programs + total visits)
+        const dashboardResponse = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/loyalty/customers/${customerId}/dashboard`
+        );
+
+        if (dashboardResponse.ok) {
           const dashboardData = await dashboardResponse.json();
-          setLifetimePoints(dashboardData.current_total_points || 0);
           setActivePrograms(dashboardData.active_programs_count || 0);
           setTotalVisits(dashboardData.total_visits_all_time || 0);
-          console.log("Dashboard info recieved: ", dashboardData);
+          console.log("Dashboard info received: ", dashboardData);
+        } else if (dashboardResponse.status === 404) {
+          console.error("Customer not found for loyalty dashboard");
+          setError("We couldn’t find loyalty info for this account yet.");
+        } else {
+          console.error("Failed to fetch loyalty dashboard");
+          setError("Unable to load your loyalty summary right now.");
         }
 
-        // Programs list
-        const programsResponse = await fetch(`${import.meta.env.VITE_API_URL}/api/loyalty/customers/${customerId}/programs`);
-        if(!programsResponse.ok){
+        // 3) Programs list
+        const programsResponse = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/loyalty/customers/${customerId}/programs`
+        );
+
+        if (programsResponse.ok) {
+          const programsData = await programsResponse.json();
+          console.log("Loyalty Programs Loaded: ", programsData);
+
+          // For each program, fetch visits for that specific salon (new visits endpoint)
+          const programsWithVisits = await Promise.all(
+            (Array.isArray(programsData) ? programsData : []).map(
+              async (prog) => {
+                try {
+                  const visitsRes = await fetch(
+                    `${import.meta.env.VITE_API_URL}/api/loyalty/customers/${customerId}/salons/${prog.salon_id}/visits`
+                  );
+
+                  if (visitsRes.ok) {
+                    const visitsData = await visitsRes.json();
+                    return {
+                      ...prog,
+                      total_visits_at_salon:
+                        visitsData.total_completed_visits ?? 0,
+                    };
+                  }
+
+                  console.error(
+                    "Failed to fetch visits for salon",
+                    prog.salon_id
+                  );
+                  return prog;
+                } catch (visitsErr) {
+                  console.error(
+                    "Error fetching visits for salon",
+                    prog.salon_id,
+                    visitsErr
+                  );
+                  return prog;
+                }
+              }
+            )
+          );
+
+          setPrograms(programsWithVisits);
+        } else {
           console.error("Failed to fetch loyalty programs");
           setPrograms([]);
-          return;
         }
-
-        const programsData = await programsResponse.json();
-        console.log("Loyalty Programs Loaded: ", programsData);
-
-        // Fetch recent activity for each active loyalty program
-        const programsWithActivity = await Promise.all(
-          (programsData || []).map(async (prog) => {
-            try {
-              const activityRes = await fetch(`${import.meta.env.VITE_API_URL}/api/loyalty/customers/${customerId}/programs/${prog.salon_id}/activity`);
-
-              if (!activityRes.ok) {
-                console.error("Failed to fetch loyalty activity for salon", prog.salon_id);
-                return { ...prog, activity: [] };
-              }
-
-              const rawActivity = await activityRes.json();
-
-              const activity = (rawActivity || []).map((txn) => ({
-                title: txn.description || "Activity",
-                date: formatActivityDate(txn.date),
-                pts: txn.points_change,
-              }));
-
-              return { ...prog, activity };
-            } 
-            catch (err) {
-              console.error("Error fetching activity:", err);
-              return { ...prog, activity: [] };
-            }
-          })
-        );
-        setPrograms(programsWithActivity);
-
-      }
-      catch(err){
+      } catch (err) {
         console.error("Error loading loyalty data: ", err);
+        setError("Something went wrong loading your rewards.");
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchLoyaltyData();
-  },[customerId]);
+  }, [customerId]);
 
   return (
     <div className="loy-page">
@@ -149,49 +200,81 @@ function CustomerLoyalty() {
         </div>
       </div>
 
-      <h3 className="loy-subtitle">Your Loyalty Programs</h3>
+      {loading && <p>Loading your rewards...</p>}
+      {!loading && error && <p>{error}</p>}
 
-      {programs.length === 0 && (<p>You’re not enrolled in any loyalty programs yet.</p>)}
+      {!loading && !error && (
+        <>
+          <h3 className="loy-subtitle">Your Loyalty Programs</h3>
 
-      {programs.map((prog) => (
-        <ProgramCard
-          key={prog.salon_id}
-          name={prog.salon_name}
-          tier={getTierFromPoints(prog.current_points)}
-          points={prog.current_points}
-          visits={prog.total_visits_at_salon}
-          message={getProgramMessage(prog)}
-          activity={prog.activity || []} 
-          pointsPerDollar={prog.program_details?.points_per_dollar}
-        />
-      ))}
+          {programs.length === 0 && (
+            <p>You’re not enrolled in any loyalty programs yet.</p>
+          )}
 
-      <ProgramCard
-        name="Jade Boutique"
-        tier="Gold"
-        points={320}
-        visits={12}
-        message="You’ve earned 3 rewards! Redeem at your next visit!"
-        activity={activity}
-      />
+          {programs.map((prog) => {
+            const tier = getTierFromPoints(prog.current_points || 0);
+            const progressPercent = getProgressPercent(prog);
+            const rulePoints = prog.program_details?.points_per_dollar;
 
-      {/*<ProgramCard
-        name="Glow Studio"
-        tier="Silver"
-        points={260}
-        visits={9}
-        message="Almost there! Only a few visits away from your next reward."
-        activity={activity}
-      />
+            return (
+              <div className="loy-program" key={prog.salon_id}>
+                {/* Header */}
+                <div className="loy-program-head">
+                  <div className="loy-program-id">
+                    <div className="loy-diamond">
+                      <Gift size={16} />
+                    </div>
+                    <div>
+                      <div className="loy-program-name">{prog.salon_name}</div>
+                      {rulePoints && (
+                        <div className="loy-program-rule">
+                          Earn {rulePoints} pts per $1
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="loy-badge">{tier}</div>
+                </div>
 
-      <ProgramCard
-        name="Radiant Lounge"
-        tier="Bronze"
-        points={140}
-        visits={5}
-        message="Keep earning points to unlock exclusive discounts!"
-        activity={activity}
-      /> */}
+                {/* Metrics row */}
+                <div className="loy-metrics">
+                  <div>
+                    <div className="loy-metric-label">Current Points</div>
+                    <div className="loy-metric-value">
+                      {prog.current_points || 0}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="loy-metric-label">Visits to This Salon</div>
+                    <div className="loy-metric-value">
+                      {prog.total_visits_at_salon || 0}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Next reward + progress */}
+                <div className="loy-next">
+                  <div className="loy-next-row">
+                    <div className="loy-next-left">Next Reward</div>
+                    <div className="loy-next-right">
+                      {getProgramMessage(prog)}
+                    </div>
+                  </div>
+
+                  {progressPercent > 0 && (
+                    <div className="loy-progress">
+                      <div
+                        className="loy-progress-fill"
+                        style={{ width: `${progressPercent}%` }}
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </>
+      )}
     </div>
   );
 }
