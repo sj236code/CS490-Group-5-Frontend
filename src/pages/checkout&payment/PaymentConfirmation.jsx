@@ -41,25 +41,9 @@ function PaymentConfirmation() {
                         <p>{time}</p>
 
                     </div>
-
-                    <div className="detail-card payment-method">
-                        <div>
-                            <p className="label">Payment Method</p>
-                            {paymentMethod === "card" ? (
-                                <>
-                                    <p>Credit/Debit Card</p>
-                                    <p>{maskedCard}</p>
-                                </>
-                            ) : (
-                                <p>Paid via Paypal</p>
-                            )}
-                        </div>
-                        <span className="paid-badge">Paid</span>
-                    </div>
                 </div>
             )}
             
-
             <div className="services-section">
                 <h4>Services Booked & Products Bought</h4>
                 <div className="service-list">
