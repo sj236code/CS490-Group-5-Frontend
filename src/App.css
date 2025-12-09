@@ -3944,6 +3944,9 @@ label {
 /* Loyalty Tab Layout */
 
 .loyalty-tab-container {
+  flex: 1;
+  align-items: center;
+  
   padding: 40px 60px;
   background-color: #f5f7f3; /* very light green/gray */
 }
