@@ -18,6 +18,8 @@ function SignUp() {
         lastName: '',
         phoneNumber: '',
         address: '',
+        dateOfBirth: '',
+        gender: '',
         
         // Role determined by page context
         role: 'CUSTOMER'
@@ -26,6 +28,23 @@ function SignUp() {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+
+    // Calculate age from date of birth
+    const calculateAge = (dob) => {
+        if (!dob) return null;
+        
+        const today = new Date();
+        const birthDate = new Date(dob);
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+        
+        // Adjust age if birthday hasn't occurred yet this year
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+        
+        return age;
+    };
 
     const handleChange = (e) => {
         setFormData({
@@ -108,6 +127,27 @@ function SignUp() {
             return false;
         }
 
+        if (!formData.dateOfBirth) {
+            setError('Date of birth is required');
+            return false;
+        }
+
+        if (!formData.gender) {
+            setError('Gender is required');
+            return false;
+        }
+
+        // Validate DOB
+        const age = calculateAge(formData.dateOfBirth);
+        if (age < 13) {
+            setError('You must be at least 13 years old to create an account');
+            return false;
+        }
+        if (age > 120) {
+            setError('Please enter a valid date of birth');
+            return false;
+        }
+
         return true;
     };
 
@@ -120,6 +160,9 @@ function SignUp() {
         setLoading(true);
         
         try {
+            // Calculate age from DOB
+            const age = calculateAge(formData.dateOfBirth);
+
             const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/signup`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -130,6 +173,9 @@ function SignUp() {
                     last_name: formData.lastName,
                     phone_number: formData.phoneNumber,
                     address: formData.address || null,
+                    date_of_birth: formData.dateOfBirth,
+                    gender: formData.gender,
+                    age: age,
                     role: formData.role
                 })
             });
@@ -312,6 +358,36 @@ function SignUp() {
                                 className="input-field"
                                 disabled={loading}
                             />
+                        </div>
+
+                        <div className="form-group">
+                            <label className="input-label">Date of Birth</label>
+                            <input
+                                type="date"
+                                name="dateOfBirth"
+                                value={formData.dateOfBirth}
+                                onChange={handleChange}
+                                className="input-field"
+                                required
+                                disabled={loading}
+                                max={new Date().toISOString().split('T')[0]}
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <select
+                                name="gender"
+                                value={formData.gender}
+                                onChange={handleChange}
+                                className="input-field select-field"
+                                required
+                                disabled={loading}
+                            >
+                                <option value="">Select Gender</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
                         </div>
 
                         {error && <div className="error-box">{error}</div>}
