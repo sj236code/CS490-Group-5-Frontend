@@ -31,10 +31,6 @@ body {
   margin: 0.2rem 0;
 }
 
-.summary-text {
-  font-weight: 500;
-}
-
 .selected-section {
   margin-top: 1.5rem;
 }
@@ -85,10 +81,8 @@ body {
 }
 
 .discount-header {
-    /* Use flex for separation */
     display: flex;
     align-items: center;
-    /* Space between the Select All group and the Total Discount amount */
     justify-content: space-between; 
     border-top: 1px solid #ddd;
     padding-top: 10px; 
@@ -115,16 +109,13 @@ body {
 }
 
 .discount-checkbox {
-    /* FIX 2: Remove conflicting margin, let the parent's 'gap' handle spacing */
     margin-right: 0; 
     flex-shrink: 0;
 }
 
-/* ... (discount-info, discount-salon, discount-points remain the same) ... */
 
 .select-all {
     font-weight: 600;
-    /* FIX 3: Remove problematic top padding which shifts the text down */
     padding-top: 0; 
 }
 
@@ -168,17 +159,23 @@ body {
   margin: 1.2rem 0;
 }
 
+.amount-section label {
+  margin: 0;
+  line-height: 1;
+}
+
 .tip-input {
   width: 70px;
   padding: 0.4rem;
   border-radius: 6px;
-  padding-block-start: 8px;
   border: 1px solid #ccc;
   text-align: right;
 }
 
-.payment-method {
-  margin-bottom: 0.8rem;
+.summary-text {
+  font-weight: 500;
+  margin: 0;
+  line-height: 1.6;
 }
 
 .method-card {

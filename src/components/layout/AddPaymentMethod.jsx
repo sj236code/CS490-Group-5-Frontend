@@ -160,14 +160,14 @@ function AddPaymentMethod({ customerId, onSuccess, onCancel }) {
 
       <div className="wallet-form-row">
         <label className="wallet-label">
-          Expiration (YYYY-MM-DD)
+          Expiration (MM/YY)
           <input
             type="text"
             name="expiration"
             value={formData.expiration}
             onChange={handleChange}
             className="wallet-input"
-            placeholder="2029-02-22"
+            placeholder="12/27"
             required
           />
         </label>
