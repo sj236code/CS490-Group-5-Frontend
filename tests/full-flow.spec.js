@@ -1,6 +1,9 @@
 // RUN COMMAND:
 // npx playwright test tests/full-flow.spec.js --project=firefox --headed
 
+// CODEGEN:
+// npx playwright codegen http://localhost://5173
+
 import { test, expect } from '@playwright/test';
 import { loginEmployee, loginCustomer, loginOwner } from './utils/login';
 import { createSchedule, blockTime } from './utils/employee';
@@ -9,14 +12,42 @@ import { addToCart, customerCheckout, leaveReview, editAppointment, viewLoyalty,
 
 test.describe.serial('entire test flow', () => {
 
+    let step = 0;
+    const titles = [
+        '1. Employee Sets Schedule/ Hours',
+        '2. Salon Owner Adds Product & Services',
+        '3. Salon Owner Activates & Sets up Loyalty',
+        '4. Customer Schedules an Appointment',
+        '5. Customer Checks Out',
+        '6. Customer Views Loyalty Status',
+        '7. Customer View & Edit Appointment',
+        '8. Customer Leaves a Review',
+        '9. Owner Replies to a Review',
+        '10. Customer Redeems Loyalty Points',
+        '11. Customer Cancels Appointment',
+        '12. Customer Earns Loyalty Points',
+        '13. Owner Views History & Transactions',
+        '14. Owner Tracks Payments & Revenue',
+        '15. Employee Blocks Times',
+    ];
+
+    test.beforeEach(async () => {
+        const title = titles[step] ?? `Step ${step + 1}`;
+        console.log('============================================');
+        console.log(title);
+        console.log('============================================');
+        step += 1;
+
+        // delay before
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+    });
+
+    test.afterEach(async ({ page }) => {
+        await page.waitForTimeout(3000);
+    });
+
     // Employee Sets Hours
     test('employee sets schedule via UI', async ({ page }) => {
-
-        console.log("============================================")
-        console.log("1. Employee Sets Schedule/ Hours")
-        console.log("============================================")
-
-        await page.waitForTimeout(2000);
 
         // Login as an employee
         await loginEmployee(page);
@@ -28,15 +59,8 @@ test.describe.serial('entire test flow', () => {
 
     });
 
-
     // Salon Owner Adds Product & Service
     test('salon owner adds a product and service to menu', async ({ page }) => {
-
-        console.log("============================================")
-        console.log("2. Salon Owner Adds Product & Services")
-        console.log("============================================")
-
-        await page.waitForTimeout(2000);
         
         // Login as owner
         await loginOwner(page);
@@ -51,12 +75,6 @@ test.describe.serial('entire test flow', () => {
     // Salon Owner Activates Loyalty Program 
     test('salon owner activates loyalty program', async ({ page }) => {
 
-        console.log("============================================")
-        console.log("3. Salon Owner Activates & Sets up Loyalty")
-        console.log("============================================")
-
-        await page.waitForTimeout(2000);
-
         // Login as owner
         await loginOwner(page);
         await page.waitForTimeout(500);
@@ -69,12 +87,6 @@ test.describe.serial('entire test flow', () => {
 
     // Customer Schedule an Appointment
     test('customer schedules appt w employee hours', async ({ page }) => {
-
-        console.log("============================================")
-        console.log("4. Customer Schedules an Appointment")
-        console.log("============================================")
-
-        await page.waitForTimeout(2000);
 
         // Login as customer
         await loginCustomer(page);
@@ -89,12 +101,6 @@ test.describe.serial('entire test flow', () => {
     // Customer Checks Out
     test('customer check out', async ({ page }) => {
 
-        console.log("============================================")
-        console.log("5. Customer Checks Out")
-        console.log("============================================")
-
-        await page.waitForTimeout(2000);
-
         // Login as customer
         await loginCustomer(page);
         await page.waitForTimeout(500);
@@ -107,12 +113,6 @@ test.describe.serial('entire test flow', () => {
 
     // Customer Views Loyalty Details
     test('customer view loyalty status after checking', async ({ page }) => {
-
-        console.log("============================================")
-        console.log("6. Customer Views Loyalty Status")
-        console.log("============================================")
-
-        await page.waitForTimeout(2000);
 
         // Login as customer
         await loginCustomer(page);
@@ -127,12 +127,6 @@ test.describe.serial('entire test flow', () => {
     // Customer View & Edit Appointment Details
     test('customer view and edit appointment details', async ({ page }) => {
 
-        console.log("============================================")
-        console.log("7. Customer Checks Out")
-        console.log("============================================")
-
-        await page.waitForTimeout(2000);
-
         // Login as customer
         await loginCustomer(page);
         await page.waitForTimeout(500);
@@ -145,12 +139,6 @@ test.describe.serial('entire test flow', () => {
 
     // Customer Leaves a Review
     test('customer leaves a review', async ({ page }) => {
-
-        console.log("============================================")
-        console.log("8. Customer Leaves a Review")
-        console.log("============================================")
-
-        await page.waitForTimeout(2000);
 
         // Login as customer
         await loginCustomer(page);
@@ -165,12 +153,6 @@ test.describe.serial('entire test flow', () => {
     // Salon Owner Replies to a Review
     test('owner replies to customer review', async ({ page }) => {
 
-        console.log("============================================")
-        console.log("9. Owner Replies to a Review")
-        console.log("============================================")
-
-        await page.waitForTimeout(2000);
-
         // Login as salon owner
         await loginOwner(page);
         await page.waitForTimeout(500);
@@ -183,12 +165,6 @@ test.describe.serial('entire test flow', () => {
 
     // Customer Redeems Loyalty Points During Checkout
     test('customer redeem loyalty points', async ({ page }) => {
-
-        console.log("============================================")
-        console.log("10. Customer Redeems Loyalty Points")
-        console.log("============================================")
-
-        await page.waitForTimeout(2000);
 
         // Login as customer
         await loginCustomer(page);
@@ -203,12 +179,6 @@ test.describe.serial('entire test flow', () => {
     // Customer Cancel Appt
     test('customer cancels appt', async ({ page }) => {
 
-        console.log("============================================")
-        console.log("11. Customer Cancels Appointment")
-        console.log("============================================")
-
-        await page.waitForTimeout(2000);
-
         // Login as customer
         await loginCustomer(page);
         await page.waitForTimeout(500);
@@ -222,12 +192,6 @@ test.describe.serial('entire test flow', () => {
     // Earn Loyalty Points Per Visit
     test('customer earns loyalty points per visit', async({ page }) => {
 
-        console.log("============================================")
-        console.log("12. Customer Earns Loyalty Points")
-        console.log("============================================")
-
-        await page.waitForTimeout(2000);
-
         // Login as customer
         await loginCustomer(page);
         await page.waitForTimeout(500);
@@ -239,12 +203,6 @@ test.describe.serial('entire test flow', () => {
 
     // Owner View History & Transaction
     test('owner can view history', async({ page }) => {
-
-        console.log("============================================")
-        console.log("13. Owner View History & Transactions")
-        console.log("============================================")
-
-        await page.waitForTimeout(2000);
 
         // Login as owner
         await loginOwner(page);
@@ -258,12 +216,6 @@ test.describe.serial('entire test flow', () => {
     // Owner Track Payments
     test('owner can track payments and manage revenue', async({ page }) => {
 
-        console.log("============================================")
-        console.log("14. Owner Track Payments & Manage Revenue")
-        console.log("============================================")
-
-        await page.waitForTimeout(2000);
-
         // Login as owner
         await loginOwner(page);
         await page.waitForTimeout(500);
@@ -275,12 +227,6 @@ test.describe.serial('entire test flow', () => {
 
     // Barber Blocks Unavailable Time Slots
     test('employee blocks times', async({ page }) => {
-
-        console.log("============================================")
-        console.log("15. Employee Blocks Times")
-        console.log("============================================")
-
-        await page.waitForTimeout(2000);
 
         // Login as owner
         await loginCustomer(page);
