@@ -1,11 +1,8 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-<<<<<<< HEAD
 import { useState, useEffect, useRef } from 'react';
 import { Star, Camera } from 'lucide-react';
-=======
 import { useState, useEffect } from 'react';
 import { Star, StarHalf, StarOff } from "lucide-react";
->>>>>>> 8161b1c414ad346ebe925dea37fd7cabd556cbd8
 import SalonShopTab from '../components/salon_details/SalonShopTab';
 import GalleryTab from '../components/salon_details/GalleryTab';
 import ReviewsTab from '../components/salon_details/ReviewsTab';
