@@ -21,6 +21,7 @@
     "react": "^19.1.1",
     "react-big-calendar": "^1.19.4",
     "react-dom": "^19.1.1",
+    "react-image-crop": "^11.0.10",
     "react-router-dom": "^7.9.6",
     "recharts": "^3.4.1"
   },
