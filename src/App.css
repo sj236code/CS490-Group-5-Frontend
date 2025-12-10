@@ -2797,6 +2797,14 @@ body {
   display: flex; align-items: center; justify-content: center;
   background: rgba(246,255,242,0.15); border: 1px solid rgba(246,255,242,0.4);
 }
+
+.loy-program-redeem {
+  font-size: 0.8rem;
+  margin-top: 2px;
+  color: #f3f3f3;
+  opacity: 0.9;
+}
+
 .loy-program-name { font-weight: 700; }
 .loy-program-rule { font-size: 0.85rem; opacity: 0.9; }
 .loy-badge {

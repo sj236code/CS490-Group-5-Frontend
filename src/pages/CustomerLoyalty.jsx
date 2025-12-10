@@ -21,7 +21,7 @@ function CustomerLoyalty() {
   const getTierFromPoints = (points) => {
     if (points >= 250) return "Gold";
     if (points >= 100) return "Silver";
-    if (points > 0) return "Bronze";
+    if (points > 0) return "Bronze";s
     return "Member";
   };
 
@@ -116,46 +116,51 @@ function CustomerLoyalty() {
           const programsData = await programsResponse.json();
           console.log("Loyalty Programs Loaded: ", programsData);
 
-          // For each program, fetch visits for that specific salon (new visits endpoint)
-          const programsWithVisits = await Promise.all(
-            (Array.isArray(programsData) ? programsData : []).map(
-              async (prog) => {
-                try {
-                  const visitsRes = await fetch(
-                    `${import.meta.env.VITE_API_URL}/api/loyalty/customers/${customerId}/salons/${prog.salon_id}/visits`
-                  );
+          const programsWithExtras = await Promise.all(
+            (Array.isArray(programsData) ? programsData : []).map(async (prog) => {
+              let totalVisits = prog.total_visits_at_salon ?? 0;
+              let rewardDetails = null;
 
-                  if (visitsRes.ok) {
-                    const visitsData = await visitsRes.json();
-                    return {
-                      ...prog,
-                      total_visits_at_salon:
-                        visitsData.total_completed_visits ?? 0,
-                    };
-                  }
-
-                  console.error(
-                    "Failed to fetch visits for salon",
-                    prog.salon_id
-                  );
-                  return prog;
-                } catch (visitsErr) {
-                  console.error(
-                    "Error fetching visits for salon",
-                    prog.salon_id,
-                    visitsErr
-                  );
-                  return prog;
+              try {
+                const visitsRes = await fetch(`${import.meta.env.VITE_API_URL}/api/loyalty/customers/${customerId}/salons/${prog.salon_id}/visits`);
+                if (visitsRes.ok) {
+                  const visitsData = await visitsRes.json();
+                  totalVisits = visitsData.total_completed_visits ?? 0;
                 }
+              } catch (e) {
+                console.error("Error fetching visits for salon", prog.salon_id, e);
               }
-            )
+
+              try {
+                const rewardsRes = await fetch(
+                  `${import.meta.env.VITE_API_URL}/api/loyalty/customers/${customerId}/programs/${prog.salon_id}/rewards`
+                );
+
+                if (rewardsRes.ok) {
+                  const rewardsData = await rewardsRes.json();
+                  // we only have one main reward in your endpoint
+                  rewardDetails = rewardsData[0] ?? null;
+                } else if (rewardsRes.status !== 404) {
+                  console.error("Failed to fetch rewards for salon", prog.salon_id);
+                }
+              } catch (e) {
+                console.error("Error fetching rewards for salon", prog.salon_id, e);
+              }
+
+              return {
+                ...prog,
+                total_visits_at_salon: totalVisits,
+                reward_details: rewardDetails,
+              };
+            })
           );
 
-          setPrograms(programsWithVisits);
+          setPrograms(programsWithExtras);
         } else {
           console.error("Failed to fetch loyalty programs");
           setPrograms([]);
         }
+
       } catch (err) {
         console.error("Error loading loyalty data: ", err);
         setError("Something went wrong loading your rewards.");
@@ -166,6 +171,36 @@ function CustomerLoyalty() {
 
     fetchLoyaltyData();
   }, [customerId]);
+
+  const getRedeemText = (prog) => {
+    const rd = prog.reward_details;
+    if (!rd) return null;
+
+    const { points_cost, reward_type, reward_value, description } = rd;
+
+    // If you set a nice description in the backend, honor it:
+    if (description) {
+      return `${description} (costs ${points_cost} points)`;
+    }
+
+    if (!points_cost) return null;
+
+    if (reward_type === "PERCENT") {
+      return `Redeem ${points_cost} pts for ${reward_value}% off.`;
+    }
+
+    if (reward_type === "FIXED_AMOUNT") {
+      return `Redeem ${points_cost} pts for $${reward_value} off.`;
+    }
+
+    if (reward_type === "FREE_ITEM") {
+      return `Redeem ${points_cost} pts for a free item.`;
+    }
+
+    // generic fallback
+    return `Redeem ${points_cost} pts for a reward.`;
+  };
+
 
   return (
     <div className="loy-page">
@@ -215,6 +250,7 @@ function CustomerLoyalty() {
             const tier = getTierFromPoints(prog.current_points || 0);
             const progressPercent = getProgressPercent(prog);
             const rulePoints = prog.program_details?.points_per_dollar;
+            const redeemText = getRedeemText(prog);
 
             return (
               <div className="loy-program" key={prog.salon_id}>
@@ -229,6 +265,11 @@ function CustomerLoyalty() {
                       {rulePoints && (
                         <div className="loy-program-rule">
                           Earn {rulePoints} pts per $1
+                        </div>
+                      )}
+                      {redeemText && (
+                        <div className="loy-program-redeem">
+                          {redeemText}
                         </div>
                       )}
                     </div>
