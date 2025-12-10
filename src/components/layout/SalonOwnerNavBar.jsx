@@ -150,12 +150,6 @@ function SalonOwnerNavBar({ onClose, onLogout, userId, user, salonId }) {
                 >
                     Payments
                 </button>
-                <button
-                    className="nb-text-link"
-                    onClick={() => navTo("/owner/appointments")}
-                >
-                    Appointments
-                </button>
                 </>
             ) : (
                 <div className="nb-pending-message">

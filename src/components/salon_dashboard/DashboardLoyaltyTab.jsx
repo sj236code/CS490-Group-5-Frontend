@@ -88,7 +88,7 @@ function DashboardLoyaltyTab({ salon }) {
       const summary = {
         pointsPerDollar: data.points_per_dollar ?? "",
         pointsForReward: data.points_for_reward ?? "",
-        rewardType: data.reward_type || "FIXED_AMOUNT",
+        rewardType: "FIXED_AMOUNT",
         rewardValue: data.reward_value ?? "",
       };
 
@@ -150,7 +150,7 @@ function DashboardLoyaltyTab({ salon }) {
       active: isActive ? 1 : 0,
       points_per_dollar: programSettings.pointsPerDollar,
       points_for_reward: programSettings.pointsForReward,
-      reward_type: programSettings.rewardType,
+      reward_type: "FIXED_AMOUNT",
       reward_value: programSettings.rewardValue,
       reward_description: `Earn ${programSettings.pointsPerDollar} pts per $1, Redeem ${programSettings.pointsForReward} pts`,
     };
@@ -172,7 +172,7 @@ function DashboardLoyaltyTab({ salon }) {
       setProgramSummary({
         pointsPerDollar: data.points_per_dollar ?? "",
         pointsForReward: data.points_for_reward ?? "",
-        rewardType: data.reward_type,
+        rewardType: "FIXED_AMOUNT",
         rewardValue: data.reward_value ?? "",
       });
 
@@ -332,17 +332,12 @@ function DashboardLoyaltyTab({ salon }) {
 
             <div className="loyalty-field-row">
               <label className="loyalty-label">Reward type</label>
-              <select
-                className="loyalty-input"
-                value={programSettings.rewardType}
-                onChange={(e) =>
-                  handleSettingsChange("rewardType", e.target.value)
-                }
-              >
-                <option value="FIXED_AMOUNT">Fixed $ amount off</option>
-                <option value="PERCENT">Percent off</option>
-                <option value="FREE_ITEM">Free item</option>
-              </select>
+              <input
+                className="loyalty-input loyalty-input-disabled"
+                value="Fixed $ amount off"
+                disabled
+                readOnly
+              />
             </div>
 
             <div className="loyalty-field-row">

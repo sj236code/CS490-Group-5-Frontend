@@ -1,5 +1,6 @@
 import { ChevronLeft } from 'lucide-react';
 import LoginButton from './LoginButton.jsx';
+import NavLogin from './NavLogin.jsx';
 import { useNavigate } from 'react-router-dom';
 
 function NavBar({onClose}){
@@ -17,7 +18,14 @@ function NavBar({onClose}){
                     <ChevronLeft strokeWidth={3} />
                 </button>
                 <div>
-                    <LoginButton onClick={navigateToLogin} style={{cursor: 'pointer'}}/>
+                    <NavLogin onClick={navigateToLogin} style={{cursor: 'pointer'}}/>
+
+                <div className="nb-pending-message">
+                    <p className="nb-pending-title">You are not logged in. </p>
+                    <p className="nb-pending-body">
+                        Please sign in with your credentials to view your navigation tabs. 
+                    </p>
+                </div>
 
                 </div>
             </div>

@@ -169,8 +169,22 @@ body {
   border: 2px solid #4B5945; 
   background-color: transparent;
   color: #4B5945;
+  padding: 8px 24px;
+  cursor: pointer;
+}
+
+.sign-in-button-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px; 
+  border: 2px solid #D9E9CE; 
+  background-color: transparent;
+  color: #D9E9CE;
   padding: 8px 24px; 
   cursor: pointer;
+  margin-top: 375px;
+  margin-bottom: 75px;
 }
 
 .sign-in-button:hover {
@@ -645,18 +659,33 @@ body {
   font-size: 1.1rem;
 }
 
-
-
 /* Search Page: Search Bar */
 
 .search-page-section {
-  padding: 2rem;
+  padding: 6rem 10rem 4rem 10rem;
   margin: 0 auto;
 }
 
 .search-page-search-bar {
   margin-bottom: 1.5rem;
 }
+
+.search-top {
+  background-color: #D9E9CE; 
+  border: 2px solid #4B5945; 
+  border-radius: 1rem;
+
+  padding: 1.5rem; 
+  margin-bottom: 2rem;
+
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+}
+
+
 
 .search-input {
   width: 100%;
@@ -2503,7 +2532,7 @@ body {
   background-color: #4B5945;
   padding: 8px 10px;
   border-radius: 8px;
-  margin: 8px 8px 14px 36px; /* leave space for close button */
+  margin: 8px 8px 14px 36px;
 }
 .cart-header-icon { 
   font-size: 14px; 
@@ -2751,12 +2780,14 @@ body {
 
 /* Stat cards */
 .loy-stats { 
-  display: flex; 
-  gap: 12px; 
-  flex-wrap: wrap; 
-  margin-bottom: 12px; 
-  justify-content: center;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 24px 0 12px;
+  justify-content: space-between;
+  width: 100%;
 }
+
 
 .loy-card {
   display: flex; 
@@ -2766,7 +2797,8 @@ body {
   border: 1px solid #E3E7E1; 
   border-radius: 10px;
   padding: 10px 12px; 
-  min-width: 300px;
+  flex: 1;
+  min-width: 260px;
   height: 100px;
   margin-top: 30px;
   margin-bottom: 30px;
@@ -2789,11 +2821,10 @@ body {
   border-radius: 12px; 
   overflow: hidden;
   box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-  width: 1100px;
-  margin: 0 auto;
-  margin-bottom: 40px;
-  margin-top: 20px;
+  width: 100%;
+  margin: 20px auto 40px;
 }
+
 .loy-program-head {
   background: #4B5945; color: #F6FFF2; padding: 12px;
   display: flex; align-items: center; justify-content: space-between;
@@ -2804,6 +2835,14 @@ body {
   display: flex; align-items: center; justify-content: center;
   background: rgba(246,255,242,0.15); border: 1px solid rgba(246,255,242,0.4);
 }
+
+.loy-program-redeem {
+  font-size: 0.8rem;
+  margin-top: 2px;
+  color: #f3f3f3;
+  opacity: 0.9;
+}
+
 .loy-program-name { font-weight: 700; }
 .loy-program-rule { font-size: 0.85rem; opacity: 0.9; }
 .loy-badge {
@@ -4059,6 +4098,13 @@ label {
   justify-content: space-between;
   margin-bottom: 10px;
   gap: 12px;
+}
+
+.loyalty-input-disabled {
+  background-color: #f2f2f2;
+  color: #6d6d6d;
+  border: 1px solid #d5d5d5;
+  cursor: not-allowed;
 }
 
 .loyalty-label {
