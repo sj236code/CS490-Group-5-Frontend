@@ -283,7 +283,7 @@ const handleCancelClick = async (appt) => {
 
       {/* Upcoming Section */}
       <section>
-        <h2 className="section-title">Upcoming</h2>
+        <h2 className="section-title">Upcoming ({upcomingAppointments.length})</h2>
         {upcomingAppointments.map((appt) => (
           <div key={appt.id} className="appointment-card">
             <div className="appt-info">
@@ -328,7 +328,7 @@ const handleCancelClick = async (appt) => {
 
       {/* Previous Section */}
       <section>
-        <h2 className="section-title">Previous</h2>
+        <h2 className="section-title">Previous ({previousAppointments.length})</h2>
         {previousAppointments.map((appt) => (
           <div key={appt.id} className="appointment-card">
             <div className="appt-info">
