@@ -169,8 +169,22 @@ body {
   border: 2px solid #4B5945; 
   background-color: transparent;
   color: #4B5945;
+  padding: 8px 24px;
+  cursor: pointer;
+}
+
+.sign-in-button-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px; 
+  border: 2px solid #D9E9CE; 
+  background-color: transparent;
+  color: #D9E9CE;
   padding: 8px 24px; 
   cursor: pointer;
+  margin-top: 375px;
+  margin-bottom: 75px;
 }
 
 .sign-in-button:hover {
