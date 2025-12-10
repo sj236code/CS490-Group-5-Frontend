@@ -2744,12 +2744,14 @@ body {
 
 /* Stat cards */
 .loy-stats { 
-  display: flex; 
-  gap: 12px; 
-  flex-wrap: wrap; 
-  margin-bottom: 12px; 
-  justify-content: center;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 24px 0 12px;
+  justify-content: space-between;
+  width: 100%;
 }
+
 
 .loy-card {
   display: flex; 
@@ -2759,7 +2761,8 @@ body {
   border: 1px solid #E3E7E1; 
   border-radius: 10px;
   padding: 10px 12px; 
-  min-width: 300px;
+  flex: 1;
+  min-width: 260px;
   height: 100px;
   margin-top: 30px;
   margin-bottom: 30px;
@@ -2782,11 +2785,10 @@ body {
   border-radius: 12px; 
   overflow: hidden;
   box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-  width: 1100px;
-  margin: 0 auto;
-  margin-bottom: 40px;
-  margin-top: 20px;
+  width: 100%;
+  margin: 20px auto 40px;
 }
+
 .loy-program-head {
   background: #4B5945; color: #F6FFF2; padding: 12px;
   display: flex; align-items: center; justify-content: space-between;

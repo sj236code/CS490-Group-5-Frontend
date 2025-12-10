@@ -211,13 +211,6 @@ function CustomerLoyalty() {
             <div className="loy-card-value">{activePrograms}</div>
           </div>
         </div>
-        <div className="loy-card">
-          <Calendar size={18} />
-          <div>
-            <div className="loy-card-label">Total Visits</div>
-            <div className="loy-card-value">{totalVisits}</div>
-          </div>
-        </div>
       </div>
 
       {loading && <p>Loading your rewards...</p>}
