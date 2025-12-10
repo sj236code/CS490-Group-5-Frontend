@@ -1,6 +1,6 @@
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { Star } from 'lucide-react';
+import { Star, StarHalf, StarOff } from "lucide-react";
 import DashboardManageTab from '../components/salon_dashboard/DashboardManageTab';
 import DashboardLoyaltyTab from '../components/salon_dashboard/DashboardLoyaltyTab';
 import DashboardCalendarTab from '../components/salon_dashboard/DashboardCalendarTab';
@@ -62,19 +62,25 @@ function SalonDashboard() {
 
     const StarRating = ({ rating }) => {
         const totalStars = 5;
+
         return (
-            <div className="star-rating-display">
-            {[...Array(totalStars)].map((_, index) => {
-                const starValue = index + 1;
-                return (
-                <Star
-                    key={index}
-                    size={16}
-                    fill={starValue <= rating ? '#4B5945' : '#E0E0E0'}
-                    color={starValue <= rating ? '#4B5945' : '#E0E0E0'}
-                />
-                );
-            })}
+            <div className="star-rating-display" style={{ display: "flex", gap: "2px" }}>
+                {[...Array(totalStars)].map((_, i) => {
+                    const starIndex = i + 1;
+
+                    if (rating >= starIndex) {
+                    // full star
+                    return <Star key={i} size={16} fill="#4B5945" color="#4B5945" />;
+                    }
+
+                    if (rating >= starIndex - 0.5) {
+                    // half star
+                    return <StarHalf key={i} size={16} fill="#4B5945" color="#4B5945" />;
+                    }
+
+                    // empty star
+                    return <StarOff key={i} size={16} fill="#E0E0E0" color="#E0E0E0" />;
+                })}
             </div>
         );
     };
@@ -97,11 +103,11 @@ function SalonDashboard() {
                             return (
                             <>
                                 <span className="rating-number">
-                                {avgRating ? avgRating.toFixed(1) : 'N/A'}
+                                    {avgRating ? avgRating.toFixed(1) : 'N/A'}
                                 </span>
-                                <StarRating rating={avgRating ? Math.round(avgRating) : 0} />
+                                <StarRating rating={avgRating || 0} />
                                 <span className="review-text">
-                                ({totalReviews} Reviews)
+                                    ({totalReviews} Reviews)
                                 </span>
                             </>
                             );

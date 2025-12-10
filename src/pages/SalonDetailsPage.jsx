@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { Star } from 'lucide-react';
+import { Star, StarHalf, StarOff } from "lucide-react";
 import SalonShopTab from '../components/salon_details/SalonShopTab';
 import GalleryTab from '../components/salon_details/GalleryTab';
 import ReviewsTab from '../components/salon_details/ReviewsTab';
@@ -8,18 +8,24 @@ import AboutTab from '../components/salon_details/AboutTab';
 
 const StarRating = ({ rating }) => {
     const totalStars = 5;
+
     return (
-        <div className="star-rating-display">
-            {[...Array(totalStars)].map((_, index) => {
-                const starValue = index + 1;
-                return (
-                    <Star
-                        key={index}
-                        size={16}
-                        fill={starValue <= rating ? '#4B5945' : '#E0E0E0'}
-                        color={starValue <= rating ? '#4B5945' : '#E0E0E0'}
-                    />
-                );
+        <div className="star-rating-display" style={{ display: "flex", gap: "2px" }}>
+            {[...Array(totalStars)].map((_, i) => {
+                const starIndex = i + 1;
+
+                if (rating >= starIndex) {
+                // full star
+                return <Star key={i} size={16} fill="#4B5945" color="#4B5945" />;
+                }
+
+                if (rating >= starIndex - 0.5) {
+                // half star
+                return <StarHalf key={i} size={16} fill="#4B5945" color="#4B5945" />;
+                }
+
+                // empty star
+                return <StarOff key={i} size={16} fill="#E0E0E0" color="#E0E0E0" />;
             })}
         </div>
     );
@@ -100,11 +106,23 @@ function SalonDetailsPage() {
                 <div className="salon-details-info">
                     <span className="salon-type-badge">{salonDetails.type}</span>
                     <div className="salon-rating-section">
-                        <span className="rating-number">{salonDetails.avgRating ? salonDetails.avgRating.toFixed(1) : 'N/A'}</span>
-                        <StarRating rating={salonDetails.avgRating ? Math.round(salonDetails.avgRating) : 0} />
-                        <span className="review-text">
-                            ({salonDetails.totalReviews || 0} Reviews)
-                        </span>
+                        {(() => {
+                            const avgRating = salonDetails.avgRating ?? salonDetails.avg_rating ?? 0;
+
+                            const totalReviews = salonDetails.totalReviews ?? salonDetails.total_reviews ?? 0;
+
+                            return (
+                            <>
+                                <span className="rating-number">
+                                    {avgRating ? avgRating.toFixed(1) : 'N/A'}
+                                </span>
+                                <StarRating rating={avgRating || 0} />
+                                <span className="review-text">
+                                    ({totalReviews} Reviews)
+                                </span>
+                            </>
+                            );
+                        })()}
                     </div>
                 </div>
             </div>
