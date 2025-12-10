@@ -2481,7 +2481,7 @@ body {
   background-color: #4B5945;
   padding: 8px 10px;
   border-radius: 8px;
-  margin: 8px 8px 14px 36px; /* leave space for close button */
+  margin: 8px 8px 14px 36px;
 }
 .cart-header-icon { 
   font-size: 14px; 
