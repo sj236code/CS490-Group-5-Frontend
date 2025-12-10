@@ -6,7 +6,10 @@ import './ImageCropModal.css';
 function ImageCropModal({ imageUrl, onCropComplete, onCancel }) {
     const [crop, setCrop] = useState({
         unit: '%',
+        x: 5,
+        y: 10,
         width: 90,
+        height: 33.75,
         aspect: 16 / 6, // Wide aspect ratio for hero images
     });
     const [completedCrop, setCompletedCrop] = useState(null);
@@ -14,41 +17,50 @@ function ImageCropModal({ imageUrl, onCropComplete, onCancel }) {
 
     const getCroppedImg = () => {
         const image = imgRef.current;
+        if (!image || !completedCrop) return null;
+
+        let { x, y, width, height, unit } = completedCrop;
+
+        const naturalWidth = image.naturalWidth;
+        const naturalHeight = image.naturalHeight;
+
+        if (unit === '%') {
+            x = (x / 100) * naturalWidth;
+            y = (y / 100) * naturalHeight;
+            width = (width / 100) * naturalWidth;
+            height = (height / 100) * naturalHeight;
+        }
+
         const canvas = document.createElement('canvas');
-        const scaleX = image.naturalWidth / image.width;
-        const scaleY = image.naturalHeight / image.height;
-        
-        canvas.width = completedCrop.width * scaleX;
-        canvas.height = completedCrop.height * scaleY;
-        
+        canvas.width = width;
+        canvas.height = height;
+
         const ctx = canvas.getContext('2d');
-        
-        ctx.drawImage(
-            image,
-            completedCrop.x * scaleX,
-            completedCrop.y * scaleY,
-            completedCrop.width * scaleX,
-            completedCrop.height * scaleY,
-            0,
-            0,
-            canvas.width,
-            canvas.height
-        );
+
+        ctx.drawImage(image,x,y,width,height,0,0,width,height);
 
         return new Promise((resolve) => {
-            canvas.toBlob((blob) => {
-                resolve(blob);
-            }, 'image/jpeg', 0.95);
+            canvas.toBlob(
+            (blob) => resolve(blob),
+            'image/jpeg',
+            0.95
+            );
         });
     };
 
+
     const handleSave = async () => {
-        if (!completedCrop) {
+        if (!completedCrop || !completedCrop.width || !completedCrop.height) {
             alert('Please select a crop area');
             return;
         }
-        
+
         const croppedBlob = await getCroppedImg();
+        if (!croppedBlob) {
+            alert('Failed to crop image, please try again.');
+            return;
+        }
+
         onCropComplete(croppedBlob);
     };
 

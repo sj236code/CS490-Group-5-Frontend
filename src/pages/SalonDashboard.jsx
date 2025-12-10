@@ -1,5 +1,5 @@
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Star, Camera, StarHalf, StarOff } from 'lucide-react';
 import DashboardManageTab from '../components/salon_dashboard/DashboardManageTab';
 import DashboardLoyaltyTab from '../components/salon_dashboard/DashboardLoyaltyTab';
