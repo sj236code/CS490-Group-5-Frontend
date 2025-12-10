@@ -4062,6 +4062,13 @@ label {
   gap: 12px;
 }
 
+.loyalty-input-disabled {
+  background-color: #f2f2f2;
+  color: #6d6d6d;
+  border: 1px solid #d5d5d5;
+  cursor: not-allowed;
+}
+
 .loyalty-label {
   flex: 1;
   font-size: 0.95rem;
