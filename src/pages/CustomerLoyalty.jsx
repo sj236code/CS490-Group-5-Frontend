@@ -176,29 +176,14 @@ function CustomerLoyalty() {
     const rd = prog.reward_details;
     if (!rd) return null;
 
-    const { points_cost, reward_type, reward_value, description } = rd;
+  const { points_cost, reward_value, reward_type } = rd;
 
-    // If you set a nice description in the backend, honor it:
-    if (description) {
-      return `${description} (costs ${points_cost} points)`;
-    }
-
-    if (!points_cost) return null;
-
-    if (reward_type === "PERCENT") {
-      return `Redeem ${points_cost} pts for ${reward_value}% off.`;
-    }
-
+    // Show "Redeem 1000 pts for $20 off" for FIXED_AMOUNT
     if (reward_type === "FIXED_AMOUNT") {
-      return `Redeem ${points_cost} pts for $${reward_value} off.`;
+      return `Redeem ${points_cost} pts for $${reward_value} off`;
     }
 
-    if (reward_type === "FREE_ITEM") {
-      return `Redeem ${points_cost} pts for a free item.`;
-    }
-
-    // generic fallback
-    return `Redeem ${points_cost} pts for a reward.`;
+    return `Redeem ${points_cost} pts`;
   };
 
 
