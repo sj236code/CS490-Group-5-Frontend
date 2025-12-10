@@ -713,10 +713,10 @@ body {
 
 .salon-details-hero {
   position: relative;
-  height: 300px;
+  height: 450px; /* Increased from 300px */
   background-image: url('../salon_details_background.jpg');
   background-size: cover;
-  background-position: top center;
+  background-position: center;
   overflow: hidden;
 }
 
@@ -727,6 +727,42 @@ body {
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.4);
+}
+
+.hero-image-upload-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border: 2px solid #96A78D;
+  border-radius: 8px;
+  color: #333;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.hero-image-upload-btn:hover:not(:disabled) {
+  background-color: #96A78D;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.hero-image-upload-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.hero-image-upload-btn svg {
+  width: 20px;
+  height: 20px;
 }
 
 .salon-details-header {

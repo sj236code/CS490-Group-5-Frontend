@@ -1,10 +1,11 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-import { Star } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Star, Camera } from 'lucide-react';
 import SalonShopTab from '../components/salon_details/SalonShopTab';
 import GalleryTab from '../components/salon_details/GalleryTab';
 import ReviewsTab from '../components/salon_details/ReviewsTab';
 import AboutTab from '../components/salon_details/AboutTab';
+import ImageCropModal from '../components/layout/ImageCropModal';
 
 const StarRating = ({ rating }) => {
     const totalStars = 5;
@@ -32,11 +33,20 @@ function SalonDetailsPage() {
 
     const [salonDetails, setSalonDetails] = useState(salon);
     const [workingTab, setWorkingTab] = useState("About");
-
     const [services, setServices] = useState([]);
+    const [heroImage, setHeroImage] = useState(null);
+    const [isUploadingImage, setIsUploadingImage] = useState(false);
+    const [showCropModal, setShowCropModal] = useState(false);
+    const [tempImageUrl, setTempImageUrl] = useState(null);
+    const [selectedFile, setSelectedFile] = useState(null);
+    const fileInputRef = useRef(null);
 
     const customerId = user?.profile_id ?? '-';
     const userRole = user?.role ?? '-';
+
+    // Check if current user is the salon owner (compare profile_id with salon_owner_id)
+    // Note: We need salon_owner_id from salonDetails to properly check ownership
+    const isOwner = user && salonDetails && user.profile_id === salonDetails.salon_owner_id;
 
     console.log("SALONDETAILS: CUSTOMER ID: ", customerId);
     console.log("SALONDETAILS USERTYPE: ", userRole);
@@ -48,9 +58,92 @@ function SalonDetailsPage() {
         }
         else{
             setSalonDetails(salon);
+            fetchHeroImage(salon.id);
             console.log("Salon Details: ", salon);
         }
     }, [salon]);
+
+    const fetchHeroImage = async (salonId) => {
+        try {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/salon_images/get_salon_home_image/${salonId}`);
+            const data = await response.json();
+            if (data.has_image) {
+                setHeroImage(data.image_url);
+            }
+        } catch (err) {
+            console.error("Failed to fetch hero image:", err);
+        }
+    };
+
+    const handleImageUpload = async (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            alert('Please select an image file');
+            return;
+        }
+
+        // Validate file size (max 10MB for original, will be compressed after crop)
+        if (file.size > 10 * 1024 * 1024) {
+            alert('Image size must be less than 10MB');
+            return;
+        }
+
+        // Create temporary URL for cropping
+        const imageUrl = URL.createObjectURL(file);
+        setTempImageUrl(imageUrl);
+        setSelectedFile(file);
+        setShowCropModal(true);
+    };
+
+    const handleCropComplete = async (croppedBlob) => {
+        setShowCropModal(false);
+        setIsUploadingImage(true);
+
+        // Clean up temp URL
+        if (tempImageUrl) {
+            URL.revokeObjectURL(tempImageUrl);
+        }
+
+        const formData = new FormData();
+        formData.append('image', croppedBlob, selectedFile.name);
+        formData.append('salon_id', salonDetails.id);
+        formData.append('user_id', user.profile_id);
+
+        try {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/salon_images/upload_salon_home_image`, {
+                method: 'POST',
+                body: formData,
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                setHeroImage(data.image_url);
+                alert('Hero image updated successfully!');
+            } else {
+                alert(data.error || 'Failed to upload image');
+            }
+        } catch (err) {
+            console.error('Upload error:', err);
+            alert('Failed to upload image. Please try again.');
+        } finally {
+            setIsUploadingImage(false);
+            setTempImageUrl(null);
+            setSelectedFile(null);
+        }
+    };
+
+    const handleCropCancel = () => {
+        setShowCropModal(false);
+        if (tempImageUrl) {
+            URL.revokeObjectURL(tempImageUrl);
+        }
+        setTempImageUrl(null);
+        setSelectedFile(null);
+    };
 
     // Add check for salonDetails
     if (!salonDetails) {
@@ -88,10 +181,39 @@ function SalonDetailsPage() {
 
     return (
         <div>
+            {showCropModal && (
+                <ImageCropModal
+                    imageUrl={tempImageUrl}
+                    onCropComplete={handleCropComplete}
+                    onCancel={handleCropCancel}
+                />
+            )}
 
             {/* Hero */}
-            <div className="salon-details-hero">
+            <div 
+                className="salon-details-hero"
+                style={heroImage ? { backgroundImage: `url(${heroImage})` } : {}}
+            >
                 <div className="salon-hero-overlay"></div>
+                
+                {isOwner && (
+                    <button 
+                        className="hero-image-upload-btn"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={isUploadingImage}
+                    >
+                        <Camera size={20} />
+                        {isUploadingImage ? 'Uploading...' : 'Change Photo'}
+                    </button>
+                )}
+                
+                <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    style={{ display: 'none' }}
+                    onChange={handleImageUpload}
+                />
             </div>
 
             {/* Salon Info */}
