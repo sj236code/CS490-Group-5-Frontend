@@ -269,7 +269,6 @@ function DashboardLoyaltyTab({ salon }) {
 
   return (
     <div className="loyalty-tab-container">
-      <div className="loyalty-grid">
         {/* LEFT COLUMN: Program summary + settings */}
         <div className="loyalty-left-column">
           {/* Program Summary Card */}
@@ -399,89 +398,6 @@ function DashboardLoyaltyTab({ salon }) {
             </div>
           </div>
         </div>
-
-        {/* RIGHT COLUMN: Engagement chart + customer table */}
-        <div className="loyalty-right-column">
-          {/* Customer Engagement Card */}
-          <div className="loyalty-card engagement-card">
-            <div className="loyalty-card-header">
-              <h2 className="loyalty-card-title">Customer Engagement</h2>
-              <BarChart3 size={20} className="loyalty-card-icon" />
-            </div>
-            <p className="loyalty-subtitle">
-              Points Earned vs Redeemed{" "}
-              <span className="loyalty-subtitle-light">(monthly)</span>
-            </p>
-
-            <div className="loyalty-chart">
-              <div className="loyalty-chart-body">
-                {engagementData.map((item) => (
-                  <div key={item.month} className="loyalty-chart-column">
-                    <div className="loyalty-chart-bars">
-                      <div
-                        className="loyalty-bar-earned"
-                        style={{
-                          height: `${(item.earned / 2000) * 100}%`,
-                        }}
-                        title={`Earned: ${item.earned}`}
-                      />
-                      <div
-                        className="loyalty-bar-redeemed"
-                        style={{
-                          height: `${(item.redeemed / 2000) * 100}%`,
-                        }}
-                        title={`Redeemed: ${item.redeemed}`}
-                      />
-                    </div>
-                    <span className="loyalty-chart-label">{item.month}</span>
-                  </div>
-                ))}
-              </div>
-
-              <div className="loyalty-chart-legend">
-                <span className="loyalty-legend-item">
-                  <span className="loyalty-legend-swatch loyalty-legend-earned" />
-                  Earned
-                </span>
-                <span className="loyalty-legend-item">
-                  <span className="loyalty-legend-swatch loyalty-legend-redeemed" />
-                  Redeemed
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Customer Points Card */}
-          <div className="loyalty-card customer-points-card">
-            <div className="loyalty-card-header">
-              <h2 className="loyalty-card-title">Customer Points</h2>
-              <Users size={20} className="loyalty-card-icon" />
-            </div>
-
-            <div className="loyalty-table">
-              <div className="loyalty-table-header">
-                <span className="loyalty-table-col loyalty-table-name">
-                  Customer Name
-                </span>
-                <span className="loyalty-table-col">Points</span>
-                <span className="loyalty-table-col">Visits</span>
-                <span className="loyalty-table-col">Last Visit</span>
-              </div>
-
-              {customerPoints.map((cust) => (
-                <div key={cust.id} className="loyalty-table-row">
-                  <span className="loyalty-table-col loyalty-table-name">
-                    {cust.name}
-                  </span>
-                  <span className="loyalty-table-col">{cust.points}</span>
-                  <span className="loyalty-table-col">{cust.visits}</span>
-                  <span className="loyalty-table-col">{cust.lastVisit}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
