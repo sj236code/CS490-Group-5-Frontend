@@ -1,6 +1,6 @@
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { Star } from 'lucide-react';
+import { Star, StarHalf, StarOff } from "lucide-react";
 import DashboardManageTab from '../components/salon_dashboard/DashboardManageTab';
 import DashboardLoyaltyTab from '../components/salon_dashboard/DashboardLoyaltyTab';
 import DashboardCalendarTab from '../components/salon_dashboard/DashboardCalendarTab';
@@ -60,6 +60,31 @@ function SalonDashboard() {
         );
     }
 
+    const StarRating = ({ rating }) => {
+        const totalStars = 5;
+
+        return (
+            <div className="star-rating-display" style={{ display: "flex", gap: "2px" }}>
+                {[...Array(totalStars)].map((_, i) => {
+                    const starIndex = i + 1;
+
+                    if (rating >= starIndex) {
+                    // full star
+                    return <Star key={i} size={16} fill="#4B5945" color="#4B5945" />;
+                    }
+
+                    if (rating >= starIndex - 0.5) {
+                    // half star
+                    return <StarHalf key={i} size={16} fill="#4B5945" color="#4B5945" />;
+                    }
+
+                    // empty star
+                    return <StarOff key={i} size={16} fill="#E0E0E0" color="#E0E0E0" />;
+                })}
+            </div>
+        );
+    };
+
     return (
         <div>
             <div className="salon-details-hero">
@@ -69,11 +94,25 @@ function SalonDashboard() {
             <div className="salon-details-header">
                 <h1 className="salon-details-name">{salonDetails.name}</h1>
                 <div className="salon-details-info">
-                    <span style={{ marginRight: '5px' }}>{salonDetails.type}</span>
-                    <span><Star size={16} fill="#96A78D"/> {salonDetails.avgRating || 'N/A'}</span>
-                    <span style={{ marginLeft: '5px' }}>
-                        {salonDetails.total_reviews || 0} Reviews
-                    </span>
+                    <div className="salon-rating-section">
+                        {(() => {
+                            const avgRating = salonDetails.avgRating ?? salonDetails.avg_rating ?? 0;
+
+                            const totalReviews = salonDetails.totalReviews ?? salonDetails.total_reviews ?? 0;
+
+                            return (
+                            <>
+                                <span className="rating-number">
+                                    {avgRating ? avgRating.toFixed(1) : 'N/A'}
+                                </span>
+                                <StarRating rating={avgRating || 0} />
+                                <span className="review-text">
+                                    ({totalReviews} Reviews)
+                                </span>
+                            </>
+                            );
+                        })()}
+                    </div>
                 </div>
             </div>
 
