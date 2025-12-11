@@ -22,16 +22,37 @@ const StarRating = ({ rating }) => {
   );
 };
 
-function SalonCard({ title, type, address, avgRating, totalReviews, onClick }) {
-
+function SalonCard({
+  title,
+  type,
+  address,
+  avgRating,
+  totalReviews,
+  imageUrl,
+  onClick,
+}) {
   const ratingValue = avgRating ?? 0;
 
   return (
     <div onClick={onClick} className="salon-card">
+      <div className="salon-card-image-wrapper">
+        {imageUrl ? (
+          <img
+            src={imageUrl}
+            alt={title}
+            className="salon-card-image"
+          />
+        ) : (
+          <div className="salon-card-image-placeholder">
+            <span>{title?.charAt(0) ?? "?"}</span>
+          </div>
+        )}
+      </div>
+
       <div className="salon-info">
         <h3 className="salon-title">{title}</h3>
-        <p className="salon-type">{type}</p>
-        <p className="salon-address">{address}</p>
+        {type && <p className="salon-type">{type}</p>}
+        {address && <p className="salon-address">{address}</p>}
 
         <div className="salon-rating">
           <div className="stars-and-rating">

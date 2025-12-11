@@ -83,7 +83,8 @@ function SalonsSection({userType, user}){
                 type: salon.type,
                 address: `${salon.address}, ${salon.city}`,
                 avgRating: salon.avg_rating,
-                totalReviews: salon.total_reviews
+                totalReviews: salon.total_reviews,
+                heroImageUrl: salon.hero_image_url,
             }));
 
             setSalons(formattedSalons);
@@ -115,6 +116,7 @@ function SalonsSection({userType, user}){
                             address={salon.address}
                             avgRating={salon.avgRating}
                             totalReviews={salon.totalReviews}
+                            imageUrl={salon.heroImageUrl}
                             onClick={() => handleSalonClick(salon)} 
                         />
                     ))}
