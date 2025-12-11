@@ -1,10 +1,11 @@
 import { Star, StarHalf, StarOff } from "lucide-react";
+import React, { useState } from "react";
 
 const StarRating = ({ rating }) => {
   const totalStars = 5;
 
   return (
-    <div className="star-rating-display" style={{ display: "flex", gap: "2px" }}>
+    <div className="star-rating-display">
       {[...Array(totalStars)].map((_, i) => {
         const starIndex = i + 1;
 
@@ -31,41 +32,42 @@ function SalonCard({
   imageUrl,
   onClick,
 }) {
+  const [imageError, setImageError] = useState(false);
   const ratingValue = avgRating ?? 0;
+  const initial = title?.charAt(0).toUpperCase() ?? "?";
+  const displayType = Array.isArray(type) ? type.join(", ") : type;
 
   return (
-    <div onClick={onClick} className="salon-card">
-      <div className="salon-card-image-wrapper">
-        {imageUrl ? (
+    <div className="salon-card" onClick={onClick}>
+      {/* TOP IMAGE AREA – SAME PATTERN AS TYPE CARD */}
+      <div className="salon-card-image">
+        {imageUrl && !imageError ? (
           <img
             src={imageUrl}
             alt={title}
-            className="salon-card-image"
+            onError={() => setImageError(true)}
           />
         ) : (
-          <div className="salon-card-image-placeholder">
-            <span>{title?.charAt(0) ?? "?"}</span>
+          <div className="salon-card-placeholder">
+            {initial}
           </div>
         )}
       </div>
 
-      <div className="salon-info">
-        <h3 className="salon-title">{title}</h3>
-        {type && <p className="salon-type">{type}</p>}
-        {address && <p className="salon-address">{address}</p>}
+      {/* BOTTOM CONTENT AREA */}
+      <div className="salon-card-content">
+        <h3 className="salon-card-name">{title}</h3>
+        {displayType && <p className="salon-card-type">{displayType}</p>}
+        <p className="salon-card-address">{address}</p>
 
-        <div className="salon-rating">
-          <div className="stars-and-rating">
-            <span className="rating-number">
-              {ratingValue ? ratingValue.toFixed(1) : "N/A"}
-            </span>
-
-            <StarRating rating={ratingValue || 0} />
-
-            <span className="review-text">
-              ({totalReviews ?? 0} Reviews)
-            </span>
-          </div>
+        <div className="salon-card-rating-row">
+          <span className="rating-number">
+            {ratingValue ? ratingValue.toFixed(1) : "N/A"}
+          </span>
+          <StarRating rating={ratingValue || 0} />
+          <span className="review-text">
+            ({totalReviews ?? 0} Reviews)
+          </span>
         </div>
       </div>
     </div>

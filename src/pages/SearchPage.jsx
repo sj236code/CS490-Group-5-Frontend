@@ -58,8 +58,6 @@ function SearchPage() {
         try {
             const final_search_query = new URLSearchParams();
 
-            // Handle Filtering Backend-- endpoint handles it now
-            // Remember to delete frontend filtering function
             if (searchQuery) {
                 final_search_query.append("q", searchQuery);
             }
@@ -73,30 +71,47 @@ function SearchPage() {
                 final_search_query.append("location", cityFilter);
             }
 
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/salons/search?${final_search_query.toString()}`);
+            const url = `${import.meta.env.VITE_API_URL}/api/salons/search?${final_search_query.toString()}`;
+            console.log("Full URL being sent:", url);
 
-            console.log('Full URL being sent:', `${import.meta.env.VITE_API_URL}/api/salons/search?${final_search_query.toString()}`);
-
+            const response = await fetch(url);
             const data = await response.json();
 
-            console.log('Search Page: Salons Successfully Received.');
-            console.log('Search Results: ', data);
+            console.log("Search Page: Salons Successfully Received.");
+            console.log("Search Results: ", data);
 
-            const formattedSalons = data.salons.map((salon) => ({
+            const baseSalons = (data.salons || []).map((salon) => ({
                 id: salon.id,
                 title: salon.name,
-                type: salon.type,
+                type: Array.isArray(salon.types) ? salon.types.join(", ") : salon.types,
                 address: `${salon.address}, ${salon.city}`,
                 avgRating: salon.avg_rating,
                 totalReviews: salon.total_reviews,
             }));
 
-            setSalons(formattedSalons);
+            const salonsWithImages = await Promise.all(
+                baseSalons.map(async (s) => {
+                    try {
+                        const imgRes = await fetch(
+                            `${import.meta.env.VITE_API_URL}/api/salon_images/get_salon_home_image/${s.id}`
+                        );
+                        const imgData = await imgRes.json();
 
-            console.log('Salons received: ', formattedSalons);
-        }
-        catch (err) {
-            console.error('Error fetching salons: ', err);
+                        return {
+                            ...s,
+                            heroImageUrl: imgData.has_image ? imgData.image_url : null,
+                        };
+                    } catch (err) {
+                        console.error("Failed to fetch hero image for salon", s.id, err);
+                        return { ...s, heroImageUrl: null };
+                    }
+                })
+            );
+
+            setSalons(salonsWithImages);
+            console.log("Search salons with images:", salonsWithImages);
+        } catch (err) {
+            console.error("Error fetching salons: ", err);
         }
     };
 
@@ -192,6 +207,7 @@ function SearchPage() {
                             address={salon.address}
                             avgRating={salon.avgRating}
                             totalReviews={salon.totalReviews}
+                            imageUrl={salon.heroImageUrl}
                             onClick={() => handleSalonClick(salon)}
                         />
                     ))}

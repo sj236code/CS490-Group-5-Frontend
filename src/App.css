@@ -459,101 +459,141 @@ body {
 
 }
 
-/* Landing Page Salons Grid */
+/* SECTION + GRID – COPY THE TYPE STYLE */
+
 .salons-section {
-  display: flex;
-  flex-direction: column;
-  background-color: #4B5945;
-  padding: 0;
+  padding: 40px 20px;
+  max-width: 2000px;
+  margin: 0 auto;
 }
 
 .salons-section-title {
-  font-size: 2.0rem;
-  padding-top: 50px;
-  margin-bottom: 20px;
+  font-size: 32px;
+  font-weight: 600;
+  color: #4B5945;
+  margin-bottom: 30px;
   text-align: center;
-  color: #F0F0F0;
 }
 
 .salon-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1.5rem;
-  align-items: center;
-  justify-content: center;
-  justify-items: center;
-  text-align: center;
-  padding: 100px 0;
+  grid-template-columns: repeat(4, 260px); 
+  gap: 100px;
+  justify-content: center; 
+  padding: 60px 0;
 }
 
-/* Salon Card Styling */
+/* CARD SHELL – SAME AS TYPE CARD */
 
 .salon-card {
-  display: flex;
-  flex-direction: column;
+  background: #ffffff;
   border-radius: 12px;
-  border: 1px solid #d9d9d9;
-  background: #fff;
   overflow: hidden;
   cursor: pointer;
-  transition: box-shadow 0.15s ease, transform 0.15s ease;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
 }
 
 .salon-card:hover {
-  background-color: #D9E9CF;
-  box-shadow: 0 4px 12px rgba(75, 89, 69, 0.15);
   transform: translateY(-4px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
 }
 
-.salon-card-image-wrapper {
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  background: #f7f7f7;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+/* TOP IMAGE AREA – FIXED HEIGHT LIKE TYPE CARD */
 
 .salon-card-image {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* placeholder if there’s no image */
-.salon-card-image-placeholder {
-  width: 100%;
-  height: 100%;
-  border: 2px solid #4B5945;
-  border-radius: 4px;
+  height: 220px;              /* same as .type-card-image */
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 600;
-  color: #4B5945;
+  padding: 16px;
   background: #ffffff;
 }
+
+.salon-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;   /* FILL the box vertically */
+  border-radius: 6px;
+}
+
+.salon-card-placeholder {
+  width: 100%;
+  height: 100%;
+  background: #eaeaea;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 42px;
+  font-weight: 700;
+}
+
+/* BOTTOM CONTENT – LIKE TYPE CARD TEXT BLOCK */
+
+.salon-card-content {
+  padding: 16px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.salon-card-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0;
+}
+
+.salon-card-type {
+  font-size: 0.85rem;
+  color: #666;
+  margin: 0;
+}
+
+.salon-card-address {
+  font-size: 0.8rem;
+  color: #444;
+  line-height: 1.2;
+  min-height: 2.4em;  /* gives two lines worth of space */
+}
+
+/* RATING ROW */
+
+.salon-card-rating-row {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.star-rating-display {
+  display: flex;
+  gap: 3px;
+}
+
+.rating-number {
+  font-weight: 600;
+}
+
+.review-text {
+  font-size: 0.75rem;
+  color: #555;
+}
+
+
+.rating-number {
+  font-weight: 600;
+}
+
 
 .salon-info {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-}
-
-.salon-title {
-  font-size: 1.2rem;
-  margin: 0;
-  color: #4B5945;
-}
-
-.salon-details {
-  font-size: 0.9rem;
-}
-
-.salon-rating {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   gap: 8px;
 }
 
@@ -579,6 +619,11 @@ body {
 .review-count {
   font-size: 0.85rem;
   color: #666;
+}
+
+.review-text {
+  font-size: 0.75rem;
+  color: #555;
 }
 
 /* Registered User Nav Bar = nb */
@@ -692,7 +737,7 @@ body {
 /* Search Page: Search Bar */
 
 .search-page-section {
-  padding: 6rem 10rem 4rem 10rem;
+  padding: 6rem 25rem 4rem 25rem;
   margin: 0 auto;
 }
 
@@ -771,12 +816,11 @@ body {
 /* SalonDetailsPage */
 
 .salon-details-hero {
-  position: relative;
-  height: 450px; /* Increased from 300px */
-  background-image: url('../salon_details_background.jpg');
+  height: 260px;           /* or whatever height you want */
   background-size: cover;
   background-position: center;
-  overflow: hidden;
+  background-repeat: no-repeat;
+  position: relative;
 }
 
 .salon-hero-overlay {
