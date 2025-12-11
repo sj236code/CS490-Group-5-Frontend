@@ -196,9 +196,9 @@ function SalonDetailsPage() {
             )}
 
             {/* Hero */}
-            <div 
+            <div
                 className="salon-details-hero"
-                style={heroImage ? { backgroundImage: `url(${heroImage})` } : {}}
+                style={heroImage ? { backgroundImage: `url("${heroImage}")` } : {}}
             >
                 <div className="salon-hero-overlay"></div>
                 

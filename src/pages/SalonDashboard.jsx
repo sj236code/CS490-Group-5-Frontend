@@ -99,7 +99,6 @@ function SalonDashboard() {
         setShowCropModal(false);
         setIsUploadingImage(true);
 
-        // Clean up temp URL
         if (tempImageUrl) {
             URL.revokeObjectURL(tempImageUrl);
         }
@@ -110,18 +109,31 @@ function SalonDashboard() {
         formData.append('user_id', user.profile_id);
 
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/salon_images/upload_salon_home_image`, {
-                method: 'POST',
-                body: formData,
-            });
+            const response = await fetch(
+            `${import.meta.env.VITE_API_URL}/api/salon_images/upload_salon_home_image`,
+            { method: 'POST', body: formData }
+            );
 
             const data = await response.json();
+            console.log('UPLOAD RESPONSE:', data);
 
             if (response.ok) {
-                setHeroImage(data.image_url);
-                alert('Hero image updated successfully!');
+            const newUrl = data.image_url || data.imageUrl || data.url;
+            if (!newUrl) {
+                console.warn('No image URL field returned from server');
+            }
+
+            // Either trust the returned URL…
+            if (newUrl) {
+                setHeroImage(newUrl);
             } else {
-                alert(data.error || 'Failed to upload image');
+                // …or just re-fetch the hero image from the GET endpoint:
+                await fetchHeroImage(salonDetails.id);
+            }
+
+            alert('Hero image updated successfully!');
+            } else {
+            alert(data.error || 'Failed to upload image');
             }
         } catch (err) {
             console.error('Upload error:', err);
@@ -194,10 +206,11 @@ function SalonDashboard() {
                 />
             )}
 
-            <div 
+            <div
                 className="salon-details-hero"
-                style={heroImage ? { backgroundImage: `url(${heroImage})` } : {}}
+                style={heroImage ? { backgroundImage: `url("${heroImage}")` } : {}}
             >
+
                 <div className="salon-hero-overlay"></div>
                 
                 {isOwner && (
