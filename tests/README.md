@@ -16,11 +16,6 @@ tests/
 │   ├─ employee-auth.spec.js       # Employee login
 │   └─ owner-auth.spec.js          # Salon owner login
 │
-├─ customer/
-│   ├─ book-appt.spec.js           # Book Appointment
-│   ├─ secure-checkout.spec.js     # Checkout Securely
-│   └─ leave-review.spec.js        # Customer leaves a review
-│
 ├─ utils/
 |   ├─ employee.js                 # Employee related helpers
 |   ├─ customer.js                 # Customer related helpers
