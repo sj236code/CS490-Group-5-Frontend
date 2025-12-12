@@ -51,7 +51,6 @@ function CustomerNavBar({onClose, onLogout, userId, user}){
                     <button className="nb-text-link" onClick={() => navTo('/myWallet')}>My Wallet</button>
                     <button className="nb-text-link" onClick={() => navTo('/userGallery')}>Gallery</button>
                     <button className="nb-text-link" onClick={() => navTo('/customerLoyalty')}>Loyalty &amp; Rewards</button>
-                    <button className="nb-text-link" onClick={() => navTo('/payments')}>Payments</button>
                     <button className="nb-text-link" onClick={handleLogout}>Log Out</button>
                 </div>
 
