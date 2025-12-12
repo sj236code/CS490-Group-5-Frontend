@@ -88,7 +88,7 @@ function DashboardLoyaltyTab({ salon }) {
       const summary = {
         pointsPerDollar: data.points_per_dollar ?? "",
         pointsForReward: data.points_for_reward ?? "",
-        rewardType: data.reward_type || "FIXED_AMOUNT",
+        rewardType: "FIXED_AMOUNT",
         rewardValue: data.reward_value ?? "",
       };
 
@@ -150,7 +150,7 @@ function DashboardLoyaltyTab({ salon }) {
       active: isActive ? 1 : 0,
       points_per_dollar: programSettings.pointsPerDollar,
       points_for_reward: programSettings.pointsForReward,
-      reward_type: programSettings.rewardType,
+      reward_type: "FIXED_AMOUNT",
       reward_value: programSettings.rewardValue,
       reward_description: `Earn ${programSettings.pointsPerDollar} pts per $1, Redeem ${programSettings.pointsForReward} pts`,
     };
@@ -172,7 +172,7 @@ function DashboardLoyaltyTab({ salon }) {
       setProgramSummary({
         pointsPerDollar: data.points_per_dollar ?? "",
         pointsForReward: data.points_for_reward ?? "",
-        rewardType: data.reward_type,
+        rewardType: "FIXED_AMOUNT",
         rewardValue: data.reward_value ?? "",
       });
 
@@ -269,7 +269,6 @@ function DashboardLoyaltyTab({ salon }) {
 
   return (
     <div className="loyalty-tab-container">
-      <div className="loyalty-grid">
         {/* LEFT COLUMN: Program summary + settings */}
         <div className="loyalty-left-column">
           {/* Program Summary Card */}
@@ -333,17 +332,12 @@ function DashboardLoyaltyTab({ salon }) {
 
             <div className="loyalty-field-row">
               <label className="loyalty-label">Reward type</label>
-              <select
-                className="loyalty-input"
-                value={programSettings.rewardType}
-                onChange={(e) =>
-                  handleSettingsChange("rewardType", e.target.value)
-                }
-              >
-                <option value="FIXED_AMOUNT">Fixed $ amount off</option>
-                <option value="PERCENT">Percent off</option>
-                <option value="FREE_ITEM">Free item</option>
-              </select>
+              <input
+                className="loyalty-input loyalty-input-disabled"
+                value="Fixed $ amount off"
+                disabled
+                readOnly
+              />
             </div>
 
             <div className="loyalty-field-row">
@@ -399,89 +393,6 @@ function DashboardLoyaltyTab({ salon }) {
             </div>
           </div>
         </div>
-
-        {/* RIGHT COLUMN: Engagement chart + customer table */}
-        <div className="loyalty-right-column">
-          {/* Customer Engagement Card */}
-          <div className="loyalty-card engagement-card">
-            <div className="loyalty-card-header">
-              <h2 className="loyalty-card-title">Customer Engagement</h2>
-              <BarChart3 size={20} className="loyalty-card-icon" />
-            </div>
-            <p className="loyalty-subtitle">
-              Points Earned vs Redeemed{" "}
-              <span className="loyalty-subtitle-light">(monthly)</span>
-            </p>
-
-            <div className="loyalty-chart">
-              <div className="loyalty-chart-body">
-                {engagementData.map((item) => (
-                  <div key={item.month} className="loyalty-chart-column">
-                    <div className="loyalty-chart-bars">
-                      <div
-                        className="loyalty-bar-earned"
-                        style={{
-                          height: `${(item.earned / 2000) * 100}%`,
-                        }}
-                        title={`Earned: ${item.earned}`}
-                      />
-                      <div
-                        className="loyalty-bar-redeemed"
-                        style={{
-                          height: `${(item.redeemed / 2000) * 100}%`,
-                        }}
-                        title={`Redeemed: ${item.redeemed}`}
-                      />
-                    </div>
-                    <span className="loyalty-chart-label">{item.month}</span>
-                  </div>
-                ))}
-              </div>
-
-              <div className="loyalty-chart-legend">
-                <span className="loyalty-legend-item">
-                  <span className="loyalty-legend-swatch loyalty-legend-earned" />
-                  Earned
-                </span>
-                <span className="loyalty-legend-item">
-                  <span className="loyalty-legend-swatch loyalty-legend-redeemed" />
-                  Redeemed
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Customer Points Card */}
-          <div className="loyalty-card customer-points-card">
-            <div className="loyalty-card-header">
-              <h2 className="loyalty-card-title">Customer Points</h2>
-              <Users size={20} className="loyalty-card-icon" />
-            </div>
-
-            <div className="loyalty-table">
-              <div className="loyalty-table-header">
-                <span className="loyalty-table-col loyalty-table-name">
-                  Customer Name
-                </span>
-                <span className="loyalty-table-col">Points</span>
-                <span className="loyalty-table-col">Visits</span>
-                <span className="loyalty-table-col">Last Visit</span>
-              </div>
-
-              {customerPoints.map((cust) => (
-                <div key={cust.id} className="loyalty-table-row">
-                  <span className="loyalty-table-col loyalty-table-name">
-                    {cust.name}
-                  </span>
-                  <span className="loyalty-table-col">{cust.points}</span>
-                  <span className="loyalty-table-col">{cust.visits}</span>
-                  <span className="loyalty-table-col">{cust.lastVisit}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

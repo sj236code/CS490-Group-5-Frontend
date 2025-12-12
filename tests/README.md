@@ -71,7 +71,7 @@ npx playwright test tests/auth/customer-auth.spec.js --project=firefox --headed
 
 ## How to use codegen to automatically generate tests
 
-1. Start you rdev server so the app is running
+1. Start your dev server so the app is running
 ```
 npm run dev
 ```

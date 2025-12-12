@@ -169,8 +169,22 @@ body {
   border: 2px solid #4B5945; 
   background-color: transparent;
   color: #4B5945;
+  padding: 8px 24px;
+  cursor: pointer;
+}
+
+.sign-in-button-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px; 
+  border: 2px solid #D9E9CE; 
+  background-color: transparent;
+  color: #D9E9CE;
   padding: 8px 24px; 
   cursor: pointer;
+  margin-top: 375px;
+  margin-bottom: 75px;
 }
 
 .sign-in-button:hover {
@@ -445,71 +459,141 @@ body {
 
 }
 
-/* Landing Page Salons Grid */
+/* SECTION + GRID – COPY THE TYPE STYLE */
+
 .salons-section {
-  display: flex;
-  flex-direction: column;
-  background-color: #4B5945;
-  padding: 0;
+  padding: 40px 20px;
+  max-width: 2000px;
+  margin: 0 auto;
 }
 
 .salons-section-title {
-  font-size: 2.0rem;
-  padding-top: 50px;
-  margin-bottom: 20px;
+  font-size: 32px;
+  font-weight: 600;
+  color: #4B5945;
+  margin-bottom: 30px;
   text-align: center;
-  color: #F0F0F0;
 }
 
 .salon-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1.5rem;
-  align-items: center;
-  justify-content: center;
-  justify-items: center;
-  text-align: center;
-  padding: 100px 0;
+  grid-template-columns: repeat(4, 260px); 
+  gap: 100px;
+  justify-content: center; 
+  padding: 60px 0;
 }
 
-/* Salon Card Styling */
+/* CARD SHELL – SAME AS TYPE CARD */
 
 .salon-card {
-  border-radius: 16px;
-  width: 250px;
-  padding: 20px;
+  background: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
   cursor: pointer;
-  text-align: center;
-  background-color: #f0f0f0;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
 }
 
 .salon-card:hover {
-  background-color: #D9E9CF;
-  box-shadow: 0 4px 12px rgba(75, 89, 69, 0.15);
   transform: translateY(-4px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
 }
+
+/* TOP IMAGE AREA – FIXED HEIGHT LIKE TYPE CARD */
+
+.salon-card-image {
+  width: 100%;
+  height: 220px;              /* same as .type-card-image */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: #ffffff;
+}
+
+.salon-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;   /* FILL the box vertically */
+  border-radius: 6px;
+}
+
+.salon-card-placeholder {
+  width: 100%;
+  height: 100%;
+  background: #eaeaea;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 42px;
+  font-weight: 700;
+}
+
+/* BOTTOM CONTENT – LIKE TYPE CARD TEXT BLOCK */
+
+.salon-card-content {
+  padding: 16px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.salon-card-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0;
+}
+
+.salon-card-type {
+  font-size: 0.85rem;
+  color: #666;
+  margin: 0;
+}
+
+.salon-card-address {
+  font-size: 0.8rem;
+  color: #444;
+  line-height: 1.2;
+  min-height: 2.4em;  /* gives two lines worth of space */
+}
+
+/* RATING ROW */
+
+.salon-card-rating-row {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.star-rating-display {
+  display: flex;
+  gap: 3px;
+}
+
+.rating-number {
+  font-weight: 600;
+}
+
+.review-text {
+  font-size: 0.75rem;
+  color: #555;
+}
+
+
+.rating-number {
+  font-weight: 600;
+}
+
 
 .salon-info {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-}
-
-.salon-title {
-  font-size: 1.2rem;
-  margin: 0;
-  color: #4B5945;
-}
-
-.salon-details {
-  font-size: 0.9rem;
-}
-
-.salon-rating {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   gap: 8px;
 }
 
@@ -535,6 +619,11 @@ body {
 .review-count {
   font-size: 0.85rem;
   color: #666;
+}
+
+.review-text {
+  font-size: 0.75rem;
+  color: #555;
 }
 
 /* Registered User Nav Bar = nb */
@@ -645,18 +734,33 @@ body {
   font-size: 1.1rem;
 }
 
-
-
 /* Search Page: Search Bar */
 
 .search-page-section {
-  padding: 2rem;
+  padding: 6rem 25rem 4rem 25rem;
   margin: 0 auto;
 }
 
 .search-page-search-bar {
   margin-bottom: 1.5rem;
 }
+
+.search-top {
+  background-color: #D9E9CE; 
+  border: 2px solid #4B5945; 
+  border-radius: 1rem;
+
+  padding: 1.5rem; 
+  margin-bottom: 2rem;
+
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+}
+
+
 
 .search-input {
   width: 100%;
@@ -712,12 +816,11 @@ body {
 /* SalonDetailsPage */
 
 .salon-details-hero {
-  position: relative;
-  height: 300px;
-  background-image: url('../salon_details_background.jpg');
+  height: 260px;           /* or whatever height you want */
   background-size: cover;
-  background-position: top center;
-  overflow: hidden;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
 }
 
 .salon-hero-overlay {
@@ -727,6 +830,42 @@ body {
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.4);
+}
+
+.hero-image-upload-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border: 2px solid #96A78D;
+  border-radius: 8px;
+  color: #333;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.hero-image-upload-btn:hover:not(:disabled) {
+  background-color: #96A78D;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.hero-image-upload-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.hero-image-upload-btn svg {
+  width: 20px;
+  height: 20px;
 }
 
 .salon-details-header {
@@ -2467,7 +2606,7 @@ body {
   background-color: #4B5945;
   padding: 8px 10px;
   border-radius: 8px;
-  margin: 8px 8px 14px 36px; /* leave space for close button */
+  margin: 8px 8px 14px 36px;
 }
 .cart-header-icon { 
   font-size: 14px; 
@@ -2715,12 +2854,14 @@ body {
 
 /* Stat cards */
 .loy-stats { 
-  display: flex; 
-  gap: 12px; 
-  flex-wrap: wrap; 
-  margin-bottom: 12px; 
-  justify-content: center;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 24px 0 12px;
+  justify-content: space-between;
+  width: 100%;
 }
+
 
 .loy-card {
   display: flex; 
@@ -2730,7 +2871,8 @@ body {
   border: 1px solid #E3E7E1; 
   border-radius: 10px;
   padding: 10px 12px; 
-  min-width: 300px;
+  flex: 1;
+  min-width: 260px;
   height: 100px;
   margin-top: 30px;
   margin-bottom: 30px;
@@ -2753,11 +2895,10 @@ body {
   border-radius: 12px; 
   overflow: hidden;
   box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-  width: 1100px;
-  margin: 0 auto;
-  margin-bottom: 40px;
-  margin-top: 20px;
+  width: 100%;
+  margin: 20px auto 40px;
 }
+
 .loy-program-head {
   background: #4B5945; color: #F6FFF2; padding: 12px;
   display: flex; align-items: center; justify-content: space-between;
@@ -2768,6 +2909,14 @@ body {
   display: flex; align-items: center; justify-content: center;
   background: rgba(246,255,242,0.15); border: 1px solid rgba(246,255,242,0.4);
 }
+
+.loy-program-redeem {
+  font-size: 0.8rem;
+  margin-top: 2px;
+  color: #f3f3f3;
+  opacity: 0.9;
+}
+
 .loy-program-name { font-weight: 700; }
 .loy-program-rule { font-size: 0.85rem; opacity: 0.9; }
 .loy-badge {
@@ -3944,6 +4093,9 @@ label {
 /* Loyalty Tab Layout */
 
 .loyalty-tab-container {
+  flex: 1;
+  align-items: center;
+  
   padding: 40px 60px;
   background-color: #f5f7f3; /* very light green/gray */
 }
@@ -4020,6 +4172,13 @@ label {
   justify-content: space-between;
   margin-bottom: 10px;
   gap: 12px;
+}
+
+.loyalty-input-disabled {
+  background-color: #f2f2f2;
+  color: #6d6d6d;
+  border: 1px solid #d5d5d5;
+  cursor: not-allowed;
 }
 
 .loyalty-label {

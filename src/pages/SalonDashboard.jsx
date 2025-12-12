@@ -1,11 +1,12 @@
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-import { Star } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Star, Camera, StarHalf, StarOff } from 'lucide-react';
 import DashboardManageTab from '../components/salon_dashboard/DashboardManageTab';
 import DashboardLoyaltyTab from '../components/salon_dashboard/DashboardLoyaltyTab';
 import DashboardCalendarTab from '../components/salon_dashboard/DashboardCalendarTab';
 import DashboardMetricsTab from '../components/salon_dashboard/DashboardMetricsTab';
 import DashboardEmployeesTab from '../components/salon_dashboard/DashboardEmployeesTab';
+import ImageCropModal from '../components/layout/ImageCropModal';
 
 function SalonDashboard() {
     const location = useLocation();
@@ -15,6 +16,15 @@ function SalonDashboard() {
 
     const [workingTab, setWorkingTab] = useState("Metrics");
     const [salonDetails, setSalonDetails] = useState(null);
+    const [heroImage, setHeroImage] = useState(null);
+    const [isUploadingImage, setIsUploadingImage] = useState(false);
+    const [showCropModal, setShowCropModal] = useState(false);
+    const [tempImageUrl, setTempImageUrl] = useState(null);
+    const [selectedFile, setSelectedFile] = useState(null);
+    const fileInputRef = useRef(null);
+
+    // Dashboard is always for owners, so isOwner is always true
+    const isOwner = true;
 
     useEffect(() => {
         const salonId = searchParams.get('id');
@@ -23,7 +33,10 @@ function SalonDashboard() {
             // Fetch using ID from query param
             fetch(`${import.meta.env.VITE_API_URL}/api/salons/details/${salonId}`)
                 .then(res => res.json())
-                .then(data => setSalonDetails(data))
+                .then(data => {
+                    setSalonDetails(data);
+                    fetchHeroImage(salonId);
+                })
                 .catch(err => console.error(err));
         } 
         else if (salon) {
@@ -31,10 +44,14 @@ function SalonDashboard() {
             if (salon.id && !salon.name) {
                 fetch(`${import.meta.env.VITE_API_URL}/api/salons/details/${salon.id}`)
                     .then(res => res.json())
-                    .then(data => setSalonDetails(data))
+                    .then(data => {
+                        setSalonDetails(data);
+                        fetchHeroImage(salon.id);
+                    })
                     .catch(err => console.error(err));
             } else {
                 setSalonDetails(salon);
+                fetchHeroImage(salon.id);
             }
             console.log("Salon Details:", salon);
         } 
@@ -42,6 +59,100 @@ function SalonDashboard() {
             console.error("No salon data provided.");
         }
     }, [location, searchParams]);
+
+    const fetchHeroImage = async (salonId) => {
+        try {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/salon_images/get_salon_home_image/${salonId}`);
+            const data = await response.json();
+            if (data.has_image) {
+                setHeroImage(data.image_url);
+            }
+        } catch (err) {
+            console.error("Failed to fetch hero image:", err);
+        }
+    };
+
+    const handleImageUpload = async (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            alert('Please select an image file');
+            return;
+        }
+
+        // Validate file size (max 10MB for original, will be compressed after crop)
+        if (file.size > 10 * 1024 * 1024) {
+            alert('Image size must be less than 10MB');
+            return;
+        }
+
+        // Create temporary URL for cropping
+        const imageUrl = URL.createObjectURL(file);
+        setTempImageUrl(imageUrl);
+        setSelectedFile(file);
+        setShowCropModal(true);
+    };
+
+    const handleCropComplete = async (croppedBlob) => {
+        setShowCropModal(false);
+        setIsUploadingImage(true);
+
+        if (tempImageUrl) {
+            URL.revokeObjectURL(tempImageUrl);
+        }
+
+        const formData = new FormData();
+        formData.append('image', croppedBlob, selectedFile.name);
+        formData.append('salon_id', salonDetails.id);
+        formData.append('user_id', user.profile_id);
+
+        try {
+            const response = await fetch(
+            `${import.meta.env.VITE_API_URL}/api/salon_images/upload_salon_home_image`,
+            { method: 'POST', body: formData }
+            );
+
+            const data = await response.json();
+            console.log('UPLOAD RESPONSE:', data);
+
+            if (response.ok) {
+            const newUrl = data.image_url || data.imageUrl || data.url;
+            if (!newUrl) {
+                console.warn('No image URL field returned from server');
+            }
+
+            // Either trust the returned URL…
+            if (newUrl) {
+                setHeroImage(newUrl);
+            } else {
+                // …or just re-fetch the hero image from the GET endpoint:
+                await fetchHeroImage(salonDetails.id);
+            }
+
+            alert('Hero image updated successfully!');
+            } else {
+            alert(data.error || 'Failed to upload image');
+            }
+        } catch (err) {
+            console.error('Upload error:', err);
+            alert('Failed to upload image. Please try again.');
+        } finally {
+            setIsUploadingImage(false);
+            setTempImageUrl(null);
+            setSelectedFile(null);
+        }
+    };
+
+    const handleCropCancel = () => {
+        setShowCropModal(false);
+        if (tempImageUrl) {
+            URL.revokeObjectURL(tempImageUrl);
+        }
+        setTempImageUrl(null);
+        setSelectedFile(null);
+    };
 
     useEffect(() => {
         if (workingTab === "Shop" && salonDetails?.id) {
@@ -60,20 +171,90 @@ function SalonDashboard() {
         );
     }
 
+    const StarRating = ({ rating }) => {
+        const totalStars = 5;
+
+        return (
+            <div className="star-rating-display" style={{ display: "flex", gap: "2px" }}>
+                {[...Array(totalStars)].map((_, i) => {
+                    const starIndex = i + 1;
+
+                    if (rating >= starIndex) {
+                    // full star
+                    return <Star key={i} size={16} fill="#4B5945" color="#4B5945" />;
+                    }
+
+                    if (rating >= starIndex - 0.5) {
+                    // half star
+                    return <StarHalf key={i} size={16} fill="#4B5945" color="#4B5945" />;
+                    }
+
+                    // empty star
+                    return <StarOff key={i} size={16} fill="#E0E0E0" color="#E0E0E0" />;
+                })}
+            </div>
+        );
+    };
+
     return (
         <div>
-            <div className="salon-details-hero">
+            {showCropModal && (
+                <ImageCropModal
+                    imageUrl={tempImageUrl}
+                    onCropComplete={handleCropComplete}
+                    onCancel={handleCropCancel}
+                />
+            )}
+
+            <div
+                className="salon-details-hero"
+                style={heroImage ? { backgroundImage: `url("${heroImage}")` } : {}}
+            >
+
                 <div className="salon-hero-overlay"></div>
+                
+                {isOwner && (
+                    <button 
+                        className="hero-image-upload-btn"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={isUploadingImage}
+                    >
+                        <Camera size={20} />
+                        {isUploadingImage ? 'Uploading...' : 'Change Photo'}
+                    </button>
+                )}
+                
+                <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    style={{ display: 'none' }}
+                    onChange={handleImageUpload}
+                />
             </div>
 
             <div className="salon-details-header">
                 <h1 className="salon-details-name">{salonDetails.name}</h1>
                 <div className="salon-details-info">
-                    <span style={{ marginRight: '5px' }}>{salonDetails.type}</span>
-                    <span><Star size={16} fill="#96A78D"/> {salonDetails.avgRating || 'N/A'}</span>
-                    <span style={{ marginLeft: '5px' }}>
-                        {salonDetails.total_reviews || 0} Reviews
-                    </span>
+                    <div className="salon-rating-section">
+                        {(() => {
+                            const avgRating = salonDetails.avgRating ?? salonDetails.avg_rating ?? 0;
+
+                            const totalReviews = salonDetails.totalReviews ?? salonDetails.total_reviews ?? 0;
+
+                            return (
+                            <>
+                                <span className="rating-number">
+                                    {avgRating ? avgRating.toFixed(1) : 'N/A'}
+                                </span>
+                                <StarRating rating={avgRating || 0} />
+                                <span className="review-text">
+                                    ({totalReviews} Reviews)
+                                </span>
+                            </>
+                            );
+                        })()}
+                    </div>
                 </div>
             </div>
 

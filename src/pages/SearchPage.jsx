@@ -17,10 +17,8 @@ function SearchPage() {
 
     // Store Filter States
     const [typeFilter, setTypeFilter] = useState(preAppliedType || 'Any Type');
-    const [priceFilter, setPriceFilter] = useState('Any Price');
     const [ratingFilter, setRatingFilter] = useState('Any Rating');
     const [cityFilter, setCityFilter] = useState(city || '');
-    const [distanceFilter, setDistanceFilter] = useState('Any Distance');
     const [sortBy, setSortBy] = useState('Best Match');
 
     // Fetches all salons from backend- run on mount
@@ -34,7 +32,7 @@ function SearchPage() {
     // Anytime any filters change
     useEffect(() => {
         fetchSalons();
-    }, [searchQuery, typeFilter, priceFilter, ratingFilter, cityFilter, distanceFilter, sortBy]);
+    }, [searchQuery, typeFilter, ratingFilter, cityFilter, sortBy]);
 
     // Effects- multiple needed 
     // Async function to fetch service categories from backend API-- taken from LandingPage
@@ -60,62 +58,60 @@ function SearchPage() {
         try {
             const final_search_query = new URLSearchParams();
 
-            // Handle Filtering Backend-- endpoint handles it now
-            // Remember to delete frontend filtering function
             if (searchQuery) {
                 final_search_query.append("q", searchQuery);
             }
             if (typeFilter !== "Any Type") {
                 final_search_query.append("type", typeFilter);
             }
-            if (priceFilter !== "Any Price") {
-                const priceMap = { '$': 1, '$$': 2, '$$$': 3 };
-                final_search_query.append("price", priceMap[priceFilter]);
-                //filtered = filtered.filter(salon => salon.priceLevel === priceMap[priceFilter]);
-            }
             if (ratingFilter !== "Any Rating") {
                 final_search_query.append("rating", ratingFilter);
-            }
-            if (distanceFilter !== "Any Distance") {
-                final_search_query.append("distance", distanceFilter)
             }
             if (cityFilter !== "All Cities" && cityFilter !== "") {
                 final_search_query.append("location", cityFilter);
             }
 
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/salons/search?${final_search_query.toString()}`);
+            const url = `${import.meta.env.VITE_API_URL}/api/salons/search?${final_search_query.toString()}`;
+            console.log("Full URL being sent:", url);
 
-            console.log('Full URL being sent:', `${import.meta.env.VITE_API_URL}/api/salons/search?${final_search_query.toString()}`);
-
+            const response = await fetch(url);
             const data = await response.json();
 
-            console.log('Search Page: Salons Successfully Received.');
-            console.log('Search Results: ', data);
+            console.log("Search Page: Salons Successfully Received.");
+            console.log("Search Results: ", data);
 
-            const calculatePriceLevel = (avgPrice) => {
-                if (!avgPrice) return null;
-                if (avgPrice < 50) return 1;
-                if (avgPrice < 100) return 2;
-                return 3;
-            };
-
-            const formattedSalons = data.salons.map((salon) => ({
+            const baseSalons = (data.salons || []).map((salon) => ({
                 id: salon.id,
                 title: salon.name,
-                type: salon.type,
+                type: Array.isArray(salon.types) ? salon.types.join(", ") : salon.types,
                 address: `${salon.address}, ${salon.city}`,
                 avgRating: salon.avg_rating,
                 totalReviews: salon.total_reviews,
-                priceLevel: salon.price_level || calculatePriceLevel(salon.avg_service_price), // Add helper
-                distance: salon.distance_miles || 0
             }));
 
-            setSalons(formattedSalons);
+            const salonsWithImages = await Promise.all(
+                baseSalons.map(async (s) => {
+                    try {
+                        const imgRes = await fetch(
+                            `${import.meta.env.VITE_API_URL}/api/salon_images/get_salon_home_image/${s.id}`
+                        );
+                        const imgData = await imgRes.json();
 
-            console.log('Salons received: ', formattedSalons);
-        }
-        catch (err) {
-            console.error('Error fetching salons: ', err);
+                        return {
+                            ...s,
+                            heroImageUrl: imgData.has_image ? imgData.image_url : null,
+                        };
+                    } catch (err) {
+                        console.error("Failed to fetch hero image for salon", s.id, err);
+                        return { ...s, heroImageUrl: null };
+                    }
+                })
+            );
+
+            setSalons(salonsWithImages);
+            console.log("Search salons with images:", salonsWithImages);
+        } catch (err) {
+            console.error("Error fetching salons: ", err);
         }
     };
 
@@ -131,100 +127,74 @@ function SearchPage() {
     return (
         <div>
             <section className="search-page-section">
-                {/* Search Bar */}
-                <div className="search-page-search-bar">
-                    <input
-                        type="text"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        placeholder="Search by Salon Name, Service, or Location..."
-                        className="search-input"
-                    />
-                </div>
+                <div className="search-top">
 
-                {/* Filter Dropdowns */}
-                <div className="filters-container">
-
-                    {/* Type Dropdown */}
-                    <div className='filter-group'>
-                        <label className='filter-name'>Type</label>
-                        <select
-                            value={typeFilter}
-                            onChange={(e) => setTypeFilter(e.target.value)}
-                            className='selected-filter'>
-                            <option>Any Type</option>
-                            <option>Barber</option>
-                            <option>Hair Color</option>
-                            <option>Hair Removal</option>
-                            <option>Lashes</option>
-                            <option>Nails</option>
-                            <option>Salon</option>
-                            <option>Spa</option>
-                            <option>Other</option>
-                        </select>
+                    {/* Search Bar */}
+                    <div className="search-page-search-bar">
+                        <input
+                            type="text"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            placeholder="Search by Salon Name, Service, or Location..."
+                            className="search-input"
+                        />
                     </div>
 
-                    {/* Price Dropdowns */}
-                    <div className='filter-group'>
-                        <label className='filter-name'>Price</label>
-                        <select
-                            value={priceFilter}
-                            onChange={(e) => setPriceFilter(e.target.value)}
-                            className='selected-filter'>
-                            <option>Any Price</option>
-                            <option>$$$</option>
-                            <option>$$</option>
-                            <option>$</option>
-                        </select>
+                    {/* Filter Dropdowns */}
+                    <div className="filters-container">
+
+                        {/* Type Dropdown */}
+                        <div className='filter-group'>
+                            <label className='filter-name'>Type</label>
+                            <select
+                                value={typeFilter}
+                                onChange={(e) => setTypeFilter(e.target.value)}
+                                className='selected-filter'>
+                                <option>Any Type</option>
+                                <option>Barber</option>
+                                <option>Hair Color</option>
+                                <option>Hair Removal</option>
+                                <option>Lashes</option>
+                                <option>Nails</option>
+                                <option>Salon</option>
+                                <option>Spa</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+
+                        {/* Rating Dropdowns */}
+                        <div className='filter-group'>
+                            <label className='filter-name'>Rating</label>
+                            <select
+                                value={ratingFilter}
+                                onChange={(e) => setRatingFilter(e.target.value)}
+                                className='selected-filter'>
+                                <option>Any Rating</option>
+                                <option>4.5</option>
+                                <option>4.0</option>
+                                <option>3.5</option>
+                                <option>3.0</option>
+                            </select>
+                        </div>
+
+                        {/* City Dropdowns */}
+                        <div className='filter-group'>
+                            <label className='filter-name'>City</label>
+                            <select
+                                value={cityFilter}
+                                onChange={(e) => setCityFilter(e.target.value)}
+                                className='selected-filter'>
+                                {/* Display All Cities (Passed From Landing Page) */}
+                                <option value="">All Cities</option>
+                                {cities.map((cityFilter, index) => (
+                                    <option key={index} value={cityFilter}>
+                                        {cityFilter}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
 
-                    {/* Rating Dropdowns */}
-                    <div className='filter-group'>
-                        <label className='filter-name'>Rating</label>
-                        <select
-                            value={ratingFilter}
-                            onChange={(e) => setRatingFilter(e.target.value)}
-                            className='selected-filter'>
-                            <option>Any Rating</option>
-                            <option>4.5</option>
-                            <option>4.0</option>
-                            <option>3.5</option>
-                            <option>3.0</option>
-                        </select>
-                    </div>
-
-                    {/* City Dropdowns */}
-                    <div className='filter-group'>
-                        <label className='filter-name'>City</label>
-                        <select
-                            value={cityFilter}
-                            onChange={(e) => setCityFilter(e.target.value)}
-                            className='selected-filter'>
-                            {/* Display All Cities (Passed From Landing Page) */}
-                            <option value="">All Cities</option>
-                            {cities.map((cityFilter, index) => (
-                                <option key={index} value={cityFilter}>
-                                    {cityFilter}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-
-
-                    {/* Distance Dropdowns */}
-                    <div className='filter-group'>
-                        <label className='filter-name'>Distance</label>
-                        <select
-                            value={distanceFilter}
-                            onChange={(e) => setDistanceFilter(e.target.value)}
-                            className='selected-filter'>
-                            <option>Any Distance</option>
-                            <option>5</option>
-                            <option>10</option>
-                            <option>25</option>
-                            <option>50</option>
-                        </select>
-                    </div>
                 </div>
 
                 {/* Salon Card Grid -- Reuse from LandingPage Grid */}
@@ -237,6 +207,7 @@ function SearchPage() {
                             address={salon.address}
                             avgRating={salon.avgRating}
                             totalReviews={salon.totalReviews}
+                            imageUrl={salon.heroImageUrl}
                             onClick={() => handleSalonClick(salon)}
                         />
                     ))}
@@ -249,10 +220,8 @@ function SearchPage() {
                         <button
                             onClick={() => {
                                 setTypeFilter('Any Type');
-                                setPriceFilter('Any Price');
                                 setRatingFilter('Any Rating');
                                 setCityFilter('All Cities');
-                                setDistanceFilter('Any Distance');
                                 setSearchQuery('');
                             }}
                             className='clear-filters'

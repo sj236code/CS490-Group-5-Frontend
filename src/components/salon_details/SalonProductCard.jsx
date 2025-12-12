@@ -6,11 +6,17 @@ import {Star, Sparkle, ChevronLeft, ChevronRight, Rows4} from 'lucide-react';
 function SalonProductCard({product, onClick}) {
 
     const rating = product.rating || product.avgRating || 4;
+    const [imageError, setImageError] = useState(false);
     
     // Calculate filled and empty stars
     const filledStars = Math.floor(rating); // Full stars- round down half stars
     const hasHalfStar = rating % 1 >= 0.5; // calc half star
     const emptyStars = 5 - filledStars - (hasHalfStar ? 1 : 0); // empty stars
+    const imgSrc = (product.icon_url || product.image_url) ?? null;
+
+    useEffect(() => {
+        setImageError(false);
+    }, [imgSrc]);
 
     // Calculate stars based on salon rating
     const calcStars = () => {
@@ -43,6 +49,10 @@ function SalonProductCard({product, onClick}) {
         return stars;
     };
 
+    const handleImageError = () => {
+        setImageError(true);
+    }
+
     const handleBooking = () => {
         console.log("booked.");
     };
@@ -52,7 +62,18 @@ function SalonProductCard({product, onClick}) {
 
             <div className="salon-service-image">
                 <div className="salon-service-placeholder">
-                    <span><Sparkle /></span>
+
+                    {imgSrc && !imageError ? (
+                        <img 
+                            src={imgSrc} 
+                            alt={product.name}
+                            onError={handleImageError}
+                        />
+                    ) : (
+                        <div className="salon-service-placeholder">
+                            <span><Sparkle /></span>
+                        </div>
+                    )}
                 </div>
             </div>
 

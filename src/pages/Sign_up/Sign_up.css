@@ -62,6 +62,14 @@
     margin-bottom: 15px;
 }
 
+.input-label {
+    display: block;
+    font-size: 14px;
+    color: #4F4B4B;
+    margin-bottom: 6px;
+    padding-left: 4px;
+}
+
 .input-field {
     width: 100%;
     font-size: 20px;
@@ -74,6 +82,34 @@
 
 .input-field::placeholder {
     color: #D9D9D9;
+}
+
+/* Styling for date input */
+.input-field[type="date"] {
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.input-field[type="date"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0.6;
+}
+
+/* Styling for select dropdown */
+.select-field {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23BEBEBE' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    background-size: 20px;
+    padding-right: 45px;
+}
+
+.select-field option {
+    background: #FFFFFF;
+    color: #000000;
+    padding: 10px;
 }
 
 .error-box {
@@ -97,6 +133,15 @@
     padding: 14px;
     cursor: pointer;
     margin-bottom: 15px;
+}
+
+.submit-btn:hover:not(:disabled) {
+    background: #6e8a6b;
+}
+
+.submit-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
 }
 
 .links {
